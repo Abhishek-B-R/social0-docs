@@ -1,6 +1,22 @@
 # Social0 Docs
 
-Standalone Fumadocs site for Social0 documentation. Styled to match the Social0 design system (accent `#1A6B4A`, Instrument Serif headings, Geist Sans body, no shadows).
+Official documentation site for Social0.
+
+This repository contains the standalone docs app (`social0-docs`) extracted from the monorepo, powered by Next.js + Fumadocs.
+
+## What is inside
+
+- Product guides for creators using Social0
+- Platform-specific posting docs (X, Instagram, LinkedIn, TikTok, and more)
+- Feature docs (scheduling, queue, bulk tools, auto-repost)
+- Developer docs for architecture and app pages
+
+## Tech stack
+
+- Next.js
+- Fumadocs
+- MDX content
+- TypeScript
 
 ## Run locally
 
@@ -9,31 +25,48 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Home links to **Browse docs** → `/docs`.
+Open [http://localhost:3000](http://localhost:3000), then go to `/docs`.
 
-## Build
+## Build for production
 
 ```bash
 npm run build
 npm start
 ```
 
-## Structure
+## Project structure
 
-- **Navbar** - "Social0 | Docs" (custom component in `components/docs-navbar.tsx`). Links to social0.app, Dashboard, and X.
-- **Content** - `content/docs/` (MDX). Structure:
-  - `index.mdx` - Overview
-  - `getting-started/` - Getting started, Connecting accounts
-  - `platforms/` - Twitter, Instagram, LinkedIn, TikTok, Bluesky, Facebook, Threads, Pinterest, YouTube
-  - `post-types/` - Text, Image, Video, Thread, Collection
-  - `features/` - Scheduling, Queue, Bulk tools, Auto-repost
-  - `billing/` - Plans, FAQ
-  - `developer/` - Architecture, Pages reference (agent-generated page docs go under `developer/pages/`)
+- `app/` - docs app routes and layout
+- `content/docs/` - all documentation pages (MDX)
+- `components/` - shared UI components for docs
+- `lib/` - docs helpers and utilities
+- `public/` - static assets
 
-## Doc agent
+## Writing docs
 
-Write all documentation as **.mdx** files compatible with Fumadocs (frontmatter `title`, `description`). Output to `content/docs/` following the structure above. Per-page app documentation from the agent goes in `content/docs/developer/pages/` (e.g. `posts.mdx`, `composer.mdx`).
+All new pages should be added as `.mdx` files under `content/docs/`.
 
-## Deploy
+Use frontmatter like:
 
-Deploy separately to Vercel (e.g. `docs.social0.app`). Build command: `npm run build`. Output: default Next.js.
+```mdx
+---
+title: "Page title"
+description: "Short page summary"
+---
+```
+
+Preferred sections:
+
+- `getting-started/`
+- `platforms/`
+- `post-types/`
+- `features/`
+- `billing/`
+- `developer/`
+
+## Deployment
+
+Deploy this repo independently (for example to `docs.social0.app`).
+
+- Build command: `npm run build`
+- Runtime: standard Next.js server output
