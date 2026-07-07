@@ -1,4 +1,13 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Social0 Docs",
+  description:
+    "Documentation for the Social0 dashboard — scheduling, publishing, and managing posts across all your social platforms.",
+  path: "/",
+});
 
 export default function HomePage() {
   return (
