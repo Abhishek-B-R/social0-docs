@@ -1,0 +1,169 @@
+---
+title: "Webhooks (management)"
+description: Create, list, update, and delete webhook subscriptions via the Social0 API.
+---
+
+## Overview
+
+Manage webhook subscriptions programmatically. For delivery format, signature verification, and events, see the [Webhooks guide](/docs/api/webhooks).
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/v1/webhooks` | List subscriptions |
+| `POST` | `/v1/webhooks` | Create; returns `secret` once |
+| `PATCH` | `/v1/webhooks/:id` | Update URL, events, or `active` |
+| `DELETE` | `/v1/webhooks/:id` | Remove subscription |
+
+---
+
+## GET /v1/webhooks
+
+List webhook subscriptions for the authenticated user.
+
+**Auth:** Bearer API key (required)
+
+### Response 200
+
+```json
+{
+  "data": [
+    {
+      "id": "uuid",
+      "url": "https://your-server.com/webhooks/social0",
+      "events": ["post.published", "post.failed"],
+      "active": true,
+      "created_at": "2026-07-11T14:00:00.000Z"
+    }
+  ]
+}
+```
+
+The signing `secret` is **not** returned on list — it is shown only at creation time.
+
+### cURL
+
+```bash
+curl https://api.social0.app/v1/webhooks \
+  -H "Authorization: Bearer sk_live_YOUR_KEY"
+```
+
+---
+
+## POST /v1/webhooks
+
+Create a webhook subscription.
+
+**Auth:** Bearer API key (required)
+
+### Request body
+
+```json
+{
+  "url": "https://your-server.com/webhooks/social0",
+  "events": ["post.published", "post.failed", "post.scheduled", "post.deleted"]
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `url` | string | Yes | HTTPS endpoint URL (public, no localhost) |
+| `events` | string[] | Yes | Events to subscribe to |
+
+**Available events:** `post.published`, `post.failed`, `post.scheduled`, `post.deleted`
+
+### Response 201
+
+```json
+{
+  "id": "uuid",
+  "url": "https://your-server.com/webhooks/social0",
+  "events": ["post.published", "post.failed"],
+  "active": true,
+  "secret": "whsec_…",
+  "created_at": "2026-07-11T14:00:00.000Z"
+}
+```
+
+The `secret` is shown **once**. Store it immediately for signature verification.
+
+### cURL
+
+```bash
+curl -X POST https://api.social0.app/v1/webhooks \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://your-server.com/webhooks/social0",
+    "events": ["post.published", "post.failed"]
+  }'
+```
+
+---
+
+## PATCH /v1/webhooks/:id
+
+Update a webhook subscription.
+
+**Auth:** Bearer API key (required)
+
+### Request body
+
+Any combination of:
+
+```json
+{
+  "url": "https://new-url.com/webhooks",
+  "events": ["post.published"],
+  "active": false
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `url` | string | New endpoint URL |
+| `events` | string[] | Updated event list |
+| `active` | boolean | Enable or disable delivery |
+
+### Response 200
+
+Returns the updated webhook object (without `secret`).
+
+### cURL
+
+```bash
+curl -X PATCH https://api.social0.app/v1/webhooks/WEBHOOK_UUID \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"active": false}'
+```
+
+---
+
+## DELETE /v1/webhooks/:id
+
+Remove a webhook subscription.
+
+**Auth:** Bearer API key (required)
+
+### Response 204
+
+Empty body on success.
+
+### cURL
+
+```bash
+curl -X DELETE https://api.social0.app/v1/webhooks/WEBHOOK_UUID \
+  -H "Authorization: Bearer sk_live_YOUR_KEY"
+```
+
+### Errors
+
+| HTTP | Code | When |
+|------|------|------|
+| 401 | `invalid_api_key` | Missing or invalid API key |
+| 404 | `not_found` | Webhook not found |
+
+## Related
+
+- [Webhooks guide](/docs/api/webhooks) — delivery, signatures, events
+- [Developer settings](/docs/dashboard/api-keys) — dashboard UI for webhooks

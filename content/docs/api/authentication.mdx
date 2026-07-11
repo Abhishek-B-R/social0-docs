@@ -1,0 +1,59 @@
+---
+title: "Authentication"
+description: Authenticate API requests with Bearer API keys from the Developer dashboard.
+---
+
+## API keys
+
+API keys are created in the dashboard under **Developer** ([`/dashboard/api-keys`](/docs/dashboard/api-keys)).
+
+| Property | Detail |
+|----------|--------|
+| Format | `sk_live_` + random secret |
+| Storage | Only the **hash** is stored server-side |
+| Visibility | Raw key shown **once** on create and regenerate |
+| Multiple keys | Supported — each has `name`, `prefix`, `last_used_at`, `created_at`, optional `expires_at` |
+| Revoked keys | Return `401` with `invalid_api_key` |
+
+There are no API key **scopes** today — all keys are full-access. Scoped keys may be added in a future release.
+
+## Request header
+
+Every `/v1` request must include:
+
+```
+Authorization: Bearer sk_live_xxxxxxxxxxxxxxxx
+```
+
+Example:
+
+```bash
+curl https://api.social0.app/v1/accounts \
+  -H "Authorization: Bearer sk_live_YOUR_KEY"
+```
+
+## Legacy keys
+
+Older keys with prefix `s0_live_` still work. New keys use `sk_live_`.
+
+## Session auth (dashboard only)
+
+Dashboard management routes (`/api/api-keys`, `/api/webhooks/subscriptions`) use **session cookies**, not API keys. External integrations should use `/v1` only — do not use `/api/*` routes from third-party clients.
+
+## Security best practices
+
+- **Never commit keys to git** — use environment variables or a secrets manager
+- **Rotate keys** via **Regenerate** in the dashboard (old key revoked immediately)
+- **Revoke unused keys** — delete keys you no longer need
+- **Do not expose keys in client-side code** — API keys belong on your server, not in browser JavaScript
+- **One key per integration** — makes rotation and revocation easier
+
+## Managing keys in the dashboard
+
+See [Developer settings](/docs/dashboard/api-keys) for creating, renaming, regenerating, and revoking keys, plus webhook setup on the same page.
+
+## Related
+
+- [Errors — `invalid_api_key`](/docs/api/errors)
+- [Rate limits](/docs/api/rate-limits)
+- [Quickstart](/docs/api/quickstart)

@@ -1,0 +1,17 @@
+{
+  "pages": [
+    "index",
+    "getting-started",
+    "onboarding",
+    "dashboard",
+    "api",
+    "features",
+    "post-types",
+    "platforms",
+    "billing",
+    "auth",
+    "developer",
+    "privacy",
+    "terms"
+  ]
+}

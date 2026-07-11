@@ -1,0 +1,92 @@
+---
+title: "Errors"
+description: Error response shape, codes, and common validation mistakes for the Social0 API.
+---
+
+## Error shape
+
+All `/v1` errors use a single JSON shape:
+
+```json
+{
+  "error": {
+    "code": "invalid_api_key",
+    "message": "API key is invalid."
+  }
+}
+```
+
+## Error codes
+
+| HTTP | `code` | When |
+|------|--------|------|
+| 400 | `validation_error` | Bad JSON, missing fields, invalid UUIDs, schedule in past, etc. |
+| 401 | `invalid_api_key` | Missing, wrong, expired, or revoked key |
+| 403 | `forbidden` | Resource belongs to another user |
+| 404 | `not_found` | Post, job, media, account, or webhook not found |
+| 409 | `idempotency_conflict` | Duplicate `Idempotency-Key` while first request in flight |
+| 429 | `rate_limit_exceeded` | Hourly API quota exceeded |
+| 500 | `internal_error` | Server error (no stack trace in body) |
+
+## Debugging
+
+Every response includes an **`x-request-id`** header. Include this when contacting support — it helps us trace your request in logs.
+
+Example:
+
+```bash
+curl -i https://api.social0.app/v1/accounts \
+  -H "Authorization: Bearer sk_live_YOUR_KEY"
+# Look for: x-request-id: abc-123-def
+```
+
+## Common `validation_error` mistakes
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| `"Expected object, received string"` | Request body sent as plain text, not JSON | Set `Content-Type: application/json` and send a JSON body (not Raw/Text in API clients) |
+| Invalid UUID on `platforms` | Used platform name (`"linkedin"`) instead of account ID | Use UUID from `GET /v1/accounts` → `data[].id` |
+| Accounts invalid / not yours | Wrong UUID or another user's account | Re-list accounts with the same API key |
+| Schedule in the past | `scheduledAt` is before now | Use a future datetime |
+| Schedule too far out | `scheduledAt` more than 1 year ahead | Pick a time within the next year |
+
+## Example error responses
+
+**401 — invalid API key:**
+
+```json
+{
+  "error": {
+    "code": "invalid_api_key",
+    "message": "API key is invalid."
+  }
+}
+```
+
+**400 — validation error:**
+
+```json
+{
+  "error": {
+    "code": "validation_error",
+    "message": "platforms: Invalid uuid"
+  }
+}
+```
+
+**409 — idempotency conflict:**
+
+```json
+{
+  "error": {
+    "code": "idempotency_conflict",
+    "message": "A request with this Idempotency-Key is already in progress."
+  }
+}
+```
+
+## Related
+
+- [Idempotency](/docs/api/idempotency)
+- [Rate limits](/docs/api/rate-limits)
+- [Authentication](/docs/api/authentication)

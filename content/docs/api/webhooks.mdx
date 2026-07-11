@@ -1,0 +1,135 @@
+---
+title: "Webhooks — Social0 API"
+description: Receive HTTP notifications when posts are published, fail, or are scheduled.
+---
+
+## Overview
+
+Webhooks deliver real-time HTTP notifications when posts change state. Set them up in the dashboard or via the API, then verify signatures on every delivery.
+
+## Events
+
+| Event | When fired |
+|-------|------------|
+| `post.published` | All platforms finished; post status `published` or `partial` |
+| `post.failed` | All platforms failed |
+| `post.scheduled` | Post scheduled via API (`POST …/schedule` or `POST /v1/posts/schedule`) |
+| `post.deleted` | Draft or scheduled post deleted via API |
+
+## Setup (dashboard)
+
+1. Go to [Developer → Webhooks](https://social0.app/dashboard/api-keys) (Webhooks tab)
+2. **Add endpoint** → enter your URL
+3. Select events
+4. Copy the **signing secret** (shown once)
+
+See [Developer settings](/docs/dashboard/api-keys) for the full dashboard walkthrough.
+
+## Setup (API)
+
+```bash
+curl -X POST https://api.social0.app/v1/webhooks \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://your-server.com/webhooks/social0",
+    "events": ["post.published", "post.failed"]
+  }'
+```
+
+The response includes `secret` once — store it immediately. See [Webhooks reference](/docs/api/reference/webhooks) for list, update, and delete endpoints.
+
+## Delivery format
+
+| Property | Value |
+|----------|-------|
+| Method | `POST` |
+| Content-Type | `application/json` |
+
+**Headers:**
+
+| Header | Description |
+|--------|-------------|
+| `X-Social0-Event` | Event type (e.g. `post.published`) |
+| `X-Social0-Delivery-Id` | UUID for this delivery |
+| `X-Social0-Signature` | `t={unix_timestamp},v1={hex_hmac}` |
+
+**Payload shape:**
+
+```json
+{
+  "id": "delivery-uuid",
+  "type": "post.published",
+  "created_at": "2026-07-11T14:00:00.000Z",
+  "data": {
+    "post_id": "uuid",
+    "status": "published",
+    "platforms": [
+      {
+        "platform": "linkedin",
+        "status": "published",
+        "connected_account_id": "uuid",
+        "error": null
+      }
+    ]
+  }
+}
+```
+
+## Signature verification
+
+```
+signed_payload = "{timestamp}.{raw_json_body}"
+expected = HMAC_SHA256(webhook_secret, signed_payload)
+compare expected to v1 value in X-Social0-Signature
+```
+
+**Python example:**
+
+```python
+import hmac, hashlib, time
+
+def verify(secret: str, signature_header: str, body: bytes, tolerance=300) -> bool:
+    parts = dict(p.split("=", 1) for p in signature_header.split(","))
+    ts = int(parts["t"])
+    if abs(time.time() - ts) > tolerance:
+        return False
+    signed = f"{ts}.{body.decode()}".encode()
+    expected = hmac.new(secret.encode(), signed, hashlib.sha256).hexdigest()
+    return hmac.compare_digest(expected, parts["v1"])
+```
+
+**JavaScript (Node.js) example:**
+
+```javascript
+import crypto from "crypto";
+
+function verify(secret, signatureHeader, body, tolerance = 300) {
+  const parts = Object.fromEntries(
+    signatureHeader.split(",").map((p) => p.split("=", 2))
+  );
+  const ts = parseInt(parts.t, 10);
+  if (Math.abs(Date.now() / 1000 - ts) > tolerance) return false;
+  const signed = `${ts}.${body}`;
+  const expected = crypto.createHmac("sha256", secret).update(signed).digest("hex");
+  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(parts.v1));
+}
+```
+
+Always verify signatures before processing webhook payloads. Reject requests with timestamps outside your tolerance window to prevent replay attacks.
+
+## URL requirements
+
+- **HTTPS only** in production
+- Must be a **public URL** (no localhost or private IPs)
+- Same SSRF rules as other outbound webhooks
+
+## Retries
+
+The current implementation is fire-and-forget. Design your handler to be **idempotent** — the same event may theoretically be delivered more than once. Automatic retry policy will be documented when added.
+
+## Related
+
+- [Webhooks reference](/docs/api/reference/webhooks)
+- [Developer settings](/docs/dashboard/api-keys)
+- [Publish guide](/docs/api/guides/publish)

@@ -1,0 +1,165 @@
+---
+title: "Accounts"
+description: List, connect, and disconnect social accounts via the Social0 API.
+---
+
+## GET /v1/accounts
+
+List connected social accounts for the authenticated user.
+
+**Auth:** Bearer API key (required)
+
+### Response 200
+
+```json
+{
+  "data": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "platform": "linkedin",
+      "username": "jane",
+      "profile_image_url": "https://example.com/avatar.jpg",
+      "is_active": true,
+      "token_expires_at": "2026-08-01T00:00:00.000Z",
+      "token_status": "ok",
+      "created_at": "2026-01-01T00:00:00.000Z"
+    }
+  ]
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | UUID | Connected account ID — use in `platforms` when posting |
+| `platform` | string | Platform enum (`linkedin`, `instagram`, etc.) |
+| `username` | string | Handle or display name |
+| `profile_image_url` | string | Avatar URL |
+| `is_active` | boolean | Whether the account is active |
+| `token_expires_at` | datetime | When the OAuth token expires |
+| `token_status` | string | `ok`, `expiring_soon`, or `expired` |
+| `created_at` | datetime | When the account was connected |
+
+### cURL
+
+```bash
+curl https://api.social0.app/v1/accounts \
+  -H "Authorization: Bearer sk_live_YOUR_KEY"
+```
+
+### JavaScript
+
+```javascript
+const res = await fetch("https://api.social0.app/v1/accounts", {
+  headers: { Authorization: `Bearer ${process.env.SOCIAL0_API_KEY}` },
+});
+const { data } = await res.json();
+const accountIds = data.map((a) => a.id);
+```
+
+### Python
+
+```python
+import requests, os
+
+r = requests.get(
+    "https://api.social0.app/v1/accounts",
+    headers={"Authorization": f"Bearer {os.environ['SOCIAL0_API_KEY']}"},
+)
+accounts = r.json()["data"]
+```
+
+### Errors
+
+| HTTP | Code | When |
+|------|------|------|
+| 401 | `invalid_api_key` | Missing or invalid API key |
+
+---
+
+## POST /v1/accounts/connect
+
+Returns an OAuth **authorization URL** to open in a browser. Does **not** connect an account inside the API call — the user must complete OAuth in the browser; then `GET /v1/accounts` shows the new account.
+
+**Recommended flow:** connect once in [Dashboard → Connections](https://social0.app/dashboard/connections), then use `GET /v1/accounts` for UUIDs. Use this endpoint only if you build custom onboarding that redirects users to OAuth.
+
+**Auth:** Bearer API key (required)
+
+### Request body
+
+```json
+{
+  "platform": "linkedin"
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `platform` | string | Yes | Platform to connect |
+
+**Supported `platform` values:** `linkedin`, `instagram`, `youtube`, `pinterest`, `tiktok`, `threads`, `facebook`
+
+**Not supported (dashboard only):** `twitter_x`, `bluesky` (BYOK — handle + app password in dashboard)
+
+### Response 200
+
+```json
+{
+  "authorization_url": "https://..."
+}
+```
+
+Redirect the end user to `authorization_url` in a browser. They must be logged into Social0.
+
+### cURL
+
+```bash
+curl -X POST https://api.social0.app/v1/accounts/connect \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"platform": "linkedin"}'
+```
+
+### Errors
+
+| HTTP | Code | When |
+|------|------|------|
+| 400 | `validation_error` | Unsupported platform (`twitter_x`, `bluesky`) |
+| 401 | `invalid_api_key` | Missing or invalid API key |
+
+---
+
+## DELETE /v1/accounts/:id
+
+Disconnect an account. Revokes token on the platform (best effort) and deletes the row.
+
+**Auth:** Bearer API key (required)
+
+### Path parameters
+
+| Param | Type | Description |
+|-------|------|-------------|
+| `id` | UUID | Connected account ID |
+
+### Response 204
+
+Empty body on success.
+
+### cURL
+
+```bash
+curl -X DELETE https://api.social0.app/v1/accounts/ACCOUNT_UUID \
+  -H "Authorization: Bearer sk_live_YOUR_KEY"
+```
+
+### Errors
+
+| HTTP | Code | When |
+|------|------|------|
+| 401 | `invalid_api_key` | Missing or invalid API key |
+| 403 | `forbidden` | Account belongs to another user |
+| 404 | `not_found` | Account not found |
+
+## Related
+
+- [Connect accounts guide](/docs/api/guides/connect-accounts)
+- [Posts reference](/docs/api/reference/posts)

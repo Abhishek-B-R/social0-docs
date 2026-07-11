@@ -1,0 +1,61 @@
+---
+title: "Idempotency"
+description: Safely retry publish requests with the Idempotency-Key header.
+---
+
+## Overview
+
+Use the `Idempotency-Key` header to safely retry publish requests without creating duplicate posts. If a network failure occurs after your request reaches the server, retry with the same key and get the original response back.
+
+## Header
+
+```
+Idempotency-Key: <unique string>
+```
+
+A UUID is recommended (e.g. `550e8400-e29b-41d4-a716-446655440000`).
+
+## Supported routes
+
+- `POST /v1/posts/publish`
+- `POST /v1/posts/:id/publish`
+
+## Behavior
+
+| Scenario | Result |
+|----------|--------|
+| First request with a key | Executes normally; response cached in Redis for 24 hours |
+| Retry with same key | Returns the **same response** (status + body) |
+| Concurrent duplicate keys | Returns **409** `idempotency_conflict` |
+
+## Example
+
+```bash
+KEY="$(uuidgen)"
+curl -X POST https://api.social0.app/v1/posts/publish \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: $KEY" \
+  -d '{"content":"Hello from the API","platforms":["YOUR_ACCOUNT_UUID"]}'
+
+# Safe to retry with same Idempotency-Key if network fails
+curl -X POST https://api.social0.app/v1/posts/publish \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: $KEY" \
+  -d '{"content":"Hello from the API","platforms":["YOUR_ACCOUNT_UUID"]}'
+```
+
+Both requests return the same `tracking_id` and `post_id`.
+
+## Best practices
+
+- Generate a new `Idempotency-Key` for each **intentionally different** publish
+- Reuse the same key only when **retrying** the same logical operation
+- Store the key client-side until you receive a successful response
+- Handle **409** by waiting briefly and retrying (another in-flight request holds the lock)
+
+## Related
+
+- [Errors — `idempotency_conflict`](/docs/api/errors)
+- [Publish guide](/docs/api/guides/publish)

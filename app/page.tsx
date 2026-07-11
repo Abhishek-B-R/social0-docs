@@ -19,12 +19,20 @@ export default function HomePage() {
         <p className="mt-3 text-(--muted-foreground)">
           Documentation for the Social0 dashboard and API.
         </p>
-        <Link
-          href="/docs"
-          className="mt-6 inline-flex items-center rounded-lg border border-(--border) bg-(--accent) px-5 py-2.5 text-sm font-medium text-(--accent-foreground) transition-colors hover:opacity-90"
-        >
-          Browse docs
-        </Link>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <Link
+            href="/docs"
+            className="inline-flex items-center rounded-lg border border-(--border) bg-(--accent) px-5 py-2.5 text-sm font-medium text-(--accent-foreground) transition-colors hover:opacity-90"
+          >
+            Browse docs
+          </Link>
+          <Link
+            href="/docs/api/quickstart"
+            className="inline-flex items-center rounded-lg border border-(--border) px-5 py-2.5 text-sm font-medium transition-colors hover:bg-(--accent)/10"
+          >
+            Build with the API
+          </Link>
+        </div>
       </div>
     </main>
   );

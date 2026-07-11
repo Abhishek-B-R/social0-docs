@@ -1,0 +1,126 @@
+---
+title: "API Reference"
+description: Complete reference for all Social0 REST API endpoints.
+---
+
+## Base URL
+
+```
+https://api.social0.app/v1
+```
+
+## Authentication
+
+All endpoints require:
+
+```
+Authorization: Bearer sk_live_YOUR_KEY
+```
+
+## Response conventions
+
+- JSON field names use **snake_case**
+- Every response includes **`x-request-id`**
+- Errors: `{ "error": { "code", "message" } }`
+
+## Endpoints
+
+| Section | Description |
+|---------|-------------|
+| [Accounts](/docs/api/reference/accounts) | List, connect, and disconnect social accounts |
+| [Posts](/docs/api/reference/posts) | Create, publish, schedule, and manage posts |
+| [Jobs](/docs/api/reference/jobs) | Poll or stream publish job progress |
+| [Media](/docs/api/reference/media) | Upload images and video |
+| [Webhooks](/docs/api/reference/webhooks) | Manage webhook subscriptions |
+
+## Copy-paste examples
+
+### cURL — list posts
+
+```bash
+curl "https://api.social0.app/v1/posts?status=draft&limit=10" \
+  -H "Authorization: Bearer sk_live_YOUR_KEY"
+```
+
+### cURL — schedule (UTC)
+
+```bash
+curl -X POST https://api.social0.app/v1/posts/schedule \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content": "Monday motivation",
+    "platforms": ["ACCOUNT_UUID"],
+    "scheduledAt": "2026-07-14T09:00:00.000Z"
+  }'
+```
+
+### cURL — schedule (explicit offset)
+
+```bash
+curl -X POST https://api.social0.app/v1/posts/schedule \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content": "Monday motivation",
+    "platforms": ["ACCOUNT_UUID"],
+    "scheduledAt": "2026-07-14T14:30:00+05:30"
+  }'
+```
+
+### Python — full publish flow
+
+```python
+import os, time, uuid, requests
+
+API = "https://api.social0.app"
+KEY = os.environ["SOCIAL0_API_KEY"]
+HEADERS = {"Authorization": f"Bearer {KEY}", "Content-Type": "application/json"}
+
+r = requests.post(
+    f"{API}/v1/posts/publish",
+    headers={**HEADERS, "Idempotency-Key": str(uuid.uuid4())},
+    json={"content": "Hello API", "platforms": ["YOUR_ACCOUNT_UUID"]},
+    timeout=30,
+)
+r.raise_for_status()
+tracking_id = r.json()["tracking_id"]
+
+while True:
+    job = requests.get(f"{API}/v1/jobs/{tracking_id}", headers=HEADERS, timeout=30).json()
+    if job["status"] in ("completed", "failed"):
+        print(job)
+        break
+    time.sleep(2)
+```
+
+### JavaScript (Node 18+) — create draft then publish
+
+```javascript
+const headers = {
+  Authorization: `Bearer ${process.env.SOCIAL0_API_KEY}`,
+  "Content-Type": "application/json",
+};
+
+const draft = await fetch("https://api.social0.app/v1/posts", {
+  method: "POST",
+  headers,
+  body: JSON.stringify({
+    content: "Draft via API",
+    platforms: [process.env.SOCIAL0_ACCOUNT_ID],
+  }),
+}).then((r) => r.json());
+
+const pub = await fetch(`https://api.social0.app/v1/posts/${draft.id}/publish`, {
+  method: "POST",
+  headers: { ...headers, "Idempotency-Key": crypto.randomUUID() },
+}).then((r) => r.json());
+
+console.log(pub.tracking_id);
+```
+
+## Related
+
+- [OpenAPI spec](https://api.social0.app/openapi.json)
+- [Interactive docs](https://api.social0.app/docs)
+- [Guides](/docs/api/guides/publish)

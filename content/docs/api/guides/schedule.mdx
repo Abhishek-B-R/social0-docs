@@ -1,0 +1,160 @@
+---
+title: "Schedule a post"
+description: Schedule posts for future delivery via the Social0 API.
+---
+
+## Overview
+
+Scheduling sets a `scheduledAt` timestamp on a post. A cron job dispatches the post at that **absolute** time via Cloudflare's scheduled queue — do not expect instant publish.
+
+## Prerequisites
+
+- API key and connected accounts (see [Quickstart](/docs/api/quickstart))
+- `scheduledAt` must be in the **future** and within **1 year**
+
+## Quick schedule (create + schedule)
+
+```bash
+curl -X POST https://api.social0.app/v1/posts/schedule \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content": "Monday motivation",
+    "platforms": ["ACCOUNT_UUID"],
+    "scheduledAt": "2026-07-14T09:00:00.000Z"
+  }'
+```
+
+Returns **201** with the scheduled post.
+
+## Schedule an existing draft
+
+```bash
+curl -X POST https://api.social0.app/v1/posts/POST_UUID/schedule \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "scheduledAt": "2026-07-14T09:00:00.000Z"
+  }'
+```
+
+## Timezones
+
+`scheduledAt` is an absolute instant. Choose the format that fits your use case:
+
+### Dashboard timezone (recommended for agents)
+
+When the user means "9am my time" and they've set their timezone in Social0 settings:
+
+```json
+{
+  "content": "Good morning!",
+  "platforms": ["ACCOUNT_UUID"],
+  "scheduledAt": "2026-07-20T09:00:00+default"
+}
+```
+
+The `+default` suffix uses the timezone from **Settings → timezone** (falls back to UTC).
+
+### UTC
+
+```json
+{
+  "scheduledAt": "2026-07-20T13:00:00.000Z"
+}
+```
+
+### Explicit offset
+
+Same instant, different representation:
+
+```json
+{
+  "scheduledAt": "2026-07-20T14:30:00+05:30"
+}
+```
+
+### Naive datetime + timezone field
+
+```json
+{
+  "scheduledAt": "2026-07-20T09:00:00",
+  "timezone": "America/New_York"
+}
+```
+
+Or with dashboard timezone:
+
+```json
+{
+  "scheduledAt": "2026-07-20T09:00:00",
+  "timezone": "default"
+}
+```
+
+**Rule:** If `scheduledAt` includes `Z` or a numeric offset (`+05:30`), the optional `timezone` field is ignored.
+
+## Walkthrough: "9am New York time"
+
+If the user wants to post at 9:00 AM Eastern on July 20, 2026:
+
+**Option A — use IANA timezone:**
+
+```json
+{
+  "content": "Good morning NYC!",
+  "platforms": ["ACCOUNT_UUID"],
+  "scheduledAt": "2026-07-20T09:00:00",
+  "timezone": "America/New_York"
+}
+```
+
+**Option B — compute UTC yourself:**
+
+July 20, 2026 at 9:00 AM EDT (UTC-4) = `2026-07-20T13:00:00.000Z`
+
+```json
+{
+  "scheduledAt": "2026-07-20T13:00:00.000Z"
+}
+```
+
+**Option C — if user's dashboard timezone is already America/New_York:**
+
+```json
+{
+  "scheduledAt": "2026-07-20T09:00:00+default"
+}
+```
+
+## Python example
+
+```python
+import requests, os
+
+resp = requests.post(
+    "https://api.social0.app/v1/posts/schedule",
+    headers={"Authorization": f"Bearer {os.environ['SOCIAL0_API_KEY']}"},
+    json={
+        "content": "Scheduled via API",
+        "platforms": ["account-uuid-here"],
+        "scheduledAt": "2026-07-15T10:00:00Z",
+    },
+)
+print(resp.json())
+```
+
+## What happens after scheduling
+
+1. Post status becomes `scheduled`
+2. At `scheduledAt`, the publish queue picks up the post
+3. You receive a `post.scheduled` webhook (if configured) immediately
+4. When published, you receive `post.published` or `post.failed`
+
+Scheduling does **not** return a `tracking_id` — use webhooks or check post status via `GET /v1/posts/:id` after the scheduled time.
+
+## Related
+
+- [Posts reference — scheduling](/docs/api/reference/posts#scheduling--timezones)
+- [Webhooks](/docs/api/webhooks)
+- [Settings — timezone](/docs/dashboard/settings)
