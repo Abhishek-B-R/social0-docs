@@ -1,0 +1,18 @@
+{
+  "title": "API",
+  "defaultOpen": true,
+  "pages": [
+    "index",
+    "quickstart",
+    "authentication",
+    "rate-limits",
+    "errors",
+    "idempotency",
+    "webhooks",
+    "---API Reference---",
+    "...reference",
+    "---Guides---",
+    "...guides",
+    "openapi"
+  ]
+}

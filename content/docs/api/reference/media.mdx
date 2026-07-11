@@ -1,0 +1,198 @@
+---
+title: "Media"
+description: Upload images and video via presigned URLs on the Social0 API.
+---
+
+## Overview
+
+Media upload is a three-step flow (same as the dashboard):
+
+1. **Presign** — get a presigned upload URL
+2. **PUT** — upload the file bytes to the presigned URL
+3. **Confirm** — register the media and get a `media` UUID for posts
+
+**Allowed content types:** JPEG, PNG, MP4, QuickTime (same as dashboard)
+
+**Size limits:** ~50 MB images, ~500 MB video
+
+---
+
+## POST /v1/media/presign
+
+Get a presigned upload URL.
+
+**Auth:** Bearer API key (required)
+
+### Request body
+
+```json
+{
+  "filename": "photo.jpg",
+  "content_type": "image/jpeg",
+  "size_bytes": 1048576
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `filename` | string | Yes | Original filename |
+| `content_type` | string | Yes | MIME type (`image/jpeg`, `video/mp4`, etc.) |
+| `size_bytes` | integer | Yes | File size in bytes |
+
+### Response 200
+
+```json
+{
+  "upload_url": "https://...",
+  "key": "uploads/{userId}/{storage_filename}",
+  "storage_filename": "uuid.jpg"
+}
+```
+
+### cURL
+
+```bash
+curl -X POST https://api.social0.app/v1/media/presign \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "filename": "photo.jpg",
+    "content_type": "image/jpeg",
+    "size_bytes": 1048576
+  }'
+```
+
+---
+
+## Step 2 — Upload file
+
+Upload directly to the presigned URL (no API key on this request):
+
+```bash
+curl -X PUT "$upload_url" \
+  -H "Content-Type: image/jpeg" \
+  --data-binary @photo.jpg
+```
+
+Set `Content-Type` to match the file's MIME type. Images and video use the same flow.
+
+---
+
+## POST /v1/media/confirm
+
+Confirm the upload and get a media ID for use in posts.
+
+**Auth:** Bearer API key (required)
+
+### Request body
+
+```json
+{
+  "key": "uploads/…/uuid.jpg",
+  "storage_filename": "uuid.jpg",
+  "original_filename": "photo.jpg",
+  "content_type": "image/jpeg",
+  "size_bytes": 1048576
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `key` | string | Yes | From presign response |
+| `storage_filename` | string | Yes | From presign response |
+| `original_filename` | string | Yes | Original filename |
+| `content_type` | string | Yes | MIME type |
+| `size_bytes` | integer | Yes | File size |
+
+### Response 201
+
+```json
+{
+  "id": "media-uuid",
+  "url": "https://cdn…"
+}
+```
+
+Use `id` in `POST /v1/posts` → `media` array.
+
+### cURL
+
+```bash
+curl -X POST https://api.social0.app/v1/media/confirm \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "key": "uploads/user-id/uuid.jpg",
+    "storage_filename": "uuid.jpg",
+    "original_filename": "photo.jpg",
+    "content_type": "image/jpeg",
+    "size_bytes": 1048576
+  }'
+```
+
+---
+
+## GET /v1/media/:id
+
+Returns metadata for media you own.
+
+**Auth:** Bearer API key (required)
+
+### Response 200
+
+```json
+{
+  "id": "media-uuid",
+  "url": "https://cdn…",
+  "content_type": "image/jpeg",
+  "size_bytes": 1048576,
+  "original_filename": "photo.jpg",
+  "created_at": "2026-07-11T14:00:00.000Z"
+}
+```
+
+### Errors
+
+| HTTP | Code | When |
+|------|------|------|
+| 401 | `invalid_api_key` | Missing or invalid API key |
+| 404 | `not_found` | Media not found |
+
+---
+
+## Full upload example (Python)
+
+```python
+import requests, os
+
+API = "https://api.social0.app"
+KEY = os.environ["SOCIAL0_API_KEY"]
+HEADERS = {"Authorization": f"Bearer {KEY}", "Content-Type": "application/json"}
+
+# Step 1: presign
+presign = requests.post(f"{API}/v1/media/presign", headers=HEADERS, json={
+    "filename": "photo.jpg",
+    "content_type": "image/jpeg",
+    "size_bytes": 1048576,
+}).json()
+
+# Step 2: upload
+with open("photo.jpg", "rb") as f:
+    requests.put(presign["upload_url"], data=f, headers={"Content-Type": "image/jpeg"})
+
+# Step 3: confirm
+media = requests.post(f"{API}/v1/media/confirm", headers=HEADERS, json={
+    "key": presign["key"],
+    "storage_filename": presign["storage_filename"],
+    "original_filename": "photo.jpg",
+    "content_type": "image/jpeg",
+    "size_bytes": 1048576,
+}).json()
+
+print(media["id"])  # Use in posts
+```
+
+## Related
+
+- [Media upload guide](/docs/api/guides/media)
+- [Posts reference](/docs/api/reference/posts)

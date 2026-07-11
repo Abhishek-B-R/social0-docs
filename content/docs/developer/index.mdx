@@ -1,31 +1,45 @@
 ---
 title: "Integrations and API"
-description: Need to connect Social0 to other tools or use it programmatically? Here’s what’s available.
+description: Connect Social0 to other tools or use it programmatically via the REST API.
 ---
 
 ## Overview
 
-These docs are written for people who use Social0 to create and schedule posts. If you’re looking for ways to connect Social0 to other tools (e.g. Zapier, your own app) or to use it via an API, this page points you in the right direction.
+Social0 has a **versioned public REST API** at `https://api.social0.app/v1`. Use it to publish, schedule, upload media, and receive webhook events from your backend, CI pipeline, or automation tools.
 
-## What’s available today
+## What's available today
 
-- **Dashboard and Composer** - Create, schedule, and publish posts from the Social0 app (requires a paid plan and connected accounts). On the free tier you can only explore the dashboard; you cannot connect accounts or post.
-- **Connections** - Add or remove social accounts from the Connections page (paid plans only). Each platform uses its official sign-in; we only ask for the permissions we need to post.
+- **[REST API](/docs/api)** - Full programmatic access with API keys (`sk_live_…`)
+- **[Quickstart](/docs/api/quickstart)** - Publish your first post in 5 minutes
+- **[Developer settings](/docs/dashboard/api-keys)** - Create API keys and manage webhooks
+- **Dashboard and Composer** - Create, schedule, and publish posts from the app
+- **Connections** - Add or remove social accounts (required before API publishing)
 
-There is no public API or developer docs for building custom integrations yet. We’re working on it.
+## Get started with the API
 
-## What’s coming
+1. Connect at least one account in [Dashboard → Connections](/docs/dashboard/connections)
+2. Create an API key in [Developer settings](/docs/dashboard/api-keys)
+3. Follow the [Quickstart](/docs/api/quickstart) to publish your first post
 
-- **API keys** - A way to use Social0 from other tools or scripts (e.g. post from a spreadsheet or automation). When it’s ready, you’ll manage API keys from the Dashboard and we’ll document how to use them.
-- **Integrations** - Pre-built connections to popular tools. We’ll announce these when they’re available.
+## Documentation
 
-## What you can do now
+| Resource | Link |
+|----------|------|
+| API Overview | [/docs/api](/docs/api) |
+| Quickstart | [/docs/api/quickstart](/docs/api/quickstart) |
+| API Reference | [/docs/api/reference](/docs/api/reference) |
+| Webhooks | [/docs/api/webhooks](/docs/api/webhooks) |
+| Interactive Swagger UI | [api.social0.app/docs](https://api.social0.app/docs) |
+| OpenAPI spec | [api.social0.app/openapi.json](https://api.social0.app/openapi.json) |
 
-- **Use the product** - Everything in these docs applies to the app today: getting started, connecting accounts, post types, scheduling, queue, billing, and so on.
-- **Send feedback** - Use **Feedback** in the Dashboard to suggest integrations or API features you’d like. That helps us prioritize.
-- **Contact us** - If you need API access, a custom integration, or a partnership before we launch it publicly, reach out through the contact details on the Social0 website or via the Feedback page. We’ll get back to you.
+## What's coming
+
+- **Pre-built integrations** - Zapier, Make, and other automation platforms
+- **Official SDKs** - Node.js and Python client libraries
+- **API key scopes** - Fine-grained permissions per key
 
 ## Tips
 
-- Don’t share your Social0 password with third-party tools. When API keys are available, you’ll use those instead and can revoke them anytime.
-- Bookmark this page or the main docs index so you can quickly find help for the product.
+- Don't share your Social0 password with third-party tools — use API keys instead and revoke them anytime.
+- Use [webhooks](/docs/api/webhooks) instead of polling for publish status.
+- Send feedback via **Dashboard → Feedback** to suggest integrations you'd like.

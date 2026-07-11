@@ -1,0 +1,390 @@
+---
+title: "Posts"
+description: Create, publish, schedule, and manage posts via the Social0 API.
+---
+
+## Overview
+
+The `platforms` field is an array of **connected account UUIDs** (not platform names). Get IDs from `GET /v1/accounts` → `data[].id`.
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/v1/posts` | List posts (paginated) |
+| `POST` | `/v1/posts` | Create **draft** |
+| `GET` | `/v1/posts/:id` | Full post + per-platform status |
+| `PATCH` | `/v1/posts/:id` | Update draft or scheduled post |
+| `DELETE` | `/v1/posts/:id` | Delete draft or scheduled post |
+| `POST` | `/v1/posts/:id/publish` | Publish existing post now → **202** + `tracking_id` |
+| `POST` | `/v1/posts/:id/schedule` | Schedule existing post |
+| `POST` | `/v1/posts/publish` | Create + publish in one request → **202** |
+| `POST` | `/v1/posts/schedule` | Create + schedule in one request → **201** |
+
+**Post statuses:** `draft`, `scheduled`, `publishing`, `published`, `partial`, `failed`
+
+Publishing or scheduling on the free tier consumes your free post quota (same as the dashboard). See [Billing](/docs/billing/plans).
+
+---
+
+## GET /v1/posts
+
+List posts with optional filters.
+
+**Auth:** Bearer API key (required)
+
+### Query parameters
+
+| Param | Type | Default | Description |
+|-------|------|---------|-------------|
+| `page` | int | 1 | Page number |
+| `limit` | int | 20 | Results per page (max 100) |
+| `status` | string | — | Filter: `draft`, `scheduled`, `published`, `failed`, etc. |
+| `platform` | string | — | Filter by platform enum |
+| `search` | string | — | Search post content |
+
+### Response 200
+
+```json
+{
+  "data": [
+    {
+      "id": "uuid",
+      "content": "Post text",
+      "status": "draft",
+      "scheduled_at": null,
+      "created_at": "2026-07-11T14:00:00.000Z",
+      "media_ids": []
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 42
+  }
+}
+```
+
+### cURL
+
+```bash
+curl "https://api.social0.app/v1/posts?status=draft&limit=10" \
+  -H "Authorization: Bearer sk_live_YOUR_KEY"
+```
+
+---
+
+## POST /v1/posts
+
+Create a **draft** post. Returns **201** with `{ "id": "post-uuid" }` only — no `tracking_id`. To publish, call `POST /v1/posts/:id/publish`.
+
+**Auth:** Bearer API key (required)
+
+### Request body
+
+```json
+{
+  "content": "Post text",
+  "platforms": ["connected-account-uuid"],
+  "media": ["media-uuid-optional"]
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `content` | string | Yes | Post text |
+| `platforms` | UUID[] | Yes | Connected account IDs |
+| `media` | UUID[] | No | Media IDs from upload flow |
+
+### Response 201
+
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+### cURL
+
+```bash
+curl -X POST https://api.social0.app/v1/posts \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content": "Draft via API",
+    "platforms": ["ACCOUNT_UUID"]
+  }'
+```
+
+---
+
+## GET /v1/posts/:id
+
+Get full post details including per-platform publication status.
+
+**Auth:** Bearer API key (required)
+
+### Response 200
+
+```json
+{
+  "id": "uuid",
+  "content": "Post text",
+  "status": "published",
+  "scheduled_at": null,
+  "created_at": "2026-07-11T14:00:00.000Z",
+  "media_ids": ["media-uuid"],
+  "platforms": [
+    {
+      "connected_account_id": "uuid",
+      "platform": "linkedin",
+      "status": "published",
+      "error": null
+    }
+  ]
+}
+```
+
+---
+
+## PATCH /v1/posts/:id
+
+Update a draft or scheduled post.
+
+**Auth:** Bearer API key (required)
+
+### Request body
+
+Any combination of:
+
+```json
+{
+  "content": "Updated text",
+  "platforms": ["account-uuid"],
+  "media": ["media-uuid"]
+}
+```
+
+### Response 200
+
+Returns the updated post object.
+
+---
+
+## DELETE /v1/posts/:id
+
+Delete a draft or scheduled post.
+
+**Auth:** Bearer API key (required)
+
+### Response 204
+
+Empty body on success. Triggers `post.deleted` webhook if configured.
+
+---
+
+## POST /v1/posts/:id/publish
+
+Publish an existing post immediately.
+
+**Auth:** Bearer API key (required)
+
+### Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Idempotency-Key` | Recommended | Safe retry — see [Idempotency](/docs/api/idempotency) |
+
+### Response 202
+
+```json
+{
+  "tracking_id": "uuid",
+  "status": "queued",
+  "stream_url": "/v1/jobs/{tracking_id}/stream"
+}
+```
+
+- `status: "queued"` = job accepted; publish runs in the background
+- `stream_url` is a **relative path**. Full URL: `https://api.social0.app/v1/jobs/{tracking_id}/stream`
+
+### cURL
+
+```bash
+curl -X POST https://api.social0.app/v1/posts/POST_UUID/publish \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Idempotency-Key: $(uuidgen)"
+```
+
+---
+
+## POST /v1/posts/publish
+
+Create and publish in one request.
+
+**Auth:** Bearer API key (required)
+
+### Request body
+
+```json
+{
+  "content": "Hello from the API!",
+  "platforms": ["connected-account-uuid"],
+  "media": ["media-uuid-optional"]
+}
+```
+
+### Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Idempotency-Key` | Recommended | Safe retry |
+
+### Response 202
+
+```json
+{
+  "post_id": "uuid",
+  "tracking_id": "uuid",
+  "status": "queued",
+  "stream_url": "/v1/jobs/{tracking_id}/stream"
+}
+```
+
+### cURL
+
+```bash
+curl -X POST https://api.social0.app/v1/posts/publish \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: $(uuidgen)" \
+  -d '{
+    "content": "Hello from the Social0 API!",
+    "platforms": ["ACCOUNT_UUID"]
+  }'
+```
+
+---
+
+## POST /v1/posts/:id/schedule
+
+Schedule an existing post.
+
+**Auth:** Bearer API key (required)
+
+### Request body
+
+```json
+{
+  "scheduledAt": "2026-07-15T10:00:00.000Z",
+  "timezone": "default"
+}
+```
+
+See [Scheduling & timezones](#scheduling--timezones) below.
+
+### Response 200
+
+Returns the updated post with `status: "scheduled"`.
+
+---
+
+## POST /v1/posts/schedule
+
+Create and schedule in one request.
+
+**Auth:** Bearer API key (required)
+
+### Request body
+
+```json
+{
+  "content": "Monday motivation",
+  "platforms": ["ACCOUNT_UUID"],
+  "scheduledAt": "2026-07-14T09:00:00.000Z"
+}
+```
+
+### Response 201
+
+Returns the created post with `status: "scheduled"`.
+
+### cURL
+
+```bash
+curl -X POST https://api.social0.app/v1/posts/schedule \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content": "Monday motivation",
+    "platforms": ["ACCOUNT_UUID"],
+    "scheduledAt": "2026-07-14T09:00:00.000Z"
+  }'
+```
+
+---
+
+## Scheduling & timezones
+
+`scheduledAt` is an **absolute instant** — when the post should go live. Pick one format:
+
+| Form | Example | Meaning |
+|------|---------|---------|
+| UTC | `"2026-07-20T10:00:00.000Z"` | 10:00 **UTC** |
+| Explicit offset | `"2026-07-20T15:30:00+05:30"` | Absolute instant (same as `04:30Z` for IST) |
+| **`+default` suffix** | `"2026-07-20T10:00:00+default"` | **10:00 in the user's dashboard timezone** |
+| Naive + `timezone` field | `"scheduledAt": "2026-07-20T10:00:00", "timezone": "default"` | Same as `+default` |
+| Naive + IANA zone | `"scheduledAt": "2026-07-20T10:00:00", "timezone": "Asia/Kolkata"` | 10:00 in that zone |
+
+Optional body field:
+
+```json
+{
+  "timezone": "default"
+}
+```
+
+- `"default"` → reads **Settings → timezone** for the API key's user (falls back to `UTC`)
+- Or pass any IANA name with a **naive** `scheduledAt` (no `Z`, no numeric offset)
+
+**Recommended for agents:** use `+default` when the user means "10am my time":
+
+```json
+{
+  "content": "Hello",
+  "platforms": ["account-uuid"],
+  "scheduledAt": "2026-07-20T10:00:00+default"
+}
+```
+
+### Rules
+
+- Must be in the **future** (small grace for clock skew)
+- Must be within **1 year**
+- If `scheduledAt` includes `Z` or `+05:30`, the optional `timezone` field is **ignored**
+
+### JavaScript examples
+
+```javascript
+// User's dashboard timezone (easiest)
+const scheduledAt = "2026-07-20T10:00:00+default";
+
+// Or explicit UTC / offset
+const scheduledAtUtc = "2026-07-20T04:30:00.000Z";
+const scheduledAtIst = "2026-07-20T10:00:00+05:30";
+```
+
+### Python — local → UTC (when not using +default)
+
+```python
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
+local = datetime(2026, 7, 20, 10, 0, tzinfo=ZoneInfo("Asia/Kolkata"))
+scheduled_at = local.astimezone(ZoneInfo("UTC")).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+```
+
+## Related
+
+- [Schedule guide](/docs/api/guides/schedule)
+- [Publish guide](/docs/api/guides/publish)
+- [Jobs reference](/docs/api/reference/jobs)
+- [Media reference](/docs/api/reference/media)

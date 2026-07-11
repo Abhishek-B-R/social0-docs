@@ -1,0 +1,141 @@
+---
+title: "Publish a post"
+description: Step-by-step guide to publishing a post via the Social0 API.
+---
+
+## Overview
+
+This guide walks through listing accounts, optionally uploading media, publishing a post, and waiting for the job to complete.
+
+## Prerequisites
+
+- API key from [Developer settings](/docs/dashboard/api-keys)
+- At least one connected account ([Connections](/docs/dashboard/connections))
+
+## Step 1 — List accounts
+
+Get connected account UUIDs. Use `data[].id` — **not** the `platform` name.
+
+```bash
+curl -s https://api.social0.app/v1/accounts \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" | jq '.data[].id'
+```
+
+## Step 2 — Upload media (optional)
+
+If your post includes images or video, follow the [media upload guide](/docs/api/guides/media) first. You'll get a media UUID to include in the `media` array.
+
+## Step 3 — Publish
+
+Send `POST /v1/posts/publish` with `Content-Type: application/json` and an `Idempotency-Key`:
+
+```bash
+curl -s -X POST https://api.social0.app/v1/posts/publish \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: $(uuidgen)" \
+  -d '{
+    "content": "Hello from the Social0 API!",
+    "platforms": ["YOUR_CONNECTED_ACCOUNT_UUID"]
+  }' | jq
+```
+
+**Response (202):**
+
+```json
+{
+  "post_id": "uuid",
+  "tracking_id": "uuid",
+  "status": "queued",
+  "stream_url": "/v1/jobs/{tracking_id}/stream"
+}
+```
+
+`status: "queued"` means the job was **accepted** — not that the post is live yet.
+
+## Step 4 — Poll until complete
+
+Poll `GET /v1/jobs/:trackingId` until `status` is `completed` or `failed`:
+
+```bash
+curl -s https://api.social0.app/v1/jobs/TRACKING_ID \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" | jq '.status'
+```
+
+## Step 5 — Optional: SSE stream
+
+For a live UI, open `GET /v1/jobs/:trackingId/stream` instead of polling. See [Jobs reference](/docs/api/reference/jobs).
+
+## Step 6 — Optional: webhooks
+
+Set up a `post.published` webhook to avoid polling. See [Webhooks](/docs/api/webhooks).
+
+## Full JavaScript example
+
+```javascript
+const API = "https://api.social0.app";
+const KEY = process.env.SOCIAL0_API_KEY;
+
+async function publish(content, accountIds) {
+  const res = await fetch(`${API}/v1/posts/publish`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${KEY}`,
+      "Content-Type": "application/json",
+      "Idempotency-Key": crypto.randomUUID(),
+    },
+    body: JSON.stringify({ content, platforms: accountIds }),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+async function waitForJob(trackingId) {
+  for (;;) {
+    const res = await fetch(`${API}/v1/jobs/${trackingId}`, {
+      headers: { Authorization: `Bearer ${KEY}` },
+    });
+    const job = await res.json();
+    if (job.status === "completed" || job.status === "failed") return job;
+    await new Promise((r) => setTimeout(r, 2000));
+  }
+}
+
+// Usage
+const { tracking_id } = await publish("Hello API!", [process.env.SOCIAL0_ACCOUNT_ID]);
+const result = await waitForJob(tracking_id);
+console.log(result);
+```
+
+## Alternative: draft then publish
+
+Create a draft first, then publish separately:
+
+```javascript
+const headers = {
+  Authorization: `Bearer ${process.env.SOCIAL0_API_KEY}`,
+  "Content-Type": "application/json",
+};
+
+const draft = await fetch("https://api.social0.app/v1/posts", {
+  method: "POST",
+  headers,
+  body: JSON.stringify({
+    content: "Draft via API",
+    platforms: [process.env.SOCIAL0_ACCOUNT_ID],
+  }),
+}).then((r) => r.json());
+
+const pub = await fetch(`https://api.social0.app/v1/posts/${draft.id}/publish`, {
+  method: "POST",
+  headers: { ...headers, "Idempotency-Key": crypto.randomUUID() },
+}).then((r) => r.json());
+
+console.log(pub.tracking_id);
+```
+
+## Related
+
+- [Posts reference](/docs/api/reference/posts)
+- [Idempotency](/docs/api/idempotency)
+- [Errors](/docs/api/errors)

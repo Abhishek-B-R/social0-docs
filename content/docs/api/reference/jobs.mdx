@@ -1,0 +1,195 @@
+---
+title: "Jobs"
+description: Poll or stream publish job progress via the Social0 API.
+---
+
+## Overview
+
+When you publish a post, the API returns a `tracking_id`. Use job endpoints to check progress until the publish completes or fails.
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/v1/jobs/:trackingId` | Poll publish progress |
+| `GET` | `/v1/jobs/:trackingId/stream` | SSE stream for live progress |
+
+**Job `status` values:** `queued`, `processing`, `completed`, `failed`
+
+For backends and CI, polling is usually enough. Use SSE only when building a UI that shows live progress.
+
+---
+
+## GET /v1/jobs/:trackingId
+
+Poll publish progress. Returns the **current** job state. Status is reconciled from publish progress and post publications, so a completed post shows `status: "completed"` even if you poll after the fact.
+
+**Auth:** Bearer API key (required)
+
+### Path parameters
+
+| Param | Type | Description |
+|-------|------|-------------|
+| `trackingId` | UUID | From publish response `tracking_id` |
+
+### Response 200
+
+```json
+{
+  "tracking_id": "uuid",
+  "post_id": "uuid",
+  "status": "completed",
+  "total": 2,
+  "completed": 2,
+  "failed": 0,
+  "platform_statuses": [
+    {
+      "platform": "linkedin",
+      "connected_account_id": "uuid",
+      "phase": "platform_success",
+      "message": "Published to linkedin"
+    }
+  ],
+  "created_at": "2026-07-11T14:00:00.000Z",
+  "completed_at": "2026-07-11T14:01:00.000Z"
+}
+```
+
+| Field | Description |
+|-------|-------------|
+| `status` | `queued`, `processing`, `completed`, or `failed` |
+| `total` | Number of platforms in this job |
+| `completed` | Platforms that succeeded |
+| `failed` | Platforms that failed |
+| `platform_statuses` | One entry per platform — **latest** phase only |
+
+### cURL
+
+```bash
+curl https://api.social0.app/v1/jobs/TRACKING_ID \
+  -H "Authorization: Bearer sk_live_YOUR_KEY"
+```
+
+### JavaScript — poll until done
+
+```javascript
+async function waitForJob(trackingId) {
+  for (;;) {
+    const res = await fetch(`https://api.social0.app/v1/jobs/${trackingId}`, {
+      headers: { Authorization: `Bearer ${process.env.SOCIAL0_API_KEY}` },
+    });
+    const job = await res.json();
+    if (job.status === "completed" || job.status === "failed") return job;
+    await new Promise((r) => setTimeout(r, 2000));
+  }
+}
+```
+
+### Python — poll until done
+
+```python
+import time, requests, os
+
+def wait_for_job(tracking_id):
+    headers = {"Authorization": f"Bearer {os.environ['SOCIAL0_API_KEY']}"}
+    while True:
+        job = requests.get(
+            f"https://api.social0.app/v1/jobs/{tracking_id}",
+            headers=headers,
+        ).json()
+        if job["status"] in ("completed", "failed"):
+            return job
+        time.sleep(2)
+```
+
+### Errors
+
+| HTTP | Code | When |
+|------|------|------|
+| 401 | `invalid_api_key` | Missing or invalid API key |
+| 404 | `not_found` | Job not found |
+
+---
+
+## GET /v1/jobs/:trackingId/stream
+
+Optional **Server-Sent Events (SSE)** stream for live publish progress. Same Bearer API key auth as other `/v1` routes.
+
+**When to use:** building a UI that shows live publish progress. For backends/CI, polling is usually enough.
+
+**Auth:** Bearer API key (required)
+
+### Full URL
+
+```
+https://api.social0.app/v1/jobs/{tracking_id}/stream
+```
+
+The `stream_url` from publish responses is a relative path on the same host.
+
+### Event types
+
+| Event | When |
+|-------|------|
+| `progress` | Meaningful phase change (`platform_uploading`, `platform_success`, `platform_failed`) |
+| `done` | Job finished — payload is the same shape as `GET /v1/jobs/:trackingId` |
+
+### `progress` payload
+
+```json
+{
+  "status": "processing",
+  "phase": "platform_uploading",
+  "platform": "bluesky",
+  "message": "Uploading to bluesky",
+  "completed": 0,
+  "failed": 0,
+  "total": 1
+}
+```
+
+### `done` payload
+
+Full job snapshot (same as poll response):
+
+```json
+{
+  "tracking_id": "uuid",
+  "post_id": "uuid",
+  "status": "completed",
+  "platform_statuses": [],
+  "created_at": "2026-07-11T14:00:00.000Z",
+  "completed_at": "2026-07-11T14:01:00.000Z"
+}
+```
+
+### Late subscribers
+
+If the job is already `completed` or `failed` when you open the stream, you receive a single `done` event (no replay of historical progress chunks).
+
+### JavaScript — SSE client
+
+```javascript
+const url = `https://api.social0.app/v1/jobs/${trackingId}/stream`;
+const res = await fetch(url, {
+  headers: { Authorization: `Bearer ${process.env.SOCIAL0_API_KEY}` },
+});
+const reader = res.body.getReader();
+const decoder = new TextDecoder();
+
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) break;
+  const text = decoder.decode(value);
+  // Parse SSE events from text (event: progress\ndata: {...}\n\n)
+  console.log(text);
+}
+```
+
+### Dashboard-only SSE
+
+The dashboard session UI may use `/api/jobs/…/stream` internally. **Public API integrations should use `/v1/jobs/…/stream` only.**
+
+## Related
+
+- [Publish guide](/docs/api/guides/publish)
+- [Webhooks](/docs/api/webhooks)
+- [Posts reference](/docs/api/reference/posts)

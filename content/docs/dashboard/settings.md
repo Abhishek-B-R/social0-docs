@@ -14,6 +14,8 @@ Settings is a single panel with four tabs at the top: **Profile**, **Preferences
 
 You’ll see four tabs: **Profile**, **Preferences**, **Queue**, and **Connections**. Click a tab to switch sections.
 
+The sidebar also has **Developer** at [Dashboard → Developer](/docs/dashboard/api-keys) (`/dashboard/api-keys`) for API keys and webhooks.
+
 ## What you can change
 
 **Profile**

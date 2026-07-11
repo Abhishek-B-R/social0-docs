@@ -7,6 +7,8 @@ description: See and manage all your connected social accounts in one place.
 
 The **Connected Accounts** page (Connections) is where you link your social accounts so you can publish from one place. You can connect multiple accounts per platform. **Connecting accounts requires a paid plan**-on the free tier you cannot connect accounts; you can only explore the dashboard. How many accounts you can connect depends on your plan (see [Billing](/docs/billing/plans)).
 
+**For API integrations:** connect accounts here first, then use `GET /v1/accounts` to get account UUIDs for the `platforms` field when posting. See [Connect accounts (API guide)](/docs/api/guides/connect-accounts). Twitter/X and Bluesky must be connected in the dashboard — they are not available via `POST /v1/accounts/connect`.
+
 The page lists each supported platform (LinkedIn, Facebook, Bluesky, YouTube, Pinterest, Instagram, TikTok, X (Twitter), Threads) in its own section. For each platform you’ll see a **Connect** button to add accounts and, for any already connected accounts, a row of account “pills”: profile picture or initial, username, a **refresh** (reload) icon to renew the connection, and an **X** icon to disconnect. If you’ve reached your plan’s account limit, an orange banner at the top will say so and offer an **Upgrade** link to Billing.
 
 ## How to open Connections

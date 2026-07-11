@@ -1,0 +1,145 @@
+---
+title: "Upload media"
+description: Three-step media upload flow for the Social0 API.
+---
+
+## Overview
+
+Upload images or video before attaching them to posts. The flow matches the dashboard:
+
+```
+┌─────────┐     ┌──────────────┐     ┌─────────┐     ┌─────────┐
+│ Presign │ ──► │ PUT to URL   │ ──► │ Confirm │ ──► │ Use ID  │
+│ (API)   │     │ (direct)     │     │ (API)   │     │ in post │
+└─────────┘     └──────────────┘     └─────────┘     └─────────┘
+```
+
+Images and video use the same three steps.
+
+## Limits
+
+| Type | Max size | Content types |
+|------|----------|---------------|
+| Images | ~50 MB | `image/jpeg`, `image/png` |
+| Video | ~500 MB | `video/mp4`, `video/quicktime` |
+
+Set `content_type` to the real MIME type on presign.
+
+## Step 1 — Presign
+
+Request a presigned upload URL:
+
+```bash
+curl -X POST https://api.social0.app/v1/media/presign \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "filename": "photo.jpg",
+    "content_type": "image/jpeg",
+    "size_bytes": 1048576
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "upload_url": "https://...",
+  "key": "uploads/{userId}/{storage_filename}",
+  "storage_filename": "uuid.jpg"
+}
+```
+
+## Step 2 — Upload file
+
+Upload directly to the presigned URL. No API key on this request:
+
+```bash
+curl -X PUT "$upload_url" \
+  -H "Content-Type: image/jpeg" \
+  --data-binary @photo.jpg
+```
+
+For video:
+
+```bash
+curl -X PUT "$upload_url" \
+  -H "Content-Type: video/mp4" \
+  --data-binary @video.mp4
+```
+
+## Step 3 — Confirm
+
+Register the upload and get a media ID:
+
+```bash
+curl -X POST https://api.social0.app/v1/media/confirm \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "key": "uploads/user-id/uuid.jpg",
+    "storage_filename": "uuid.jpg",
+    "original_filename": "photo.jpg",
+    "content_type": "image/jpeg",
+    "size_bytes": 1048576
+  }'
+```
+
+**Response (201):**
+
+```json
+{
+  "id": "media-uuid",
+  "url": "https://cdn…"
+}
+```
+
+## Step 4 — Attach to a post
+
+Use the media `id` when creating or publishing:
+
+```bash
+curl -X POST https://api.social0.app/v1/posts/publish \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: $(uuidgen)" \
+  -d '{
+    "content": "Check out this photo!",
+    "platforms": ["ACCOUNT_UUID"],
+    "media": ["media-uuid"]
+  }'
+```
+
+## Full Python example
+
+```python
+import requests, os
+
+API = "https://api.social0.app"
+KEY = os.environ["SOCIAL0_API_KEY"]
+HEADERS = {"Authorization": f"Bearer {KEY}", "Content-Type": "application/json"}
+
+presign = requests.post(f"{API}/v1/media/presign", headers=HEADERS, json={
+    "filename": "photo.jpg",
+    "content_type": "image/jpeg",
+    "size_bytes": os.path.getsize("photo.jpg"),
+}).json()
+
+with open("photo.jpg", "rb") as f:
+    requests.put(presign["upload_url"], data=f, headers={"Content-Type": "image/jpeg"})
+
+media = requests.post(f"{API}/v1/media/confirm", headers=HEADERS, json={
+    "key": presign["key"],
+    "storage_filename": presign["storage_filename"],
+    "original_filename": "photo.jpg",
+    "content_type": "image/jpeg",
+    "size_bytes": os.path.getsize("photo.jpg"),
+}).json()
+
+print(f"Media ID: {media['id']}")
+```
+
+## Related
+
+- [Media reference](/docs/api/reference/media)
+- [Publish guide](/docs/api/guides/publish)

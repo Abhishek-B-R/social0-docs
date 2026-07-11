@@ -7,6 +7,8 @@ description: Your home base in Social0-where you create posts, manage connection
 
 The Dashboard is where you spend most of your time in Social0. When you sign in, you land here. On the free tier you can only explore-you cannot connect accounts or post. With a paid plan you can open the Composer to create a post, go to Connections to add accounts, open Posts to see drafts and scheduled and published posts, change Settings, and open Billing. Everything is one or two clicks away.
 
+You can also use Social0 programmatically via the [REST API](/docs/api/quickstart)-create API keys in **Developer** settings and publish from your backend or automation tools.
+
 ## How to get to the Dashboard
 
 1. Go to [social0.app](https://social0.app) and sign in (Google or email).
@@ -40,6 +42,7 @@ At the top of the sidebar you’ll see a **Create post** button-the quickest way
 **CONFIGURATION**
 
 - **Settings** - Profile, timezone, date format, queue slots, and other preferences.
+- **Developer** - Create API keys and manage webhooks for programmatic access. See [Developer settings](/docs/dashboard/api-keys) and the [API docs](/docs/api/quickstart).
 - **Billing** - Your plan, usage, and upgrade or cancel.
 
 **SUPPORT**

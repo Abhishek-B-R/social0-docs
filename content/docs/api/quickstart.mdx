@@ -1,0 +1,82 @@
+---
+title: "Quickstart — Social0 API"
+description: Create an API key and publish your first post in 5 minutes.
+---
+
+## Before you start
+
+| Item | Value |
+|------|-------|
+| Base URL | `https://api.social0.app` |
+| API version | `/v1` |
+| Auth header | `Authorization: Bearer sk_live_…` |
+| Content-Type | `application/json` (except media upload to presigned URL) |
+| Key prefix | `sk_live_` (legacy `s0_live_` still accepted) |
+| Interactive docs | [api.social0.app/docs](https://api.social0.app/docs) |
+| OpenAPI spec | [api.social0.app/openapi.json](https://api.social0.app/openapi.json) |
+| Dashboard: Developer | [social0.app/dashboard/api-keys](https://social0.app/dashboard/api-keys) |
+
+## Step 1 — Connect an account (dashboard)
+
+Open [Connections](https://social0.app/dashboard/connections) and connect LinkedIn (or another platform). You need at least one connected account before publishing.
+
+Copy the account UUID from the API response in Step 3, or from your dashboard.
+
+## Step 2 — Create an API key
+
+Go to **Developer** → [API Keys](https://social0.app/dashboard/api-keys) → **Create key** → copy `sk_live_…` (shown once).
+
+Store the key in an environment variable or secrets manager — never commit it to git.
+
+## Step 3 — List accounts
+
+```bash
+curl -s https://api.social0.app/v1/accounts \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" | jq
+```
+
+Note the `id` field for each account — you will use these UUIDs in the `platforms` array (not platform names like `"linkedin"`).
+
+## Step 4 — Publish a post
+
+```bash
+curl -s -X POST https://api.social0.app/v1/posts/publish \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: $(uuidgen)" \
+  -d '{
+    "content": "Hello from the Social0 API!",
+    "platforms": ["YOUR_CONNECTED_ACCOUNT_UUID"]
+  }' | jq
+```
+
+**Response (202):**
+
+```json
+{
+  "post_id": "uuid",
+  "tracking_id": "uuid",
+  "status": "queued",
+  "stream_url": "/v1/jobs/{tracking_id}/stream"
+}
+```
+
+`status: "queued"` on the **202** response means the publish job was **accepted** and is running asynchronously — not that the post is live yet. Poll `GET /v1/jobs/:trackingId` (or use the stream URL) until `status` is `completed` or `failed`.
+
+## Step 5 — Poll job status
+
+```bash
+curl -s https://api.social0.app/v1/jobs/TRACKING_ID \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" | jq
+```
+
+When `status` is `completed`, your post is live (or `partial` if some platforms succeeded). When `status` is `failed`, check `platform_statuses` for per-platform errors.
+
+## Next steps
+
+- [Webhooks](/docs/api/webhooks) — avoid polling; get notified when posts publish or fail
+- [Upload media](/docs/api/guides/media) — attach images or video
+- [Schedule a post](/docs/api/guides/schedule) — set a future `scheduledAt`
+- [Publish guide](/docs/api/guides/publish) — full walkthrough with JavaScript examples
+- [Errors](/docs/api/errors) — common validation mistakes
+- [Rate limits](/docs/api/rate-limits) — hourly quotas by plan

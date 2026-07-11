@@ -1,0 +1,55 @@
+---
+title: "OpenAPI & SDKs"
+description: Interactive Swagger UI, OpenAPI 3.1 spec, and client generation.
+---
+
+## Interactive API reference
+
+| Resource | URL |
+|----------|-----|
+| Swagger UI | [https://api.social0.app/docs](https://api.social0.app/docs) |
+| OpenAPI spec | [https://api.social0.app/openapi.json](https://api.social0.app/openapi.json) |
+
+The live Swagger UI is always up to date with the production API. Use it to explore endpoints, try requests (with your API key), and inspect request/response schemas.
+
+## Spec details
+
+| Property | Value |
+|----------|-------|
+| OpenAPI version | 3.1.0 |
+| API version | v1 (URL prefix) |
+| Base URL | `https://api.social0.app` |
+| Auth | Bearer token (`sk_live_…`) |
+
+Breaking changes will ship under `/v2`. The `/v1` prefix remains stable.
+
+## SDKs
+
+Official Node.js and Python SDK packages are **not shipped yet**. Generate clients from the OpenAPI spec using tools like:
+
+- [OpenAPI Generator](https://openapi-generator.tech/)
+- [Stainless](https://www.stainless.com/)
+- [Speakeasy](https://www.speakeasy.com/)
+
+Point any generator at `https://api.social0.app/openapi.json`.
+
+## SSE streaming
+
+`GET /v1/jobs/:trackingId/stream` provides optional **Server-Sent Events** for real-time publish progress. Same Bearer API key auth as other `/v1` routes.
+
+| Use case | Recommendation |
+|----------|----------------|
+| Backend / CI | Poll `GET /v1/jobs/:trackingId` |
+| Live UI | SSE stream for progress updates |
+
+See [Jobs reference](/docs/api/reference/jobs) for event types and payload shapes.
+
+## Dashboard-only routes
+
+The dashboard uses session-cookie routes like `/api/jobs/:trackingId/stream` internally. **Third-party API clients should not use `/api/*` routes** — use `/v1/*` only.
+
+## Related
+
+- [API Overview](/docs/api)
+- [Quickstart](/docs/api/quickstart)
+- [API Reference](/docs/api/reference)

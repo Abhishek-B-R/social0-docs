@@ -1,17 +1,96 @@
 ---
-title: "API access"
-description: Programmatic access to Social0 (coming soon).
+title: "Developer settings — API keys & webhooks"
+description: Manage API keys and webhook endpoints in the Social0 dashboard.
 ---
 
 ## Overview
 
-We’re working on a way to let you use Social0 from other tools (e.g. automation or your own apps) via API keys. That feature isn’t available yet. When it is, you’ll be able to create and manage API keys from the Dashboard and use them to post or manage content programmatically.
+The **Developer** page (`/dashboard/api-keys`) is where you create API keys for programmatic access and manage webhook endpoints. API keys authenticate requests to the [Social0 REST API](/docs/api) at `https://api.social0.app/v1`.
 
-## For now
+## How to open Developer settings
 
-If you see an **API keys** or **API access** link and click it, you may see a “Coming soon” message. If you need API or integration access before that, contact us through the app (**Feedback**) or the contact details on the Social0 website. We’ll let you know when programmatic access is ready.
+1. In the Dashboard, open the sidebar (or **More** on mobile).
+2. Click **Developer** (under Configuration, or go directly to [social0.app/dashboard/api-keys](https://social0.app/dashboard/api-keys)).
+
+You'll see two tabs: **API Keys** and **Webhooks**.
+
+## API Keys
+
+### Create a key
+
+1. Click **Create key**.
+2. Enter a name (e.g. "Production CI" or "Zapier integration").
+3. Copy the full key (`sk_live_…`) — it is shown **once**.
+4. Store it in an environment variable or secrets manager.
+
+### Key table
+
+| Column | Description |
+|--------|-------------|
+| Name | Label you chose |
+| Key prefix | First characters of the key (e.g. `sk_live_abc…`) |
+| Last used | When the key was last used for an API request |
+| Created | When the key was created |
+
+### Actions
+
+| Action | What it does |
+|--------|--------------|
+| **Rename** | Change the key's display name |
+| **Regenerate** | Creates a new key and **revokes the old one immediately** |
+| **Revoke** | Permanently deletes the key |
+
+Revoked or expired keys return `401 invalid_api_key` on API requests.
+
+### Security
+
+- Never commit keys to git or expose them in browser code
+- Use one key per integration so you can revoke individually
+- Rotate keys periodically via **Regenerate**
+
+See [Authentication](/docs/api/authentication) for request headers and best practices.
+
+## Webhooks
+
+Switch to the **Webhooks** tab on the same page.
+
+### Add an endpoint
+
+1. Click **Add endpoint**.
+2. Enter your HTTPS URL (must be public — no localhost).
+3. Select events: `post.published`, `post.failed`, `post.scheduled`, `post.deleted`.
+4. Copy the **signing secret** — shown once after create.
+
+### Manage endpoints
+
+- View all endpoints with their URL, events, and active status
+- Delete endpoints you no longer need
+
+You can also manage webhooks via the [Webhooks API](/docs/api/reference/webhooks). See [Webhooks guide](/docs/api/webhooks) for delivery format and signature verification.
+
+## API documentation
+
+- **Docs site:** [API Overview](/docs/api)
+- **Quickstart:** [Publish your first post](/docs/api/quickstart)
+- **Interactive reference:** [api.social0.app/docs](https://api.social0.app/docs)
+- **OpenAPI spec:** [api.social0.app/openapi.json](https://api.social0.app/openapi.json)
 
 ## Tips
 
-- Don’t share your Social0 password with third-party tools. When API keys are available, you’ll use those instead-one key per integration, and you can revoke them anytime.
-- Use **Feedback** to tell us what you’d want to do with API access (e.g. “post from Zapier” or “sync with my CMS”).
+- Create separate keys for development and production so you can revoke one without affecting the other.
+- Set up a `post.published` webhook to avoid polling job status.
+- Include the `x-request-id` header from API responses when contacting support.
+
+## Common questions
+
+**Q: Where do I get my API key?**  
+A: Dashboard → **Developer** → Create key. Copy `sk_live_…` when shown.
+
+**Q: I lost my key. Can I retrieve it?**  
+A: No — only the hash is stored. Regenerate to get a new key (old one is revoked).
+
+**Q: Do API keys have scopes?**  
+A: Not yet. All keys are full-access today.
+
+**Q: Can I manage webhooks without the dashboard?**  
+A: Yes — use `POST /v1/webhooks` and related endpoints. See [Webhooks reference](/docs/api/reference/webhooks).

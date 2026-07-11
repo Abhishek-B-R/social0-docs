@@ -1,0 +1,83 @@
+---
+title: "Connect accounts"
+description: How to connect social accounts for use with the Social0 API.
+---
+
+## Primary flow (recommended)
+
+Most integrations should connect accounts in the dashboard, then use the API to list them.
+
+1. User opens [Dashboard → Connections](https://social0.app/dashboard/connections)
+2. Connect a platform (OAuth in browser, or Bluesky BYOK with handle + app password)
+3. Your integration calls `GET /v1/accounts` and uses returned `id` values in `platforms` when posting
+
+```bash
+curl https://api.social0.app/v1/accounts \
+  -H "Authorization: Bearer sk_live_YOUR_KEY"
+```
+
+Each account's `id` is a UUID like `550e8400-e29b-41d4-a716-446655440000`. Pass these in the `platforms` array — **not** platform names like `"linkedin"`.
+
+## Platform support
+
+| Platform | Dashboard | API connect (`POST /v1/accounts/connect`) |
+|----------|-----------|-------------------------------------------|
+| LinkedIn | Yes | Yes |
+| Instagram | Yes | Yes |
+| Facebook | Yes | Yes |
+| YouTube | Yes | Yes |
+| Pinterest | Yes | Yes |
+| TikTok | Yes | Yes |
+| Threads | Yes | Yes |
+| Twitter/X | Yes | **No** — dashboard only (OAuth 1.0a) |
+| Bluesky | Yes (BYOK) | **No** — dashboard only |
+
+## Twitter/X and Bluesky
+
+These platforms **cannot** be connected via the API:
+
+- **Twitter/X** — requires OAuth 1.0a in a browser session. Connect via [Dashboard → Connections](/docs/dashboard/connections).
+- **Bluesky** — uses BYOK (handle + app password) in the dashboard. `POST /v1/accounts/connect` returns **400** for these platforms.
+
+After connecting in the dashboard, list accounts via API as usual.
+
+## Optional: custom OAuth onboarding
+
+Use this only if you build a white-label or custom onboarding flow that redirects users to OAuth.
+
+1. Call `POST /v1/accounts/connect` with a platform:
+
+```bash
+curl -X POST https://api.social0.app/v1/accounts/connect \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"platform": "linkedin"}'
+```
+
+2. Response includes an `authorization_url`:
+
+```json
+{
+  "authorization_url": "https://..."
+}
+```
+
+3. Redirect the end user to that URL in a **browser** (they must be logged into Social0)
+4. After OAuth callback completes, call `GET /v1/accounts` — the new account appears in the list
+
+This endpoint does **not** connect an account headlessly. The user must complete OAuth in a browser.
+
+## Disconnect an account
+
+```bash
+curl -X DELETE https://api.social0.app/v1/accounts/ACCOUNT_UUID \
+  -H "Authorization: Bearer sk_live_YOUR_KEY"
+```
+
+Returns **204** on success.
+
+## Related
+
+- [Accounts reference](/docs/api/reference/accounts)
+- [Connections (dashboard)](/docs/dashboard/connections)
+- [Quickstart](/docs/api/quickstart)

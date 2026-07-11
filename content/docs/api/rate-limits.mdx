@@ -1,0 +1,47 @@
+---
+title: "Rate limits"
+description: Hourly API request limits by subscription plan.
+---
+
+## Overview
+
+Rate limits apply **per user** (derived from your subscription tier), enforced via Redis. All `/v1/*` requests count toward the same hourly quota.
+
+## Limits by plan
+
+| Plan | Requests per hour |
+|------|-------------------|
+| Free | 60 |
+| Starter | 300 |
+| Growth | 1,000 |
+| Pro | 5,000 |
+
+## When you exceed the limit
+
+- HTTP **429 Too Many Requests**
+- Header **`Retry-After`** (seconds; typically 3600)
+- Body:
+
+```json
+{
+  "error": {
+    "code": "rate_limit_exceeded",
+    "message": "Too many requests. Try again later."
+  }
+}
+```
+
+Wait for the `Retry-After` period before retrying, or upgrade your plan for a higher limit.
+
+## Dashboard vs API limits
+
+Publish actions on the dashboard have **separate** limits (`/api/publish`). API limits apply to all `/v1/*` requests collectively — listing posts, uploading media, and publishing all count.
+
+## Upgrade for higher limits
+
+See [Billing plans](/docs/billing/plans) to upgrade. Twitter/X fair usage limits (monthly tweet caps) are separate — see [Fair usage policy](/docs/billing/fair-usage).
+
+## Related
+
+- [Errors — `rate_limit_exceeded`](/docs/api/errors)
+- [Authentication](/docs/api/authentication)
