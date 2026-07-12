@@ -1,0 +1,77 @@
+---
+title: "REST API for integrations"
+description: Programmatic access to Social0 — the interface the MCP server and custom integrations use.
+---
+
+## Overview
+
+The Social0 REST API at `https://api.social0.app/v1` is the underlying interface for the [MCP server](/docs/integrations/mcp), scripts, and custom apps. Authenticate with `Authorization: Bearer sk_live_…`.
+
+**Higher-level option:** If you use Claude, Cursor, or ChatGPT, start with the [MCP Server](/docs/integrations/mcp) instead of calling REST directly.
+
+## Base URL
+
+| Environment | URL |
+|-------------|-----|
+| Production | `https://api.social0.app` |
+| v1 prefix | `https://api.social0.app/v1` |
+| Interactive docs | [api.social0.app/docs](https://api.social0.app/docs) |
+| OpenAPI spec | [api.social0.app/openapi.json](https://api.social0.app/openapi.json) |
+
+## Quick links
+
+| Topic | This section | Full reference |
+|-------|--------------|----------------|
+| Authentication | [Authentication](/docs/integrations/api/authentication) | [/docs/api/authentication](/docs/api/authentication) |
+| Accounts | [Accounts](/docs/integrations/api/accounts) | [/docs/api/reference/accounts](/docs/api/reference/accounts) |
+| Posts | [Posts](/docs/integrations/api/posts) | [/docs/api/reference/posts](/docs/api/reference/posts) |
+| Media | [Media](/docs/integrations/api/media) | [/docs/api/reference/media](/docs/api/reference/media) |
+| Publish | [Publish](/docs/integrations/api/publish) | [/docs/api/guides/publish](/docs/api/guides/publish) |
+| Job status | [Jobs](/docs/integrations/api/jobs) | [/docs/api/reference/jobs](/docs/api/reference/jobs) |
+
+## Complete API documentation
+
+For the full reference including webhooks, idempotency, rate limits, and OpenAPI:
+
+- [API Overview](/docs/api)
+- [Quickstart](/docs/api/quickstart)
+- [API Reference index](/docs/api/reference)
+
+## MCP mapping
+
+| MCP tool | REST endpoint |
+|----------|---------------|
+| `list_accounts` | `GET /v1/accounts` |
+| `create_post` | `POST /v1/posts` |
+| `publish_now` | `POST /v1/posts/publish` |
+| `publish_post` | `POST /v1/posts/:id/publish` |
+| `get_publish_status` | `GET /v1/jobs/:trackingId` |
+| `upload_media` | presign → PUT → confirm |
+
+See [MCP tools reference](/docs/integrations/mcp/tools) for all 13 tools.
+
+## Error format
+
+All `/v1` errors:
+
+```json
+{
+  "error": {
+    "code": "invalid_api_key",
+    "message": "API key is invalid."
+  }
+}
+```
+
+See [Errors](/docs/api/errors).
+
+## Rate limits
+
+| Plan | Requests/hour |
+|------|---------------|
+| Free | 60 |
+| Starter | 300 |
+| Growth | 1,000 |
+| Pro | 5,000 |
+
+See [Rate limits](/docs/api/rate-limits).

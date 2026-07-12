@@ -32,6 +32,12 @@ export default function HomePage() {
           >
             Build with the API
           </Link>
+          <Link
+            href="/docs/integrations/mcp"
+            className="inline-flex items-center rounded-lg border border-(--border) px-5 py-2.5 text-sm font-medium transition-colors hover:bg-(--accent)/10"
+          >
+            AI assistants (MCP)
+          </Link>
         </div>
       </div>
     </main>

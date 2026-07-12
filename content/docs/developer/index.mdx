@@ -1,45 +1,59 @@
 ---
 title: "Integrations and API"
-description: Connect Social0 to other tools or use it programmatically via the REST API.
+description: Connect Social0 to AI assistants via MCP or build custom integrations with the REST API.
 ---
 
 ## Overview
 
-Social0 has a **versioned public REST API** at `https://api.social0.app/v1`. Use it to publish, schedule, upload media, and receive webhook events from your backend, CI pipeline, or automation tools.
+Social0 offers two integration paths:
 
-## What's available today
+- **[MCP Server](/docs/integrations/mcp)** — official Model Context Protocol server for Claude, Cursor, ChatGPT, and VS Code
+- **[REST API](/docs/api)** — full programmatic access at `https://api.social0.app/v1`
 
-- **[REST API](/docs/api)** - Full programmatic access with API keys (`sk_live_…`)
-- **[Quickstart](/docs/api/quickstart)** - Publish your first post in 5 minutes
-- **[Developer settings](/docs/dashboard/api-keys)** - Create API keys and manage webhooks
-- **Dashboard and Composer** - Create, schedule, and publish posts from the app
-- **Connections** - Add or remove social accounts (required before API publishing)
+Both use [API keys](/docs/dashboard/api-keys) from Developer settings.
 
-## Get started with the API
+## MCP Server (recommended for AI users)
 
-1. Connect at least one account in [Dashboard → Connections](/docs/dashboard/connections)
-2. Create an API key in [Developer settings](/docs/dashboard/api-keys)
-3. Follow the [Quickstart](/docs/api/quickstart) to publish your first post
+Manage posts with natural language in your AI assistant:
+
+```text
+Show my connected Social0 accounts.
+Create a LinkedIn post about our product launch.
+Publish my latest draft.
+```
+
+[Get started with MCP →](/docs/integrations/mcp/quickstart)
+
+## REST API (for developers)
+
+Build scripts, backends, and custom integrations:
+
+```bash
+curl https://api.social0.app/v1/accounts \
+  -H "Authorization: Bearer sk_live_YOUR_KEY"
+```
+
+[API Quickstart →](/docs/api/quickstart)
 
 ## Documentation
 
 | Resource | Link |
 |----------|------|
-| API Overview | [/docs/api](/docs/api) |
-| Quickstart | [/docs/api/quickstart](/docs/api/quickstart) |
-| API Reference | [/docs/api/reference](/docs/api/reference) |
-| Webhooks | [/docs/api/webhooks](/docs/api/webhooks) |
-| Interactive Swagger UI | [api.social0.app/docs](https://api.social0.app/docs) |
-| OpenAPI spec | [api.social0.app/openapi.json](https://api.social0.app/openapi.json) |
+| Integrations hub | [/docs/integrations](/docs/integrations) |
+| MCP overview | [/docs/integrations/mcp](/docs/integrations/mcp) |
+| MCP tools (13 tools) | [/docs/integrations/mcp/tools](/docs/integrations/mcp/tools) |
+| API keys | [/docs/dashboard/api-keys](/docs/dashboard/api-keys) |
+| REST API reference | [/docs/api](/docs/api) |
+| Interactive Swagger | [api.social0.app/docs](https://api.social0.app/docs) |
 
 ## What's coming
 
-- **Pre-built integrations** - Zapier, Make, and other automation platforms
-- **Official SDKs** - Node.js and Python client libraries
-- **API key scopes** - Fine-grained permissions per key
+- Pre-built integrations (Zapier, Make)
+- Official Node.js and Python SDKs
+- API key scopes
 
 ## Tips
 
-- Don't share your Social0 password with third-party tools — use API keys instead and revoke them anytime.
-- Use [webhooks](/docs/api/webhooks) instead of polling for publish status.
-- Send feedback via **Dashboard → Feedback** to suggest integrations you'd like.
+- Connect platforms in [Connections](/docs/dashboard/connections) before using MCP or API
+- Use [webhooks](/docs/api/webhooks) to avoid polling publish status
+- One API key per integration (Claude vs Cursor vs CI)

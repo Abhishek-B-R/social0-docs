@@ -27,6 +27,7 @@ If something’s wrong (e.g. video aspect ratio), we’ll show a message so you 
 
 - Use the Composer when you want to move fast. Use **Manual Posting** when you want to choose “Text,” “Image,” “Video,” “Threads,” or “Collection” yourself.
 - You can reorder images or videos by dragging before you click Continue.
+- Prefer natural language? Use the [MCP Server](/docs/integrations/mcp) in Claude or Cursor to create and publish posts via chat.
 
 ## Common questions
 

@@ -1,0 +1,62 @@
+---
+title: "REST API — Posts"
+description: Create, list, update, and delete posts via the Social0 REST API.
+---
+
+## Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/v1/posts` | List posts (paginated) |
+| `POST` | `/v1/posts` | Create draft |
+| `GET` | `/v1/posts/:id` | Get post + per-platform status |
+| `PATCH` | `/v1/posts/:id` | Update draft or scheduled |
+| `DELETE` | `/v1/posts/:id` | Delete draft or scheduled |
+
+## Create draft
+
+```http
+POST /v1/posts
+Content-Type: application/json
+
+{
+  "content": "Post text",
+  "platforms": ["connected-account-uuid"],
+  "media": ["media-uuid"]
+}
+```
+
+Returns **201** `{ "id": "post-uuid" }`.
+
+## List posts
+
+```http
+GET /v1/posts?status=draft&limit=10
+```
+
+Filters: `status`, `platform`, `search`, `page`, `limit`.
+
+## Post statuses
+
+| Status | Meaning |
+|--------|---------|
+| `draft` | Not published or scheduled |
+| `scheduled` | Waiting for `scheduledAt` |
+| `publishing` | Publish in progress |
+| `published` | All platforms succeeded |
+| `partial` | Mixed — some succeeded, some failed |
+| `failed` | All platforms failed |
+
+## MCP tools
+
+| Tool | Endpoint |
+|------|----------|
+| `create_post` | `POST /v1/posts` |
+| `update_post` | `PATCH /v1/posts/:id` |
+| `delete_post` | `DELETE /v1/posts/:id` |
+| `list_posts` | `GET /v1/posts` |
+| `get_post` | `GET /v1/posts/:id` |
+
+## Full documentation
+
+[Posts reference](/docs/api/reference/posts) · [Publish guide](/docs/api/guides/publish) · [Schedule guide](/docs/api/guides/schedule)

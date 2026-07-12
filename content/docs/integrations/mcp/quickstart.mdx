@@ -1,0 +1,137 @@
+---
+title: "MCP quick start"
+description: Connect the Social0 MCP server to your AI assistant in under 5 minutes.
+---
+
+## Prerequisites
+
+- [Social0 account](https://social0.app) with at least one [connected platform](/docs/dashboard/connections)
+- [API key](/docs/dashboard/api-keys) (`sk_live_…`)
+- Node.js 20+
+- An MCP host (Claude Desktop, Cursor, or VS Code)
+
+## Step 1 — Get an API key
+
+1. Open [Developer → API Keys](https://social0.app/dashboard/api-keys)
+2. Click **Create key** → name it (e.g. "Cursor MCP")
+3. Copy `sk_live_…` — shown once
+
+## Step 2 — Install the MCP server
+
+```bash
+git clone https://github.com/Abhishek-B-R/social0.git
+cd social0/social0-mcp
+cp .env.example .env
+```
+
+Edit `.env`:
+
+```bash
+SOCIAL0_API_KEY=sk_live_your_key_here
+SOCIAL0_API_URL=https://api.social0.app/v1
+```
+
+Build:
+
+```bash
+npm install && npm run build
+```
+
+Note the absolute path to `dist/index.js` — you'll need it for MCP config.
+
+## Step 3 — Configure your MCP host
+
+Pick your host:
+
+| Host | Guide |
+|------|-------|
+| Claude Desktop | [Setup](/docs/integrations/mcp/claude-desktop) |
+| Cursor | [Setup](/docs/integrations/mcp/cursor) |
+| VS Code | [Setup](/docs/integrations/mcp/vscode) |
+| ChatGPT | [Setup](/docs/integrations/mcp/chatgpt) |
+
+**Minimal Cursor config** (`.cursor/mcp.json` or Cursor Settings → MCP):
+
+```json
+{
+  "mcpServers": {
+    "social0": {
+      "command": "node",
+      "args": ["/absolute/path/to/social0-mcp/dist/index.js"],
+      "env": {
+        "SOCIAL0_API_KEY": "sk_live_your_key_here",
+        "SOCIAL0_API_URL": "https://api.social0.app/v1"
+      }
+    }
+  }
+}
+```
+
+Replace `/absolute/path/to/social0-mcp` with your actual install path.
+
+## Step 4 — Restart and verify
+
+Restart your MCP host, then run this prompt:
+
+```text
+Use the Social0 MCP list_accounts tool to show my connected accounts.
+```
+
+Expected: a list of platforms with IDs and token status.
+
+## Step 5 — Publish your first post
+
+```text
+Create a LinkedIn post that says "Hello from Social0 MCP!" and publish it now.
+```
+
+The assistant should:
+
+1. Call `list_accounts` to find your LinkedIn account
+2. Call `publish_now` with content and platform
+3. Return a `tracking_id`
+4. Call `get_publish_status` until the job completes
+
+## Example multi-step flow
+
+```text
+1. upload_media({ file_path: "./logo.png" })           → mediaId
+2. create_post({ content: "...", platforms: ["linkedin", "twitter_x"], media: [mediaId] })
+3. publish_post({ post_id: "..." })                    → tracking_id
+4. get_publish_status({ tracking_id: "..." })          → poll until completed | failed | partial
+5. get_post({ post_id: "..." })                        → final per-platform URLs and errors
+```
+
+Multi-platform publishes run **in parallel**. Poll every 2–5 seconds. Video uploads may take minutes.
+
+## Dev mode
+
+Run with verbose logging:
+
+```bash
+SOCIAL0_MCP_VERBOSE=true SOCIAL0_API_KEY=sk_live_xxx node dist/index.js
+```
+
+Or use `tsx` for development (Cursor):
+
+```json
+{
+  "command": "npx",
+  "args": ["tsx", "/absolute/path/to/social0-mcp/src/index.ts"],
+  "env": { "SOCIAL0_API_KEY": "sk_live_...", "SOCIAL0_MCP_VERBOSE": "true" }
+}
+```
+
+## MCP Inspector
+
+Test the server without an AI host:
+
+```bash
+npx @modelcontextprotocol/inspector node dist/index.js
+```
+
+## Next steps
+
+- [Tools reference](/docs/integrations/mcp/tools) — all 13 tools
+- [Troubleshooting](/docs/integrations/mcp/troubleshooting)
+- [REST API](/docs/api/quickstart) — underlying endpoints

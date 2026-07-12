@@ -1,0 +1,61 @@
+---
+title: "REST API — Accounts"
+description: List and manage connected social accounts via the Social0 REST API.
+---
+
+## List accounts
+
+```http
+GET /v1/accounts
+Authorization: Bearer sk_live_your_key
+```
+
+**Response:**
+
+```json
+{
+  "data": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "platform": "linkedin",
+      "username": "jane",
+      "profile_image_url": "https://...",
+      "is_active": true,
+      "token_expires_at": "2026-08-01T00:00:00.000Z",
+      "token_status": "ok",
+      "created_at": "2026-01-01T00:00:00.000Z"
+    }
+  ]
+}
+```
+
+Use `id` values in the `platforms` array when posting. MCP accepts platform names (`linkedin`) when only one account exists per platform.
+
+## Connect account (optional)
+
+```http
+POST /v1/accounts/connect
+Content-Type: application/json
+
+{ "platform": "linkedin" }
+```
+
+Returns `{ "authorization_url": "https://..." }` — user must complete OAuth in a browser. **Recommended:** connect in [Dashboard → Connections](/docs/dashboard/connections) instead.
+
+Twitter/X and Bluesky: dashboard only.
+
+## Disconnect
+
+```http
+DELETE /v1/accounts/:id
+```
+
+Returns **204** on success.
+
+## MCP tool
+
+`list_accounts` → `GET /v1/accounts`
+
+## Full documentation
+
+[Accounts reference](/docs/api/reference/accounts) · [Connect accounts guide](/docs/api/guides/connect-accounts)

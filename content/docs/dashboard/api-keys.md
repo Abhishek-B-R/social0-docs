@@ -5,7 +5,7 @@ description: Manage API keys and webhook endpoints in the Social0 dashboard.
 
 ## Overview
 
-The **Developer** page (`/dashboard/api-keys`) is where you create API keys for programmatic access and manage webhook endpoints. API keys authenticate requests to the [Social0 REST API](/docs/api) at `https://api.social0.app/v1`.
+The **Developer** page (`/dashboard/api-keys`) is where you create API keys for programmatic access and manage webhook endpoints. API keys authenticate requests to the [Social0 REST API](/docs/api) at `https://api.social0.app/v1` and power the [MCP Server](/docs/integrations/mcp) for AI assistants.
 
 ## How to open Developer settings
 
@@ -22,6 +22,8 @@ You'll see two tabs: **API Keys** and **Webhooks**.
 2. Enter a name (e.g. "Production CI" or "Zapier integration").
 3. Copy the full key (`sk_live_…`) — it is shown **once**.
 4. Store it in an environment variable or secrets manager.
+
+Name keys by integration (e.g. "Claude Desktop", "Cursor MCP") so you can revoke individually.
 
 ### Key table
 
@@ -50,6 +52,24 @@ Revoked or expired keys return `401 invalid_api_key` on API requests.
 
 See [Authentication](/docs/api/authentication) for request headers and best practices.
 
+### Use with MCP
+
+```json
+{
+  "mcpServers": {
+    "social0": {
+      "command": "node",
+      "args": ["/path/to/social0-mcp/dist/index.js"],
+      "env": {
+        "SOCIAL0_API_KEY": "sk_live_your_key_here"
+      }
+    }
+  }
+}
+```
+
+See [MCP Server setup](/docs/integrations/mcp/quickstart).
+
 ## Webhooks
 
 Switch to the **Webhooks** tab on the same page.
@@ -70,6 +90,7 @@ You can also manage webhooks via the [Webhooks API](/docs/api/reference/webhooks
 
 ## API documentation
 
+- **MCP Server:** [Manage posts from AI assistants](/docs/integrations/mcp)
 - **Docs site:** [API Overview](/docs/api)
 - **Quickstart:** [Publish your first post](/docs/api/quickstart)
 - **Interactive reference:** [api.social0.app/docs](https://api.social0.app/docs)
@@ -94,3 +115,6 @@ A: Not yet. All keys are full-access today.
 
 **Q: Can I manage webhooks without the dashboard?**  
 A: Yes — use `POST /v1/webhooks` and related endpoints. See [Webhooks reference](/docs/api/reference/webhooks).
+
+**Q: Can I use this key with Claude or Cursor?**  
+A: Yes — set `SOCIAL0_API_KEY` in your MCP host config. See [MCP quick start](/docs/integrations/mcp/quickstart).

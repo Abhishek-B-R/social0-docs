@@ -1,0 +1,83 @@
+---
+title: "Cursor setup"
+description: Connect the Social0 MCP server to Cursor.
+---
+
+## Prerequisites
+
+- Node.js 20+
+- [API key](/docs/dashboard/api-keys) (`sk_live_…`)
+- Built MCP server (`npm run build` in `social0-mcp/`)
+
+## Configuration
+
+Cursor supports project-level or global MCP config.
+
+### Project config (recommended)
+
+Create `.cursor/mcp.json` in your project root:
+
+```json
+{
+  "mcpServers": {
+    "social0": {
+      "command": "node",
+      "args": ["/absolute/path/to/social0-mcp/dist/index.js"],
+      "env": {
+        "SOCIAL0_API_KEY": "sk_live_your_key_here",
+        "SOCIAL0_API_URL": "https://api.social0.app/v1"
+      }
+    }
+  }
+}
+```
+
+### Global config
+
+Open **Cursor Settings → MCP** and add the same server configuration.
+
+## Restart Cursor
+
+Reload the window or restart Cursor after saving config.
+
+## Verify
+
+In Cursor chat (Agent mode), ask:
+
+```text
+Use the Social0 MCP list_accounts tool to show my connected accounts.
+```
+
+## Dev mode
+
+Use `tsx` for development without rebuilding:
+
+```json
+{
+  "mcpServers": {
+    "social0": {
+      "command": "npx",
+      "args": ["tsx", "/absolute/path/to/social0-mcp/src/index.ts"],
+      "env": {
+        "SOCIAL0_API_KEY": "sk_live_your_key_here",
+        "SOCIAL0_MCP_VERBOSE": "true"
+      }
+    }
+  }
+}
+```
+
+## Windsurf
+
+Windsurf uses the same stdio MCP config format as Cursor. Copy the `.cursor/mcp.json` config to Windsurf's MCP settings.
+
+## Troubleshooting
+
+See [MCP troubleshooting](/docs/integrations/mcp/troubleshooting).
+
+{/* SCREENSHOT: Cursor MCP settings with social0 configured */}
+
+## Related
+
+- [MCP quick start](/docs/integrations/mcp/quickstart)
+- [Tools reference](/docs/integrations/mcp/tools)

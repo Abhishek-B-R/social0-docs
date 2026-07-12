@@ -1,0 +1,63 @@
+---
+title: "ChatGPT setup"
+description: Connect the Social0 MCP server to ChatGPT.
+---
+
+## Prerequisites
+
+- Node.js 20+
+- [API key](/docs/dashboard/api-keys) (`sk_live_…`)
+- Built MCP server (`npm run build` in `social0-mcp/`)
+- ChatGPT plan with MCP support (availability varies by plan and region)
+
+## Availability
+
+MCP support in ChatGPT is rolling out and may not be available in all regions or plans. **Claude Desktop and Cursor are the primary recommended hosts** for Social0 MCP today.
+
+Check OpenAI's documentation for current MCP connector availability.
+
+## Configuration
+
+When MCP connectors are available in your ChatGPT account:
+
+1. Open ChatGPT **Settings → Connectors** (or equivalent MCP section)
+2. Add a custom MCP server with stdio transport
+3. Use this configuration:
+
+```json
+{
+  "command": "node",
+  "args": ["/absolute/path/to/social0-mcp/dist/index.js"],
+  "env": {
+    "SOCIAL0_API_KEY": "sk_live_your_key_here",
+    "SOCIAL0_API_URL": "https://api.social0.app/v1"
+  }
+}
+```
+
+The MCP server must run on your local machine — ChatGPT connects to it via the desktop app or connector bridge.
+
+## Verify
+
+```text
+Use the Social0 MCP list_accounts tool to show my connected accounts.
+```
+
+## Alternative hosts
+
+If ChatGPT MCP is not available in your region:
+
+| Host | Guide |
+|------|-------|
+| Claude Desktop | [Setup](/docs/integrations/mcp/claude-desktop) |
+| Cursor | [Setup](/docs/integrations/mcp/cursor) |
+| VS Code | [Setup](/docs/integrations/mcp/vscode) |
+
+## Troubleshooting
+
+See [MCP troubleshooting](/docs/integrations/mcp/troubleshooting).
+
+## Related
+
+- [MCP quick start](/docs/integrations/mcp/quickstart)
+- [MCP overview](/docs/integrations/mcp)

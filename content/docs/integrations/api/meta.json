@@ -1,0 +1,12 @@
+{
+  "title": "REST API",
+  "pages": [
+    "index",
+    "authentication",
+    "accounts",
+    "posts",
+    "media",
+    "publish",
+    "jobs"
+  ]
+}

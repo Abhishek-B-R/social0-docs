@@ -1,0 +1,40 @@
+# Social0 Documentation
+
+> Social0 lets you write once and publish everywhere — LinkedIn, Instagram, X, YouTube, TikTok, Bluesky, Threads, Facebook, and Pinterest.
+
+## Getting started
+- Docs home: https://docs.social0.app/docs
+- Getting started: https://docs.social0.app/docs/getting-started
+- Connect accounts: https://docs.social0.app/docs/dashboard/connections
+
+## Integrations
+- MCP Server (AI assistants): https://docs.social0.app/docs/integrations/mcp
+- MCP quick start: https://docs.social0.app/docs/integrations/mcp/quickstart
+- MCP tools reference: https://docs.social0.app/docs/integrations/mcp/tools
+- API keys: https://docs.social0.app/docs/dashboard/api-keys
+- REST API: https://docs.social0.app/docs/api
+- REST API quickstart: https://docs.social0.app/docs/api/quickstart
+- Interactive API docs: https://api.social0.app/docs
+- OpenAPI spec: https://api.social0.app/openapi.json
+
+## Dashboard
+- Dashboard overview: https://docs.social0.app/docs/dashboard
+- Composer: https://docs.social0.app/docs/dashboard/composer
+- Posts: https://docs.social0.app/docs/dashboard/posts
+- Connections: https://docs.social0.app/docs/dashboard/connections
+- Developer settings: https://docs.social0.app/docs/dashboard/api-keys
+
+## API authentication
+- Base URL: https://api.social0.app/v1
+- Auth: Authorization: Bearer sk_live_...
+- Legacy keys: s0_live_... still accepted
+
+## MCP Server
+- Official Model Context Protocol server for Claude, Cursor, ChatGPT, VS Code
+- 13 tools: list_accounts, create_post, publish_now, get_publish_status, etc.
+- Requires API key and Node.js 20+
+- GitHub: https://github.com/Abhishek-B-R/social0/tree/main/social0-mcp
+
+## Changelog
+- 2026-07-12: Added MCP Server documentation
+- 2026-07-11: Added Public REST API (/v1) documentation

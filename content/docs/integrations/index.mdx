@@ -1,0 +1,63 @@
+---
+title: "Integrations"
+description: Connect Social0 to AI assistants via MCP or build custom integrations with the REST API.
+---
+
+## Overview
+
+Social0 integrates with external tools in two ways:
+
+- **[MCP Server](/docs/integrations/mcp)** — manage posts from Claude, Cursor, ChatGPT, or VS Code using natural language
+- **[REST API](/docs/integrations/api)** — programmatic access for scripts, backends, and custom apps
+
+Both use the same [API keys](/docs/dashboard/api-keys) and the same `/v1` backend.
+
+## Choose your path
+
+| I want to… | Start here |
+|------------|------------|
+| Use natural language in Claude or Cursor | [MCP Server](/docs/integrations/mcp) |
+| Build a custom integration or script | [REST API](/docs/api/quickstart) |
+| Create an API key | [Developer settings](/docs/dashboard/api-keys) |
+| Connect social accounts first | [Connections](/docs/dashboard/connections) |
+
+## MCP Server (AI assistants)
+
+The official **Model Context Protocol** server translates AI tool calls into Social0 REST API requests. Create drafts, publish, schedule, upload media, and check publish status — all from your AI assistant.
+
+```text
+Claude / ChatGPT / Cursor
+            │
+            ▼
+      Social0 MCP Server
+            │
+     (translate tool calls)
+            │
+            ▼
+     Social0 Public REST API
+            │
+            ▼
+     Existing Backend
+```
+
+[Get started with MCP →](/docs/integrations/mcp/quickstart)
+
+## REST API
+
+Full programmatic access at `https://api.social0.app/v1`. Authenticate with `Authorization: Bearer sk_live_…`.
+
+- [API Overview](/docs/api) — complete reference, guides, and OpenAPI spec
+- [Quickstart](/docs/api/quickstart) — publish your first post in 5 minutes
+- [Interactive docs](https://api.social0.app/docs) — live Swagger UI
+
+## Prerequisites (both paths)
+
+1. Social0 account with at least one [connected platform](/docs/dashboard/connections)
+2. [API key](/docs/dashboard/api-keys) from Developer settings
+3. For MCP: Node.js 20+ and an MCP-compatible host
+
+## Related
+
+- [Developer settings](/docs/dashboard/api-keys) — API keys and webhooks
+- [Dashboard](/docs/dashboard) — create posts in the app
+- [Billing](/docs/billing/plans) — plan limits apply to API and MCP usage
