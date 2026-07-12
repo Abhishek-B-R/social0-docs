@@ -1,0 +1,47 @@
+---
+title: "REST API authentication"
+description: Authenticate Social0 REST API requests with Bearer API keys.
+---
+
+## API keys
+
+Create keys in [Developer settings](/docs/dashboard/api-keys). Format: `sk_live_…` (legacy `s0_live_…` still accepted).
+
+```http
+Authorization: Bearer sk_live_your_key_here
+Content-Type: application/json
+```
+
+Keys are shown **once** at creation. Store securely — never commit to git.
+
+## Use with MCP
+
+```json
+{
+  "mcpServers": {
+    "social0": {
+      "command": "node",
+      "args": ["/path/to/social0-mcp/dist/index.js"],
+      "env": {
+        "SOCIAL0_API_KEY": "sk_live_your_key_here"
+      }
+    }
+  }
+}
+```
+
+## Security
+
+- One key per integration (Claude vs Cursor vs CI)
+- Rotate immediately if leaked
+- MCP runs locally — key stays on your machine's env
+- Revoked keys return `401 invalid_api_key`
+
+## Full documentation
+
+See [Authentication](/docs/api/authentication) for complete details including legacy keys, session auth vs API keys, and security best practices.
+
+## Related
+
+- [API keys (dashboard)](/docs/dashboard/api-keys)
+- [MCP overview](/docs/integrations/mcp)

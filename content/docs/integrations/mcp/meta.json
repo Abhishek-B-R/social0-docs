@@ -1,0 +1,14 @@
+{
+  "title": "MCP Server",
+  "pages": [
+    "index",
+    "quickstart",
+    "tools",
+    "---Setup guides---",
+    "claude-desktop",
+    "cursor",
+    "vscode",
+    "chatgpt",
+    "troubleshooting"
+  ]
+}

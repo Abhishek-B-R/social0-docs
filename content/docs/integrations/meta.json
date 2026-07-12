@@ -1,0 +1,11 @@
+{
+  "title": "Integrations",
+  "defaultOpen": true,
+  "pages": [
+    "index",
+    "---MCP Server---",
+    "...mcp",
+    "---REST API---",
+    "...api"
+  ]
+}

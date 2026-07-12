@@ -1,0 +1,151 @@
+---
+title: "REST API — Job status"
+description: Poll or stream publish job progress — tracking_id, partial status, and platform phases.
+---
+
+## Overview
+
+Every publish returns a `tracking_id`. Poll until the job reaches a terminal state: `completed`, `failed`, or `partial`.
+
+```http
+GET /v1/jobs/:trackingId
+Authorization: Bearer sk_live_your_key
+```
+
+Optional SSE stream for live UI:
+
+```http
+GET /v1/jobs/:trackingId/stream
+```
+
+## Response shape
+
+```json
+{
+  "tracking_id": "uuid",
+  "post_id": "uuid",
+  "status": "partial",
+  "total": 2,
+  "completed": 1,
+  "failed": 1,
+  "platform_statuses": [
+    {
+      "platform": "youtube",
+      "connected_account_id": "uuid",
+      "phase": "platform_success",
+      "message": "Published to youtube",
+      "error": null
+    },
+    {
+      "platform": "twitter_x",
+      "connected_account_id": "uuid",
+      "phase": "platform_failed",
+      "message": "Actual platform error message here",
+      "error": "Actual platform error message here"
+    }
+  ],
+  "errors": [
+    {
+      "platform": "twitter_x",
+      "connected_account_id": "uuid",
+      "message": "Actual platform error message here"
+    }
+  ],
+  "failure_reason": "First failure message (only when status is failed or partial)",
+  "created_at": "2026-07-11T14:00:00.000Z",
+  "completed_at": "2026-07-11T14:01:00.000Z"
+}
+```
+
+## Job status semantics
+
+| `status` | Meaning |
+|----------|---------|
+| `queued` | Job accepted, not yet fanning out |
+| `processing` | At least one platform still publishing |
+| `completed` | All platforms succeeded |
+| `failed` | All platforms failed |
+| `partial` | Mixed — some succeeded, some failed (all platforms terminal) |
+
+## Platform phases
+
+| `phase` | Meaning |
+|---------|---------|
+| `platform_queued` | Platform job accepted |
+| `platform_uploading` | Upload/publish in progress |
+| `platform_success` | Published on that platform |
+| `platform_failed` | Failed — read `error` / `message` |
+
+## MCP mapping
+
+MCP `get_publish_status` reshapes the API response:
+
+| API field | MCP field |
+|-----------|-----------|
+| `status` | `overall_status` |
+| `total`, `completed`, `failed` | `progress.total`, etc. |
+| `platform_statuses` | `platform_statuses` |
+| `errors` | `errors` |
+| `failure_reason` | `failure_reason` |
+
+## Polling guidance
+
+- Poll every **2–5 seconds** while status is `processing`
+- Stop when status is `completed`, `failed`, or `partial`
+- Text posts: usually seconds
+- Video (YouTube, X, Instagram): **1–5+ minutes**
+- `completed_at` is non-null only when terminal
+
+## Post status vs job status
+
+| Concept | Values | Where |
+|---------|--------|-------|
+| **Publish job** | `queued`, `processing`, `completed`, `failed`, `partial` | `GET /v1/jobs/:id`, `get_publish_status` |
+| **Post** | `draft`, `scheduled`, `publishing`, `published`, `partial`, `failed` | `GET /v1/posts/:id`, dashboard |
+
+After job completes, use `GET /v1/posts/:id` for final per-platform URLs and errors.
+
+## SSE stream
+
+`GET /v1/jobs/:trackingId/stream` emits:
+
+| Event | When |
+|-------|------|
+| `progress` | Phase change (`platform_uploading`, `platform_success`, `platform_failed`) |
+| `done` | Job finished — full snapshot |
+
+Late subscribers get a single `done` event if the job already finished.
+
+**Note:** Dashboard uses `/api/jobs/…/stream` with session cookies. Third-party clients use `/v1/jobs/…/stream` only.
+
+## Example poll loop (Python)
+
+```python
+import time, requests, os
+
+def wait_for_job(tracking_id):
+    headers = {"Authorization": f"Bearer {os.environ['SOCIAL0_API_KEY']}"}
+    while True:
+        job = requests.get(
+            f"https://api.social0.app/v1/jobs/{tracking_id}",
+            headers=headers,
+        ).json()
+        if job["status"] in ("completed", "failed", "partial"):
+            return job
+        time.sleep(3)
+```
+
+## FAQ
+
+**Q: Why does status show `partial`?**  
+A: Multi-platform publish with mixed results. Check `errors` for failed platforms.
+
+**Q: One platform stuck on `platform_queued` > 2 minutes?**  
+A: Retry the publish. Posts from before July 2026 reliability fixes may need manual retry.
+
+**Q: Can I retry a failed platform?**  
+A: Use dashboard retry for a specific publication, or call `publish_post` again on a `failed`/`partial` post.
+
+## Related
+
+[MCP get_publish_status](/docs/integrations/mcp/tools#get_publish_status) · [Publish](/docs/integrations/api/publish) · [Jobs reference](/docs/api/reference/jobs) · [Troubleshooting](/docs/integrations/mcp/troubleshooting)

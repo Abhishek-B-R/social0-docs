@@ -1,0 +1,113 @@
+---
+title: "MCP troubleshooting"
+description: Fix common Social0 MCP server connection, auth, and publish errors.
+---
+
+## Authentication
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| `SOCIAL0_API_KEY is required` | Missing env var | Set `SOCIAL0_API_KEY` in MCP host config `env` block |
+| `must start with sk_live_` or `s0_live_` | Wrong key format | Create new key in [Developer settings](/docs/dashboard/api-keys) |
+| `401 Unauthorized` / `invalid_api_key` | Revoked or expired key | Create new API key; update MCP config |
+| `401 Unauthorized` | Key not passed to subprocess | Ensure key is in `env` block, not only in `.env` file |
+
+## MCP server
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| `Unknown tool` | Old MCP build | Run `npm run build`, restart MCP host |
+| MCP host shows no tools | Server not starting | Check stderr; run `node dist/index.js` manually |
+| `console.log` broke MCP | stdout pollution | MCP logs only to **stderr** — check for debug prints |
+| Server exits immediately | Missing API key or bad path | Verify absolute path to `dist/index.js` |
+
+## Accounts and platforms
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| `No connected linkedin account` | Platform not connected | [Connect accounts](/docs/dashboard/connections) first |
+| `Multiple twitter_x accounts` | Ambiguous platform name | Use account UUID from `list_accounts` |
+| Token expired errors | OAuth needs refresh | Reconnect account in dashboard |
+
+## Posts and publishing
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| Post create fails | Invalid platform or missing account | Run `list_accounts`; use valid platform name or UUID |
+| `validation_error` on platforms | Used platform name when UUID required | Pass UUID when multiple accounts on same platform |
+| Schedule in past | `scheduled_at` before now | Use future ISO 8601 datetime |
+
+## Publish status
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| `overall_status: processing` forever | One platform still running | Poll again; video uploads take minutes |
+| One platform `platform_queued` > 2 min | Stuck from pre-fix deploy or worker issue | Retry publish — see below |
+| `failure_reason` while still `processing` | Stale post row (pre-2026-07-12) | Retry publish; current API only sets `failure_reason` when terminal |
+| `failed: 0` but `platform_failed` in statuses | Job counter desync (fixed 2026-07-12) | Upgrade API; counters now reconcile from DB |
+| Dashboard Pending, API shows failed | Publication row not synced (fixed 2026-07-12) | Retry stuck publication from dashboard |
+| Multi-platform: one succeeds, one fails | Expected platform rejection | Job becomes `partial`; check `errors[]` per platform |
+
+## Historical errors (fixed July 2026)
+
+These **Social0 infrastructure bugs** are resolved. If you see the old symptoms on an outdated deployment, upgrade and retry.
+
+| Old symptom | What happened | User action |
+|-------------|---------------|-------------|
+| X: "Publishing is temporarily unavailable. Try again later." | Internal rate-limit gate on CF worker | **Should not appear on current API.** Retry publish. |
+| X `platform_queued` forever | CF worker dropped jobs | Retry `publish_post` or dashboard retry |
+| Stuck posts from before deploy | Old queue messages | **Retry** publication — do not wait for auto-recovery |
+
+**Docs tone:** If `platform_failed` shows a **platform error message** (not the old "temporarily unavailable" string), fix the account or content issue and retry.
+
+## Media upload
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| Upload fails | Wrong file type | JPG, PNG, GIF, WebP ≤ 50 MB; MP4, MOV, WebM ≤ 500 MB |
+| Upload fails | File not found | Use absolute path or correct relative path from MCP cwd |
+| Presign error | Size over limit | Check file size before upload |
+
+## Rate limits
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| HTTP `429` | Too many API requests | MCP auto-retries up to 3 times; wait and retry |
+| Hourly quota exceeded | Plan limit | See [Rate limits](/docs/api/rate-limits); upgrade plan |
+
+## Debug mode
+
+Run the MCP server manually with verbose logging:
+
+```bash
+SOCIAL0_MCP_VERBOSE=true SOCIAL0_API_KEY=sk_live_xxx node dist/index.js
+```
+
+Watch stderr for REST request/response details.
+
+## MCP Inspector
+
+Test tools without an AI host:
+
+```bash
+npx @modelcontextprotocol/inspector node dist/index.js
+```
+
+Set `SOCIAL0_API_KEY` in the inspector environment before connecting.
+
+## Real platform failures (still possible)
+
+Social0 fixes covered false failures and stuck state. These can still fail:
+
+- Expired OAuth / disconnected account → [Reconnect in Connections](/docs/dashboard/connections)
+- Platform content policy rejection
+- X/Twitter media size or duration limits
+- YouTube quota or auth errors
+
+## Related
+
+- [API keys](/docs/dashboard/api-keys)
+- [Connections](/docs/dashboard/connections)
+- [Tools reference](/docs/integrations/mcp/tools)
+- [Job status API](/docs/integrations/api/jobs)
+- [Publish via API](/docs/integrations/api/publish)

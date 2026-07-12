@@ -16,6 +16,10 @@ When you first sign up, Social0 walks you through a short onboarding flow: choos
 
 From there you can open the Composer and create your first post.
 
+## Optional: Connect an AI assistant
+
+After connecting accounts and creating an [API key](/docs/dashboard/api-keys), you can manage Social0 from Claude, Cursor, or VS Code via the [MCP Server](/docs/integrations/mcp/quickstart). Ask your assistant to list accounts, draft posts, or publish — no dashboard required for day-to-day posting.
+
 ## Tips
 
 - On the free tier you can only explore the dashboard-you cannot connect accounts or post. You need a paid plan to connect accounts and to publish or schedule. You can start with a **3-day free trial** to try everything, then continue by paying when the trial ends-or skip plan selection during onboarding and upgrade from Billing later.

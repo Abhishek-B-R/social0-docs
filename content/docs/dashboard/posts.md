@@ -34,6 +34,8 @@ You’ll see a list (or grid) of post cards. Each shows a preview of the content
 
 - If you see a banner like “Some posts failed because your trial ended,” go to **Billing** to upgrade, then retry the failed posts from this list.
 - After publishing to TikTok, it may take a few minutes for the post to appear on TikTok. That’s normal.
+- **Partial** status means some platforms succeeded and some failed — open the post to see per-platform errors and retry.
+- Prefer natural language? Use MCP tools like `list_posts` and `publish_post` from [Claude or Cursor](/docs/integrations/mcp).
 
 ## Common questions
 

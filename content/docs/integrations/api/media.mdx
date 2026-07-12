@@ -1,0 +1,65 @@
+---
+title: "REST API — Media"
+description: Upload images and video via presigned URLs on the Social0 REST API.
+---
+
+## Three-step upload
+
+```text
+1. POST /v1/media/presign     → upload_url, key, storage_filename
+2. PUT  <upload_url>          → raw file bytes (no API key)
+3. POST /v1/media/confirm     → media id
+```
+
+## Presign
+
+```http
+POST /v1/media/presign
+Content-Type: application/json
+
+{
+  "filename": "photo.jpg",
+  "content_type": "image/jpeg",
+  "size_bytes": 1048576
+}
+```
+
+## Upload
+
+```bash
+curl -X PUT "$upload_url" \
+  -H "Content-Type: image/jpeg" \
+  --data-binary @photo.jpg
+```
+
+## Confirm
+
+```http
+POST /v1/media/confirm
+Content-Type: application/json
+
+{
+  "key": "uploads/.../uuid.jpg",
+  "storage_filename": "uuid.jpg",
+  "original_filename": "photo.jpg",
+  "content_type": "image/jpeg",
+  "size_bytes": 1048576
+}
+```
+
+Returns **201** `{ "id": "media-uuid", "url": "https://cdn..." }`.
+
+## Limits
+
+| Type | Max size | Types |
+|------|----------|-------|
+| Images | ~50 MB | JPEG, PNG, GIF, WebP |
+| Video | ~500 MB | MP4, MOV, WebM |
+
+## MCP tool
+
+`upload_media({ file_path })` runs all three steps automatically.
+
+## Full documentation
+
+[Media reference](/docs/api/reference/media) · [Media upload guide](/docs/api/guides/media)
