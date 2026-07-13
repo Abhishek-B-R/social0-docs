@@ -8,9 +8,9 @@ export const siteDescription =
   "Official documentation for Social0 — guides for scheduling, publishing, and managing posts across X, Instagram, LinkedIn, TikTok, YouTube, and more.";
 
 export const ogImage = {
-  url: "/og-image.jpg",
-  width: 1024,
-  height: 682,
+  url: "/og-image.png",
+  width: 1200,
+  height: 630,
   alt: "Social0 — Post and schedule content to all platforms",
 } as const;
 
