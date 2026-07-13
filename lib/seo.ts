@@ -7,6 +7,13 @@ export const siteName = "Social0 Docs";
 export const siteDescription =
   "Official documentation for Social0 — guides for scheduling, publishing, and managing posts across X, Instagram, LinkedIn, TikTok, YouTube, and more.";
 
+export const ogImage = {
+  url: "/og-image.jpg",
+  width: 1024,
+  height: 682,
+  alt: "Social0 — Post and schedule content to all platforms",
+} as const;
+
 export function absoluteUrl(path: string): string {
   const normalized = path.startsWith("/") ? path : `/${path}`;
   return `${siteUrl.replace(/\/$/, "")}${normalized}`;
@@ -25,6 +32,12 @@ export function buildPageMetadata({
 }: PageMetadataInput): Metadata {
   const url = absoluteUrl(path);
   const fullTitle = path === "/" ? title : `${title} | ${siteName}`;
+  const image = {
+    url: absoluteUrl(ogImage.url),
+    width: ogImage.width,
+    height: ogImage.height,
+    alt: ogImage.alt,
+  };
 
   return {
     title: fullTitle,
@@ -37,20 +50,15 @@ export function buildPageMetadata({
       url,
       siteName,
       type: "website",
-      images: [
-        {
-          url: absoluteUrl("/favicon-light.png"),
-          width: 512,
-          height: 512,
-          alt: siteName,
-        },
-      ],
+      images: [image],
     },
     twitter: {
-      card: "summary",
+      card: "summary_large_image",
       title: fullTitle,
       description,
+      site: "@social0_app",
       creator: "@social0_app",
+      images: [image.url],
     },
   };
 }
@@ -70,6 +78,8 @@ export function buildOrganizationJsonLd() {
     "@type": "Organization",
     name: "Social0",
     url: "https://social0.app",
+    logo: absoluteUrl("/favicon-light.png"),
+    image: absoluteUrl(ogImage.url),
     sameAs: ["https://x.com/social0_app"],
   };
 }
@@ -81,6 +91,7 @@ export function buildWebSiteJsonLd() {
     name: siteName,
     url: siteUrl,
     description: siteDescription,
+    image: absoluteUrl(ogImage.url),
     publisher: buildOrganizationJsonLd(),
     inLanguage: "en",
   };

@@ -8,6 +8,7 @@ import { DocsNavbar } from "@/components/docs-navbar";
 import {
   buildOrganizationJsonLd,
   buildWebSiteJsonLd,
+  ogImage,
   siteDescription,
   siteName,
   siteUrl,
@@ -31,18 +32,20 @@ export const metadata: Metadata = {
     description: siteDescription,
     images: [
       {
-        url: "/favicon-light.png",
-        width: 512,
-        height: 512,
-        alt: siteName,
+        url: ogImage.url,
+        width: ogImage.width,
+        height: ogImage.height,
+        alt: ogImage.alt,
       },
     ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: siteName,
     description: siteDescription,
+    site: "@social0_app",
     creator: "@social0_app",
+    images: [ogImage.url],
   },
   icons: {
     icon: [
