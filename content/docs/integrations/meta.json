@@ -3,7 +3,7 @@
   "defaultOpen": true,
   "pages": [
     "index",
-    "---MCP Server---",
+    "---MCP---",
     "...mcp",
     "---REST API---",
     "...api"

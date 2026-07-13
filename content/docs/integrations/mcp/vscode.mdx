@@ -1,71 +1,42 @@
 ---
 title: "VS Code setup"
-description: Connect the Social0 MCP server to VS Code.
+description: Connect Social0 MCP to VS Code via local npx (stdio) or remote URL if supported.
 ---
 
-## Prerequisites
+## Prefer remote first
 
-- Node.js 20+
-- [API key](/docs/dashboard/api-keys) (`sk_live_…`)
-- Built MCP server (`npm run build` in `social0-mcp/`)
-- VS Code with an MCP-compatible extension (e.g. GitHub Copilot with MCP support, or a dedicated MCP extension)
+If your VS Code MCP extension supports a remote/HTTP MCP URL, use:
 
-## Build first
-
-The MCP server must be built before use:
-
-```bash
-cd social0-mcp
-npm install && npm run build
+```text
+https://mcp.social0.app/mcp
 ```
 
-## Configuration
+Authorize with Social0 OAuth when prompted. See the [MCP quickstart](/docs/integrations/mcp/quickstart).
 
-MCP extension config varies by extension. Use **stdio** transport with this pattern:
+## Local npx (stdio)
+
+Most VS Code MCP setups use stdio:
 
 ```json
 {
   "mcpServers": {
     "social0": {
-      "command": "node",
-      "args": ["/absolute/path/to/social0-mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "social0-mcp"],
       "env": {
-        "SOCIAL0_API_KEY": "sk_live_your_key_here",
-        "SOCIAL0_API_URL": "https://api.social0.app/v1"
+        "SOCIAL0_API_KEY": "sk_live_your_key_here"
       }
     }
   }
 }
 ```
 
-Consult your MCP extension's documentation for the exact config file location (often `.vscode/mcp.json` or user settings).
+Requires [Node.js 20+](https://nodejs.org/) and an API key from [Developer settings](/docs/dashboard/api-keys). Config file location varies by extension (often `.vscode/mcp.json` or user settings).
 
-## Verify
-
-After configuring and reloading VS Code, ask your AI assistant:
-
-```text
-Use the Social0 MCP list_accounts tool to show my connected accounts.
-```
-
-## Dev mode
-
-```json
-{
-  "command": "npx",
-  "args": ["tsx", "/absolute/path/to/social0-mcp/src/index.ts"],
-  "env": {
-    "SOCIAL0_API_KEY": "sk_live_your_key_here",
-    "SOCIAL0_MCP_VERBOSE": "true"
-  }
-}
-```
-
-## Troubleshooting
-
-See [MCP troubleshooting](/docs/integrations/mcp/troubleshooting).
+Reload VS Code, then ask: “Show my connected Social0 accounts.”
 
 ## Related
 
-- [MCP quick start](/docs/integrations/mcp/quickstart)
-- [Cursor setup](/docs/integrations/mcp/cursor) — similar config pattern
+- [MCP quickstart](/docs/integrations/mcp/quickstart)
+- [Cursor setup](/docs/integrations/mcp/cursor)
+- [Troubleshooting](/docs/integrations/mcp/troubleshooting)

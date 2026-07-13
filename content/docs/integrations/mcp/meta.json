@@ -1,10 +1,11 @@
 {
-  "title": "MCP Server",
+  "title": "MCP",
+  "defaultOpen": true,
   "pages": [
     "index",
     "quickstart",
     "tools",
-    "---Setup guides---",
+    "---Host setup---",
     "claude-desktop",
     "cursor",
     "vscode",

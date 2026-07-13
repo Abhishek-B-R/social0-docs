@@ -1,63 +1,42 @@
 ---
 title: "ChatGPT setup"
-description: Connect the Social0 MCP server to ChatGPT.
+description: Connect Social0 MCP to ChatGPT via remote URL (recommended) or local stdio if needed.
 ---
 
-## Prerequisites
+## Prefer remote first
 
-- Node.js 20+
-- [API key](/docs/dashboard/api-keys) (`sk_live_…`)
-- Built MCP server (`npm run build` in `social0-mcp/`)
-- ChatGPT plan with MCP support (availability varies by plan and region)
+In ChatGPT, open **Settings → Connectors** (wording may vary) and add:
 
-## Availability
+```text
+https://mcp.social0.app/mcp
+```
 
-MCP support in ChatGPT is rolling out and may not be available in all regions or plans. **Claude Desktop and Cursor are the primary recommended hosts** for Social0 MCP today.
+Click **Connect** and authorize on social0.app (OAuth). No Node.js. No API key in config.
 
-Check OpenAI's documentation for current MCP connector availability.
+See the [MCP quickstart](/docs/integrations/mcp/quickstart).
 
-## Configuration
+## Local npx (fallback)
 
-When MCP connectors are available in your ChatGPT account:
-
-1. Open ChatGPT **Settings → Connectors** (or equivalent MCP section)
-2. Add a custom MCP server with stdio transport
-3. Use this configuration:
+Only if your ChatGPT build does not support remote MCP connectors:
 
 ```json
 {
-  "command": "node",
-  "args": ["/absolute/path/to/social0-mcp/dist/index.js"],
-  "env": {
-    "SOCIAL0_API_KEY": "sk_live_your_key_here",
-    "SOCIAL0_API_URL": "https://api.social0.app/v1"
+  "mcpServers": {
+    "social0": {
+      "command": "npx",
+      "args": ["-y", "social0-mcp"],
+      "env": {
+        "SOCIAL0_API_KEY": "sk_live_your_key_here"
+      }
+    }
   }
 }
 ```
 
-The MCP server must run on your local machine — ChatGPT connects to it via the desktop app or connector bridge.
-
-## Verify
-
-```text
-Use the Social0 MCP list_accounts tool to show my connected accounts.
-```
-
-## Alternative hosts
-
-If ChatGPT MCP is not available in your region:
-
-| Host | Guide |
-|------|-------|
-| Claude Desktop | [Setup](/docs/integrations/mcp/claude-desktop) |
-| Cursor | [Setup](/docs/integrations/mcp/cursor) |
-| VS Code | [Setup](/docs/integrations/mcp/vscode) |
-
-## Troubleshooting
-
-See [MCP troubleshooting](/docs/integrations/mcp/troubleshooting).
+Requires [Node.js 20+](https://nodejs.org/) and an API key from [Developer settings](/docs/dashboard/api-keys).
 
 ## Related
 
-- [MCP quick start](/docs/integrations/mcp/quickstart)
+- [MCP quickstart](/docs/integrations/mcp/quickstart)
 - [MCP overview](/docs/integrations/mcp)
+- [Troubleshooting](/docs/integrations/mcp/troubleshooting)

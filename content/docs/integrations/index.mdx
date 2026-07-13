@@ -1,44 +1,29 @@
 ---
 title: "Integrations"
-description: Connect Social0 to AI assistants via MCP or build custom integrations with the REST API.
+description: Connect Social0 to AI apps via remote MCP OAuth, or build custom integrations with the REST API.
 ---
 
 ## Overview
 
 Social0 integrates with external tools in two ways:
 
-- **[MCP Server](/docs/integrations/mcp)** — manage posts from Claude, Cursor, ChatGPT, or VS Code using natural language
-- **[REST API](/docs/integrations/api)** — programmatic access for scripts, backends, and custom apps
-
-Both use the same [API keys](/docs/dashboard/api-keys) and the same `/v1` backend.
+- **[MCP](/docs/integrations/mcp)** — manage posts from Claude.ai, ChatGPT, Cursor, and other AI hosts using natural language
+- **[REST API](/docs/api)** — programmatic access for scripts, backends, and custom apps
 
 ## Choose your path
 
 | I want to… | Start here |
 |------------|------------|
-| Use natural language in Claude or Cursor | [MCP Server](/docs/integrations/mcp) |
+| Use an AI assistant (recommended: remote URL) | [MCP quickstart](/docs/integrations/mcp/quickstart) |
 | Build a custom integration or script | [REST API](/docs/api/quickstart) |
-| Create an API key | [Developer settings](/docs/dashboard/api-keys) |
+| Create or revoke an API key | [Developer settings](/docs/dashboard/api-keys) |
 | Connect social accounts first | [Connections](/docs/dashboard/connections) |
 
-## MCP Server (AI assistants)
+## MCP (AI assistants)
 
-The official **Model Context Protocol** server translates AI tool calls into Social0 REST API requests. Create drafts, publish, schedule, upload media, and check publish status — all from your AI assistant.
+**Remote URL (recommended):** add `https://mcp.social0.app/mcp` in any AI that supports remote MCP connectors, then authorize with Social0 OAuth. No Node.js. No API key in config.
 
-```text
-Claude / ChatGPT / Cursor
-            │
-            ▼
-      Social0 MCP Server
-            │
-     (translate tool calls)
-            │
-            ▼
-     Social0 Public REST API
-            │
-            ▼
-     Existing Backend
-```
+**Local stdio (fallback):** `npx -y social0-mcp` with a `sk_live_` key when your host only supports stdio.
 
 [Get started with MCP →](/docs/integrations/mcp/quickstart)
 
@@ -50,14 +35,14 @@ Full programmatic access at `https://api.social0.app/v1`. Authenticate with `Aut
 - [Quickstart](/docs/api/quickstart) — publish your first post in 5 minutes
 - [Interactive docs](https://api.social0.app/docs) — live Swagger UI
 
-## Prerequisites (both paths)
+## Prerequisites
 
 1. Social0 account with at least one [connected platform](/docs/dashboard/connections)
-2. [API key](/docs/dashboard/api-keys) from Developer settings
-3. For MCP: Node.js 20+ and an MCP-compatible host
+2. For remote MCP: nothing else — OAuth mints a connector key
+3. For local MCP or REST: an [API key](/docs/dashboard/api-keys) (`sk_live_…`)
 
 ## Related
 
-- [Developer settings](/docs/dashboard/api-keys) — API keys and webhooks
+- [Developer settings](/docs/dashboard/api-keys) — API keys, connector keys, and webhooks
 - [Dashboard](/docs/dashboard) — create posts in the app
 - [Billing](/docs/billing/plans) — plan limits apply to API and MCP usage

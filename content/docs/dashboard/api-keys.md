@@ -7,6 +7,8 @@ description: Manage API keys and webhook endpoints in the Social0 dashboard.
 
 The **Developer** page (`/dashboard/api-keys`) is where you create API keys for programmatic access and manage webhook endpoints. API keys authenticate requests to the [Social0 REST API](/docs/api) at `https://api.social0.app/v1` and power the [MCP Server](/docs/integrations/mcp) for AI assistants.
 
+When you connect via hosted MCP (`https://mcp.social0.app/mcp`), Social0 creates a dedicated **connector API key** after OAuth approval. The UI may label it “Claude MCP Connector” (or similar) depending on the client. Revoke it here anytime — reconnecting mints a new one. Manual `sk_live_` keys are only needed for local `npx` MCP or the REST API.
+
 ## How to open Developer settings
 
 1. In the Dashboard, open the sidebar (or **More** on mobile).

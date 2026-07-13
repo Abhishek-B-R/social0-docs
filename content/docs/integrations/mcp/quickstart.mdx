@@ -1,137 +1,95 @@
 ---
-title: "MCP quick start"
-description: Connect the Social0 MCP server to your AI assistant in under 5 minutes.
+title: "MCP quickstart"
+description: Connect with the hosted remote URL and OAuth (recommended), or fall back to local npx with an API key.
 ---
 
-## Prerequisites
+## Option A — Remote URL (recommended)
 
-- [Social0 account](https://social0.app) with at least one [connected platform](/docs/dashboard/connections)
-- [API key](/docs/dashboard/api-keys) (`sk_live_…`)
-- Node.js 20+
-- An MCP host (Claude Desktop, Cursor, or VS Code)
+Works with **Claude.ai**, **ChatGPT**, **Cursor** (if HTTP MCP is supported), and any other host that accepts a remote MCP URL.
 
-## Step 1 — Get an API key
+1. Connect social accounts in [Dashboard → Connections](https://social0.app/dashboard/connections).
+2. Open your AI app’s connectors / MCP settings:
+   - **Claude.ai** → Settings → Connectors → Add custom connector
+   - **ChatGPT** → Settings → Connectors (wording may vary)
+   - Other hosts → look for remote MCP / custom connector
+3. Add this URL:
 
-1. Open [Developer → API Keys](https://social0.app/dashboard/api-keys)
-2. Click **Create key** → name it (e.g. "Cursor MCP")
-3. Copy `sk_live_…` — shown once
-
-## Step 2 — Install the MCP server
-
-```bash
-git clone https://github.com/Abhishek-B-R/social0.git
-cd social0/social0-mcp
-cp .env.example .env
+```text
+https://mcp.social0.app/mcp
 ```
 
-Edit `.env`:
+4. Click **Connect** and authorize on social0.app (OAuth PKCE).
+5. Ask: “Show my connected Social0 accounts.”
 
-```bash
-SOCIAL0_API_KEY=sk_live_your_key_here
-SOCIAL0_API_URL=https://api.social0.app/v1
-```
+No Node.js. No `SOCIAL0_API_KEY` in config. OAuth creates a connector API key (the UI may show “Claude MCP Connector”). Revoke it anytime in [Dashboard → API keys](/docs/dashboard/api-keys); reconnecting mints a new one.
 
-Build:
+### Cursor (remote URL)
 
-```bash
-npm install && npm run build
-```
-
-Note the absolute path to `dist/index.js` — you'll need it for MCP config.
-
-## Step 3 — Configure your MCP host
-
-Pick your host:
-
-| Host | Guide |
-|------|-------|
-| Claude Desktop | [Setup](/docs/integrations/mcp/claude-desktop) |
-| Cursor | [Setup](/docs/integrations/mcp/cursor) |
-| VS Code | [Setup](/docs/integrations/mcp/vscode) |
-| ChatGPT | [Setup](/docs/integrations/mcp/chatgpt) |
-
-**Minimal Cursor config** (`.cursor/mcp.json` or Cursor Settings → MCP):
+If your Cursor build supports HTTP MCP servers:
 
 ```json
 {
   "mcpServers": {
     "social0": {
-      "command": "node",
-      "args": ["/absolute/path/to/social0-mcp/dist/index.js"],
+      "url": "https://mcp.social0.app/mcp"
+    }
+  }
+}
+```
+
+Authorize when prompted. If remote/OAuth isn’t available, use Option B.
+
+### Media tip (remote)
+
+Use `upload_media` with a public `url` or base64 `data`. Do **not** pass `file_path` — sandbox paths fail on the hosted server.
+
+---
+
+## Option B — Local npx (fallback)
+
+Use this for stdio-only hosts (Cursor / Claude Desktop / VS Code, and ChatGPT Desktop only if remote isn’t available).
+
+1. Install [Node.js 20+](https://nodejs.org/).
+2. Create an API key at [Dashboard → API keys](https://social0.app/dashboard/api-keys) (`sk_live_…`).
+3. Paste this into your host MCP config:
+
+```json
+{
+  "mcpServers": {
+    "social0": {
+      "command": "npx",
+      "args": ["-y", "social0-mcp"],
       "env": {
-        "SOCIAL0_API_KEY": "sk_live_your_key_here",
-        "SOCIAL0_API_URL": "https://api.social0.app/v1"
+        "SOCIAL0_API_KEY": "sk_live_your_key_here"
       }
     }
   }
 }
 ```
 
-Replace `/absolute/path/to/social0-mcp` with your actual install path.
+4. Reload MCP / restart the app.
+5. Ask: “Show my connected Social0 accounts.”
 
-## Step 4 — Restart and verify
+### Where to paste
 
-Restart your MCP host, then run this prompt:
+| Host | Location |
+|------|----------|
+| Cursor | Settings → MCP, or `.cursor/mcp.json` |
+| Claude Desktop | `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) |
+| VS Code | Copilot / MCP settings (stdio) |
+| ChatGPT Desktop | Prefer Option A; local only if remote isn’t available |
 
-```text
-Use the Social0 MCP list_accounts tool to show my connected accounts.
-```
+---
 
-Expected: a list of platforms with IDs and token status.
+## Try these prompts
 
-## Step 5 — Publish your first post
+- “Show my connected Social0 accounts”
+- “Post this to LinkedIn and X”
+- “Schedule this for tomorrow at 9am UTC on Instagram and TikTok”
+- “Upload this image from a URL and publish it everywhere”
 
-```text
-Create a LinkedIn post that says "Hello from Social0 MCP!" and publish it now.
-```
+## Next
 
-The assistant should:
-
-1. Call `list_accounts` to find your LinkedIn account
-2. Call `publish_now` with content and platform
-3. Return a `tracking_id`
-4. Call `get_publish_status` until the job completes
-
-## Example multi-step flow
-
-```text
-1. upload_media({ file_path: "./logo.png" })           → mediaId
-2. create_post({ content: "...", platforms: ["linkedin", "twitter_x"], media: [mediaId] })
-3. publish_post({ post_id: "..." })                    → tracking_id
-4. get_publish_status({ tracking_id: "..." })          → poll until completed | failed | partial
-5. get_post({ post_id: "..." })                        → final per-platform URLs and errors
-```
-
-Multi-platform publishes run **in parallel**. Poll every 2–5 seconds. Video uploads may take minutes.
-
-## Dev mode
-
-Run with verbose logging:
-
-```bash
-SOCIAL0_MCP_VERBOSE=true SOCIAL0_API_KEY=sk_live_xxx node dist/index.js
-```
-
-Or use `tsx` for development (Cursor):
-
-```json
-{
-  "command": "npx",
-  "args": ["tsx", "/absolute/path/to/social0-mcp/src/index.ts"],
-  "env": { "SOCIAL0_API_KEY": "sk_live_...", "SOCIAL0_MCP_VERBOSE": "true" }
-}
-```
-
-## MCP Inspector
-
-Test the server without an AI host:
-
-```bash
-npx @modelcontextprotocol/inspector node dist/index.js
-```
-
-## Next steps
-
-- [Tools reference](/docs/integrations/mcp/tools) — all 13 tools
-- [Troubleshooting](/docs/integrations/mcp/troubleshooting)
-- [REST API](/docs/api/quickstart) — underlying endpoints
+- [Tools reference](/docs/integrations/mcp/tools)
+- [Connections](/docs/dashboard/connections)
+- [REST API](/docs/api) if you prefer HTTP over MCP

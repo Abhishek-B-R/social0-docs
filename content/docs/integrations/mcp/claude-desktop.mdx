@@ -1,15 +1,25 @@
 ---
 title: "Claude Desktop setup"
-description: Connect the Social0 MCP server to Claude Desktop.
+description: Connect Social0 MCP to Claude Desktop — prefer Claude.ai remote OAuth when available.
 ---
 
-## Prerequisites
+## Prefer remote first
 
-- Node.js 20+
-- [API key](/docs/dashboard/api-keys) (`sk_live_…`)
-- Built MCP server (`npm run build` in `social0-mcp/`)
+On **Claude.ai** (web), use Settings → Connectors → Add custom connector with:
 
-## Config file location
+```text
+https://mcp.social0.app/mcp
+```
+
+Click **Connect** and authorize on social0.app. No Node.js or API key in config. See the [MCP quickstart](/docs/integrations/mcp/quickstart).
+
+## Local npx (Claude Desktop)
+
+Use this when you need the desktop app with stdio MCP.
+
+1. Install [Node.js 20+](https://nodejs.org/).
+2. Create an API key in [Developer settings](/docs/dashboard/api-keys).
+3. Edit the Claude Desktop config:
 
 | OS | Path |
 |----|------|
@@ -17,16 +27,12 @@ description: Connect the Social0 MCP server to Claude Desktop.
 | Windows | `%APPDATA%\Claude\claude_desktop_config.json` |
 | Linux | `~/.config/Claude/claude_desktop_config.json` |
 
-## Configuration
-
-Add the Social0 MCP server to the `mcpServers` block:
-
 ```json
 {
   "mcpServers": {
     "social0": {
-      "command": "node",
-      "args": ["/absolute/path/to/social0-mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "social0-mcp"],
       "env": {
         "SOCIAL0_API_KEY": "sk_live_your_key_here"
       }
@@ -35,56 +41,11 @@ Add the Social0 MCP server to the `mcpServers` block:
 }
 ```
 
-Replace `/absolute/path/to/social0-mcp` with your install path. Use forward slashes on all platforms.
-
-Optional environment variables:
-
-```json
-"env": {
-  "SOCIAL0_API_KEY": "sk_live_your_key_here",
-  "SOCIAL0_API_URL": "https://api.social0.app/v1",
-  "SOCIAL0_MCP_VERBOSE": "false"
-}
-```
-
-## Restart Claude Desktop
-
-Fully quit and reopen Claude Desktop after saving the config file.
-
-## Verify
-
-In a new conversation, ask:
-
-```text
-Use the Social0 MCP list_accounts tool to show my connected accounts.
-```
-
-You should see your connected platforms with IDs and token status.
-
-## Dev mode
-
-For development with live reload:
-
-```json
-{
-  "mcpServers": {
-    "social0": {
-      "command": "npx",
-      "args": ["tsx", "/absolute/path/to/social0-mcp/src/index.ts"],
-      "env": {
-        "SOCIAL0_API_KEY": "sk_live_your_key_here",
-        "SOCIAL0_MCP_VERBOSE": "true"
-      }
-    }
-  }
-}
-```
-
-## Troubleshooting
-
-See [MCP troubleshooting](/docs/integrations/mcp/troubleshooting) for auth errors, missing tools, and publish issues.
+4. Fully quit and reopen Claude Desktop.
+5. Ask: “Show my connected Social0 accounts.”
 
 ## Related
 
-- [MCP quick start](/docs/integrations/mcp/quickstart)
+- [MCP quickstart](/docs/integrations/mcp/quickstart)
 - [Tools reference](/docs/integrations/mcp/tools)
+- [Troubleshooting](/docs/integrations/mcp/troubleshooting)
