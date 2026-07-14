@@ -1,0 +1,56 @@
+---
+title: "Social0 CLI"
+description: Publish, schedule, and manage Social0 posts from your terminal with the official social0 CLI.
+---
+
+## Overview
+
+The **Social0 CLI** (`social0`) is a thin terminal client for the [Social0 REST API](/docs/api). Use it for scripts, CI, and day-to-day posting from the command line.
+
+| | **CLI** | **MCP** | **REST API** |
+|--|---------|---------|--------------|
+| Best for | Terminal, scripts, CI | AI chat hosts | Custom backends |
+| Package | [`social0`](https://www.npmjs.com/package/social0) | [`social0-mcp`](https://www.npmjs.com/package/social0-mcp) | HTTP at `/v1` |
+| Auth | `sk_live_…` via `social0 login` or env | OAuth (remote) or API key (local) | Bearer `sk_live_…` |
+
+Same publish pipeline and plan limits as the dashboard. Connect platforms in the dashboard first — the CLI does not replace [Connections](/docs/dashboard/connections).
+
+## Quick links
+
+- [Quickstart](/docs/integrations/cli/quickstart) — install, login, first publish
+- [Commands](/docs/integrations/cli/commands) — full command reference
+- npm: [`social0`](https://www.npmjs.com/package/social0)
+- Source: [github.com/Abhishek-B-R/social0-cli](https://github.com/Abhishek-B-R/social0-cli)
+- API keys: [Developer settings](/docs/dashboard/api-keys)
+
+## Prerequisites
+
+1. [Node.js 20+](https://nodejs.org/)
+2. A [Social0 account](https://social0.app) with at least one [connected platform](/docs/dashboard/connections)
+3. An API key (`sk_live_…`) from [Dashboard → API keys](https://social0.app/dashboard/api-keys)
+
+## Install
+
+```bash
+npm install -g social0
+# or without installing globally:
+npx social0
+```
+
+Current package version: **0.1.2**. Binary name: `social0`.
+
+## Auth in one glance
+
+| Method | How |
+|--------|-----|
+| Interactive | `social0 login` (masked prompt) |
+| Stdin | `echo "sk_live_..." \| social0 login` |
+| Env (CI) | `SOCIAL0_API_KEY=sk_live_...` — not written to disk |
+
+Credentials use the OS keychain when available (macOS Keychain / Linux Secret Service / Windows Credential Manager). Otherwise they fall back to `~/.social0/` with mode `0600`.
+
+## Tips
+
+- Prefer the [CLI quickstart](/docs/integrations/cli/quickstart) for terminal work; use [MCP](/docs/integrations/mcp) when you want an AI chat host to post for you.
+- Run `social0 doctor` if auth or API connectivity looks wrong.
+- Free and paid plans use the same CLI — free still has the same post limits as the dashboard.

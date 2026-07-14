@@ -1,0 +1,192 @@
+---
+title: "CLI commands"
+description: Full command reference for the Social0 CLI — auth, accounts, posts, publish, schedule, and ops.
+---
+
+Global package: [`social0`](https://www.npmjs.com/package/social0) (v0.1.2). Thin client over `https://api.social0.app/v1`.
+
+## Global flags
+
+Available on every command:
+
+| Flag | Meaning |
+|------|---------|
+| `--json` | JSON output |
+| `--yaml` | YAML output |
+| `--table` | Table output (default) |
+| `--verbose` | Verbose request logging (sensitive URLs redacted where needed) |
+| `--api-url <url>` | Override API base for this run |
+
+## Auth
+
+```bash
+social0 login
+social0 login --skip-passphrase
+social0 login --require-passphrase
+echo "sk_live_..." | social0 login
+
+social0 logout
+social0 whoami
+social0 passphrase status
+social0 passphrase set
+social0 passphrase remove
+```
+
+`whoami` shows name, email, plan, API URL, and a masked key (`GET /v1/me`).
+
+Keys must start with `sk_live_…`. Create them in [Developer settings](/docs/dashboard/api-keys).
+
+### Credential storage
+
+- Prefer OS keychain (macOS Keychain / Linux Secret Service / Windows Credential Manager)
+- Fallback: `~/.social0/` file with mode `0600`
+- Optional AES passphrase for file fallback: `--skip-passphrase`, `--require-passphrase`, or `SOCIAL0_CREDENTIAL_PASSPHRASE`
+- Env auth: `SOCIAL0_API_KEY` is used as-is and **not** written to disk
+
+## Config
+
+```bash
+social0 config
+social0 config list
+social0 config get <key>
+social0 config set <key> <value>
+```
+
+| Key | Purpose |
+|-----|---------|
+| `apiUrl` | API base URL |
+| `defaultWorkspace` | Default workspace |
+| `defaultTimezone` | Timezone for natural schedule times |
+| `defaultPlatform` | Default platform alias |
+| `outputFormat` | Default output (`table`, `json`, `yaml`) |
+
+Config file: `~/.social0/config.json`.
+
+## Accounts
+
+```bash
+social0 accounts
+social0 accounts connect <platform>    # opens dashboard connect guidance
+social0 accounts disconnect <id>
+```
+
+Pass platforms as names (`twitter`, `linkedin`, `instagram`, …) or numeric IDs from `social0 accounts`. Prefer IDs when multiple accounts share a platform.
+
+## Posts
+
+```bash
+social0 post create -c "Hello" -p twitter linkedin
+social0 post create -c "Hello" -p 1 2 --publish
+social0 post create -c "Later" -p linkedin -s "tomorrow 9am"
+
+social0 post list
+social0 post list --status draft
+social0 post show <id>
+social0 post edit <id> -c "Updated"
+social0 post delete <id>
+social0 post init          # sample JSON template
+```
+
+Default `post create` saves a **draft**. Add `--publish` to publish immediately, or `-s` / `--schedule` for a time.
+
+## Publish / schedule / media / status
+
+```bash
+social0 publish -c "Ship day" -p twitter linkedin
+social0 publish <draft-id>
+social0 publish latest
+social0 publish post.md
+echo "From stdin" | social0 publish -p twitter
+
+social0 schedule -c "Tomorrow launch" -p 1 2 -t "tomorrow 9am"
+social0 schedule post.md
+social0 schedule batch.json
+
+social0 upload ./hero.png ./clip.mp4
+social0 upload ./hero.png --json
+
+social0 status <tracking-id>
+social0 status <tracking-id> --watch
+```
+
+`publish` / `schedule` targets can be content flags, a draft id, `latest`, a `.md` file (supports front matter), or stdin. Schedule also accepts a JSON batch file.
+
+## Drafts
+
+```bash
+social0 drafts
+social0 drafts list
+social0 drafts publish <id>
+social0 drafts schedule <id> -t "tomorrow 9am"
+social0 drafts delete <id>
+```
+
+Prefer the **full UUID** for draft publish/schedule/delete when short IDs fail.
+
+## Project / ops
+
+```bash
+social0                 # interactive menu
+social0 examples
+social0 link -p twitter linkedin
+social0 link -f json    # writes .social0 in the current directory
+
+social0 watch           # monitor publish queue
+social0 logs            # stream publish events
+social0 export out.json
+social0 import in.json
+
+social0 completion bash
+social0 completion zsh
+social0 completion fish
+social0 completion powershell
+
+social0 doctor
+social0 version
+social0 update
+```
+
+## Custom API URL / self-host
+
+Priority (highest first):
+
+1. `--api-url <url>`
+2. `SOCIAL0_API_URL`
+3. `social0 config set apiUrl …` (`~/.social0/config.json`)
+4. Default `https://api.social0.app/v1`
+
+The CLI appends `/v1` if you omit it.
+
+```bash
+social0 --api-url https://your-domain.com accounts
+export SOCIAL0_API_URL=https://your-domain.com
+social0 config set apiUrl https://your-domain.com/v1
+social0 config get apiUrl
+```
+
+## Environment variables
+
+| Variable | Purpose | Default |
+|----------|---------|---------|
+| `SOCIAL0_API_KEY` | API key for CI / headless | — |
+| `SOCIAL0_CREDENTIAL_PASSPHRASE` | Encrypt local fallback credentials | — |
+| `SOCIAL0_API_URL` | API base | `https://api.social0.app/v1` |
+| `SOCIAL0_REQUEST_TIMEOUT_MS` | Request timeout | `30000` |
+| `SOCIAL0_MAX_RETRIES` | Retries on HTTP 429 | `3` |
+| `SOCIAL0_VERBOSE` | Verbose logs (`1` to enable) | `0` |
+
+## Coming soon
+
+These commands exist in the CLI but are not ready yet — don’t rely on them:
+
+- `social0 suggest`
+- `social0 improve`
+- `social0 hashtags`
+
+## Related
+
+- [CLI quickstart](/docs/integrations/cli/quickstart)
+- [API keys](/docs/dashboard/api-keys)
+- [Connections](/docs/dashboard/connections)
+- [REST API](/docs/api)
+- [MCP](/docs/integrations/mcp)

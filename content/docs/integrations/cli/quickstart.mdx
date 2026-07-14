@@ -1,0 +1,141 @@
+---
+title: "CLI quickstart"
+description: Install social0, log in with an API key, list accounts, and publish your first post.
+---
+
+## 1. Prerequisites
+
+1. Install [Node.js 20+](https://nodejs.org/).
+2. Connect at least one platform in [Dashboard → Connections](https://social0.app/dashboard/connections).
+3. Create an API key (`sk_live_…`) in [Dashboard → API keys](https://social0.app/dashboard/api-keys).
+
+## 2. Install and log in
+
+```bash
+npm install -g social0
+social0 login          # paste sk_live_… (masked)
+social0 whoami
+```
+
+Or pipe the key:
+
+```bash
+echo "sk_live_..." | social0 login
+```
+
+For CI / non-interactive:
+
+```bash
+export SOCIAL0_API_KEY=sk_live_...
+social0 accounts --json
+```
+
+## 3. List accounts
+
+```bash
+social0 accounts
+```
+
+You’ll see numeric IDs (`1`, `2`, `3`…) plus platform names. Use IDs when you have more than one account on the same platform.
+
+## 4. Publish once
+
+```bash
+social0 publish --content "Hello from the CLI" --platform twitter linkedin
+```
+
+Short form:
+
+```bash
+social0 publish -c "Hello from the CLI" -p twitter linkedin
+```
+
+## 5. Check health
+
+```bash
+social0 doctor
+```
+
+## Recipes
+
+### First publish
+
+```bash
+social0 accounts
+social0 publish -c "Ship day" -p twitter linkedin
+```
+
+### Upload then publish
+
+```bash
+social0 upload ./hero.png --json   # copy media id
+social0 publish -c "New look" -p instagram -m <media-uuid>
+```
+
+### Schedule
+
+```bash
+social0 schedule -c "Tomorrow launch" -p 1 2 -t "tomorrow 9am"
+```
+
+Natural times that work: `tomorrow 9am`, `today 8pm`, `next monday`, `2026-08-01 14:00`, `in 2 hours`, `in 2 days at 3pm`. Times use your **local** wall-clock — set a default with `social0 config set defaultTimezone …` if needed.
+
+### Draft workflow
+
+```bash
+social0 post create -c "WIP" -p linkedin
+social0 drafts
+social0 drafts publish <full-uuid>
+```
+
+### Markdown with front matter
+
+```markdown
+---
+platforms:
+  - twitter
+  - linkedin
+schedule: tomorrow 9am
+---
+
+Launching Social0 today
+```
+
+```bash
+social0 publish launch.md
+```
+
+### JSON / automation
+
+```bash
+social0 accounts --json
+social0 post list --status draft --json
+```
+
+## Core ideas
+
+| Concept | What to remember |
+|---------|------------------|
+| Account aliases | Platform name (`twitter`) or numeric ID from `social0 accounts` |
+| Drafts | `post create` → draft; `post create --publish` → publish now |
+| Publish | `publish` accepts content flags, draft id, `latest`, `.md`, or stdin |
+| Status | After publish, `social0 status <tracking-id>` (add `--watch` to poll) |
+
+## Troubleshooting
+
+| Problem | Fix |
+|---------|-----|
+| `Not authenticated` | Run `social0 login` or set `SOCIAL0_API_KEY` |
+| Invalid key | Key must start with `sk_live_…` from [API keys](/docs/dashboard/api-keys) |
+| No connected accounts | [Connect platforms](/docs/dashboard/connections) in the dashboard first |
+| Ambiguous platform | Use the numeric account ID from `social0 accounts` |
+| Short IDs fail on show/edit | Use the **full UUID** |
+| HTTP 429 | CLI retries automatically; wait or upgrade plan |
+| Auth / API looks broken | Run `social0 doctor` |
+| Self-hosted API | Pass `--api-url` or set `SOCIAL0_API_URL` — see [Commands](/docs/integrations/cli/commands#custom-api-url--self-host) |
+
+## Next
+
+- [Commands reference](/docs/integrations/cli/commands)
+- [REST API](/docs/api) for raw HTTP
+- [MCP](/docs/integrations/mcp) if you prefer an AI assistant

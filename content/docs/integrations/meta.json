@@ -3,6 +3,8 @@
   "defaultOpen": true,
   "pages": [
     "index",
+    "---CLI---",
+    "...cli",
     "---MCP---",
     "...mcp",
     "---REST API---",

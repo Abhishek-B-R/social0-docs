@@ -1,23 +1,36 @@
 ---
 title: "Integrations"
-description: Connect Social0 to AI apps via remote MCP OAuth, or build custom integrations with the REST API.
+description: Connect Social0 from the terminal (CLI), AI apps (MCP), or your own code (REST API).
 ---
 
 ## Overview
 
-Social0 integrates with external tools in two ways:
+Social0 integrates with external tools in three ways:
 
-- **[MCP](/docs/integrations/mcp)** — manage posts from Claude.ai, ChatGPT, Cursor, and other AI hosts using natural language
+- **[CLI](/docs/integrations/cli)** — publish and schedule from your terminal (`social0`)
+- **[MCP](/docs/integrations/mcp)** — manage posts from Claude.ai, ChatGPT, Cursor, and other AI hosts
 - **[REST API](/docs/api)** — programmatic access for scripts, backends, and custom apps
 
 ## Choose your path
 
 | I want to… | Start here |
 |------------|------------|
+| Use the terminal or CI | [CLI quickstart](/docs/integrations/cli/quickstart) |
 | Use an AI assistant (recommended: remote URL) | [MCP quickstart](/docs/integrations/mcp/quickstart) |
 | Build a custom integration or script | [REST API](/docs/api/quickstart) |
 | Create or revoke an API key | [Developer settings](/docs/dashboard/api-keys) |
 | Connect social accounts first | [Connections](/docs/dashboard/connections) |
+
+## CLI (terminal)
+
+Install with `npm install -g social0`, then `social0 login` with a `sk_live_…` key.
+
+```bash
+social0 accounts
+social0 publish -c "Hello from the CLI" -p twitter linkedin
+```
+
+[Get started with the CLI →](/docs/integrations/cli/quickstart)
 
 ## MCP (AI assistants)
 
@@ -39,10 +52,10 @@ Full programmatic access at `https://api.social0.app/v1`. Authenticate with `Aut
 
 1. Social0 account with at least one [connected platform](/docs/dashboard/connections)
 2. For remote MCP: nothing else — OAuth mints a connector key
-3. For local MCP or REST: an [API key](/docs/dashboard/api-keys) (`sk_live_…`)
+3. For CLI, local MCP, or REST: an [API key](/docs/dashboard/api-keys) (`sk_live_…`)
 
 ## Related
 
 - [Developer settings](/docs/dashboard/api-keys) — API keys, connector keys, and webhooks
 - [Dashboard](/docs/dashboard) — create posts in the app
-- [Billing](/docs/billing/plans) — plan limits apply to API and MCP usage
+- [Billing](/docs/billing/plans) — plan limits apply to API, CLI, and MCP usage
