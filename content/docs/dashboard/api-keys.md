@@ -73,7 +73,7 @@ Prefer remote MCP (`https://mcp.social0.app/mcp`) with OAuth when your host supp
   "mcpServers": {
     "social0": {
       "command": "npx",
-      "args": ["-y", "social0-mcp"],
+      "args": ["-y", "@social0/mcp"],
       "env": {
         "SOCIAL0_API_KEY": "sk_live_your_key_here"
       }
