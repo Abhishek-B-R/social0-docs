@@ -5,9 +5,9 @@ description: Manage API keys and webhook endpoints in the Social0 dashboard.
 
 ## Overview
 
-The **Developer** page (`/dashboard/api-keys`) is where you create API keys for programmatic access and manage webhook endpoints. API keys authenticate requests to the [Social0 REST API](/docs/api) at `https://api.social0.app/v1` and power the [MCP Server](/docs/integrations/mcp) for AI assistants.
+The **Developer** page (`/dashboard/api-keys`) is where you create API keys for programmatic access and manage webhook endpoints. API keys authenticate requests to the [Social0 REST API](/docs/api) at `https://api.social0.app/v1`, power the [CLI](/docs/integrations/cli) (`npm install -g social0`), and power [local MCP](/docs/integrations/mcp) setups.
 
-When you connect via hosted MCP (`https://mcp.social0.app/mcp`), Social0 creates a dedicated **connector API key** after OAuth approval. The UI may label it “Claude MCP Connector” (or similar) depending on the client. Revoke it here anytime — reconnecting mints a new one. Manual `sk_live_` keys are only needed for local `npx` MCP or the REST API.
+When you connect via hosted MCP (`https://mcp.social0.app/mcp`), Social0 creates a dedicated **connector API key** after OAuth approval. The UI may label it “Claude MCP Connector” (or similar) depending on the client. Revoke it here anytime — reconnecting mints a new one. Manual `sk_live_` keys are needed for the CLI, local `npx` MCP, or the REST API.
 
 ## How to open Developer settings
 
@@ -54,14 +54,26 @@ Revoked or expired keys return `401 invalid_api_key` on API requests.
 
 See [Authentication](/docs/api/authentication) for request headers and best practices.
 
+### Use with CLI
+
+```bash
+npm install -g social0
+social0 login   # paste sk_live_…
+social0 accounts
+```
+
+See [CLI quickstart](/docs/integrations/cli/quickstart).
+
 ### Use with MCP
+
+Prefer remote MCP (`https://mcp.social0.app/mcp`) with OAuth when your host supports it. For local stdio:
 
 ```json
 {
   "mcpServers": {
     "social0": {
-      "command": "node",
-      "args": ["/path/to/social0-mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "social0-mcp"],
       "env": {
         "SOCIAL0_API_KEY": "sk_live_your_key_here"
       }
