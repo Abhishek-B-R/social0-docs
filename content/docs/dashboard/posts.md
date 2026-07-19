@@ -7,6 +7,8 @@ description: See all your posts-drafts, scheduled, and published-in one list.
 
 The Posts page is your list of everything you’ve created: drafts, scheduled posts, and published posts. You can filter by platform or time, sort by newest or oldest, and open any post to view it, edit it, publish it, or retry if it failed.
 
+Posts follow the **active workspace**. In a team (`/dashboard/teams/:teamId/posts`), you see that workspace’s posts; they use the **team owner’s** plan and connections. Switch with the workspace switcher — see [Teams & Workspaces](/docs/dashboard/teams).
+
 ## How to open Posts
 
 1. In the Dashboard, open the sidebar or menu.

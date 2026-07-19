@@ -7,6 +7,8 @@ description: The quick way to create a post-type, add media, and we take you to 
 
 The Composer is the main place to start a new post. You type or paste your text, add images or video if you want, and click **Continue**. Social0 figures out the right post type (text, image, video, thread, or collection) and sends you to the next screen to pick accounts and publish or schedule. No need to choose the type yourself unless you want to.
 
+Composer uses the **active workspace**. In **Main**, you post with your personal connections. Inside a team (`/dashboard/teams/:teamId/composer`), you use that workspace’s connections; posts count toward the **team owner’s** plan. See [Teams & Workspaces](/docs/dashboard/teams).
+
 ## How to use the Composer
 
 1. Open the **Composer** (it’s usually the first screen you see in the Dashboard).
@@ -36,3 +38,6 @@ A: Use a common aspect ratio (e.g. 16:9, 9:16, 1:1). Resize or re-export your vi
 
 **Q: Can I save from the Composer without publishing?**  
 A: When you click Continue you go to the next step; there you can schedule for later or save as a draft instead of publishing now.
+
+**Q: Why don’t I see the accounts I expect?**  
+A: Check the **Workspace switcher** — connections are per-workspace (Main vs team).

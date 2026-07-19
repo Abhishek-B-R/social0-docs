@@ -36,14 +36,16 @@ At the top of the sidebar you’ll see a **Create post** button-the quickest way
 
 **WORKSPACE**
 
-- **Connections** - List of connected accounts. Add or disconnect accounts here.
-- **Teams** - Invite team members and manage access (coming soon).
+- **Workspace switcher** - Switch between **Main (personal)** and team/solo workspaces.
+- **Connections** - Connected accounts for the **active** workspace (Main or team). Owner/Admin manage; Members can view in a team.
+- **Teams** - Collaborative teams (Pro): invite, roles, settings. See [Teams & Workspaces](/docs/dashboard/teams).
+- **Workspaces** - Board to create solo/team workspaces and move connections. See [Workspaces board](/docs/dashboard/workspaces).
 
 **CONFIGURATION**
 
-- **Settings** - Profile, timezone, date format, queue slots, and other preferences.
+- **Settings** - Profile, timezone, date format, queue slots, and other preferences (personal).
 - **Developer** - Create API keys and manage webhooks for programmatic access. See [Developer settings](/docs/dashboard/api-keys), the [REST API](/docs/api/quickstart), and [MCP Server](/docs/integrations/mcp) for AI assistants.
-- **Billing** - Your plan, usage, and upgrade or cancel.
+- **Billing** - Your personal plan, usage, and upgrade or cancel (team Pro is the owner’s subscription).
 
 **SUPPORT**
 

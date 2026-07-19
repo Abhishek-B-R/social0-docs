@@ -7,6 +7,8 @@ description: After connecting Facebook, pick which Page(s) to use in Social0.
 
 When you connect Facebook, you’re asked to choose which **Facebook Page(s)** to use. Social0 posts to Pages, not personal profiles. You’ll see a list of Pages you manage; select the one(s) you want and confirm. Each Page you connect will appear as a separate account when you create a post.
 
+This flow is **workspace-scoped** — accounts land in the active workspace (Main or team). Only Owner/Admin can connect in a collaborative team. See [Connections](/docs/dashboard/connections) and [Teams & Workspaces](/docs/dashboard/teams).
+
 ## How to choose Facebook Pages
 
 1. In Social0, go to **Connections** and click **Connect** for Facebook.

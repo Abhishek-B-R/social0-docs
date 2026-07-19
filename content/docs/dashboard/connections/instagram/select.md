@@ -7,6 +7,8 @@ description: After connecting, pick which Facebook Page (and its linked Instagra
 
 Instagram posting in Social0 works through a linked **Facebook Page**. When you connect Instagram, you sign in with Facebook and then choose which Page (and its linked Instagram account) to use. You’ll see a list of Pages that have Instagram linked; pick one and confirm. That Instagram account will then appear in Social0 so you can send posts to it.
 
+This flow is **workspace-scoped** — the account lands in the active workspace (Main or team). Only Owner/Admin can connect in a collaborative team. See [Connections](/docs/dashboard/connections).
+
 ## How to choose your Instagram account
 
 1. In Social0, go to **Connections** and click **Connect** for Instagram.

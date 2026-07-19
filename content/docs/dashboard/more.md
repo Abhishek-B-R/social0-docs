@@ -24,9 +24,10 @@ The More page is split into two sections:
 - **Scheduled** - Posts set to go out at a specific time or in a queue slot.
 - **Posted** - Posts that have already been sent to your connected accounts.
 - **Drafts** - Posts you’ve saved but not yet published or scheduled.
-- **Teams** - Invite team members and manage access (coming soon).
+- **Teams** - Collaborative teams (Pro): invite teammates and manage roles. See [Teams & Workspaces](/docs/dashboard/teams).
+- **Workspaces** - Create solo or team workspaces and move connections. See [Workspaces board](/docs/dashboard/workspaces).
 - **Settings** - Profile, timezone, date format, queue slots, and other preferences.
-- **Billing** - Your plan, usage, and upgrade or cancel.
+- **Billing** - Your personal plan, usage, and upgrade or cancel.
 - **Share feedback** - Send feedback or feature requests to the Social0 team.
 
 ## How to open More

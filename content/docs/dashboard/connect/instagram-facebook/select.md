@@ -7,6 +7,8 @@ description: How connecting Instagram works when you sign in with Facebook.
 
 To connect Instagram in Social0, you sign in with Facebook and then choose a **Facebook Page** that has an Instagram account linked to it. You may land on this flow when you click **Connect** for Instagram. The app will show “Redirecting…” briefly, then take you to the screen where you pick the Page (and its linked Instagram). Pick the one you want and confirm; that Instagram account will then be connected.
 
+Accounts land in the **active workspace** (Main or team). See [Connections](/docs/dashboard/connections).
+
 ## How it works
 
 1. In Social0, click **Connect** for Instagram.

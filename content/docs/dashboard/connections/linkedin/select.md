@@ -7,6 +7,8 @@ description: After connecting LinkedIn, choose which profile or pages to use in 
 
 When you connect LinkedIn, you’re asked to choose what to connect: your personal profile and/or one or more company pages. This happens on a selection screen right after you sign in to LinkedIn. You pick what you want, confirm, and then those accounts appear in Social0 so you can send posts to them.
 
+This flow is **workspace-scoped** — accounts land in the active workspace (Main or team). Only Owner/Admin can connect in a collaborative team. See [Connections](/docs/dashboard/connections).
+
 ## How to choose LinkedIn accounts
 
 1. In Social0, go to **Connections** and click **Connect** for LinkedIn.

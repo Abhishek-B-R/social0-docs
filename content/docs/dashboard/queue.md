@@ -7,6 +7,8 @@ description: Where queue slots are set and how scheduled posts use them.
 
 The **queue** lets you define time slots (e.g. “weekdays at 9 AM”) and assign scheduled posts to those slots instead of picking an exact time for each post. There isn’t a separate “Queue” page that lists only queued posts-you manage slots in **Settings** → **Queue**, and when you schedule a post you choose whether to give it a specific time or add it to a slot. Queued posts show up in your main **Posts** list with a **Queued** label.
 
+In a **collaborative team**, only **Owner** and **Admin** can manage queue slots. **Members** can still schedule posts into existing slots. Queue and posts in a team use the **owner’s** resources — see [Teams & Workspaces](/docs/dashboard/teams).
+
 ## How to set up queue slots
 
 1. Go to **Dashboard** → **Settings**.

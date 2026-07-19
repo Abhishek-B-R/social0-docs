@@ -7,6 +7,8 @@ description: Change your profile, timezone, date format, queue slots, and other 
 
 Settings is a single panel with four tabs at the top: **Profile**, **Preferences**, **Queue**, and **Connections**. Use them to control your profile and avatar, how dates and times are shown, your weekly posting queue, and the avatars used for each connected account. Everything you need to personalize Social0 is here.
 
+Settings is a **personal** page (`/dashboard/settings`). Opening it does not wipe team membership. In a collaborative team, only **Owner** and **Admin** manage queue slots — see [Teams & Workspaces](/docs/dashboard/teams).
+
 ## How to open Settings
 
 1. In the Dashboard, open the sidebar (or **More** on mobile).

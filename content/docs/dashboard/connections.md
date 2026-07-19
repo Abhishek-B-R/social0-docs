@@ -1,72 +1,84 @@
 ---
 title: "Connections"
-description: See and manage all your connected social accounts in one place.
+description: Connect and manage social accounts in Main or a team workspace.
 ---
 
 ## Overview
 
-The **Connected Accounts** page (Connections) is where you link your social accounts so you can publish from one place. You can connect multiple accounts per platform. **Connecting accounts requires a paid plan**-on the free tier you cannot connect accounts; you can only explore the dashboard. How many accounts you can connect depends on your plan (see [Billing](/docs/billing/plans)).
+The **Connected Accounts** page (Connections) is where you link social accounts so you can publish from one place. You can connect multiple accounts per platform.
 
-**For API and MCP integrations:** connect accounts here first, then use `GET /v1/accounts` or the MCP `list_accounts` tool to get account UUIDs for posting. See [Connect accounts (API guide)](/docs/api/guides/connect-accounts) and [MCP overview](/docs/integrations/mcp). Twitter/X and Bluesky must be connected in the dashboard — they are not available via `POST /v1/accounts/connect`.
+**Connecting accounts requires a paid plan** — on Free you can only explore the dashboard. How many accounts you can connect depends on your plan (see [Plans](/docs/billing/plans)). Pro allows up to **50** connected accounts.
 
-The page lists each supported platform (LinkedIn, Facebook, Bluesky, YouTube, Pinterest, Instagram, TikTok, X (Twitter), Threads) in its own section. For each platform you’ll see a **Connect** button to add accounts and, for any already connected accounts, a row of account “pills”: profile picture or initial, username, a **refresh** (reload) icon to renew the connection, and an **X** icon to disconnect. If you’ve reached your plan’s account limit, an orange banner at the top will say so and offer an **Upgrade** link to Billing.
+### Main vs workspace
+
+Connections are **per-workspace**:
+
+- **Main (personal)** — accounts with no team workspace selected
+- **Team / solo workspace** — accounts connected while that workspace is active
+
+The same platform can exist in Main and another workspace separately. Use the [Workspaces board](/docs/dashboard/workspaces) to **move** accounts between Main and workspaces without reconnecting.
+
+In a **collaborative team**, only **Owner** and **Admin** can connect, disconnect, reauth, or move. **Members** can view connections but cannot change them. Full matrix: [Teams & Workspaces](/docs/dashboard/teams#roles--permissions).
+
+**For API and MCP:** connect accounts in the dashboard first, then use `GET /v1/accounts` or MCP `list_accounts`. Twitter/X and Bluesky must be connected in the dashboard. See [Connect accounts (API)](/docs/api/guides/connect-accounts) and [MCP](/docs/integrations/mcp).
 
 ## How to open Connections
 
-1. In the Dashboard, open the sidebar or menu.
-2. Click **Connections**.
+1. Switch to the right context with the **Workspace switcher** (Main or a team workspace).
+2. Open **Connections** in the sidebar, or go to `/dashboard/connections` (Main) or `/dashboard/teams/:teamId/connections` (team).
 
-You’ll see the Connected Accounts page with each platform in its own section.
+After OAuth you’ll return to the same Connections URL you started from (including team URLs).
 
 ## What you’ll see
 
-- **Account limit banner** - If you’ve reached your plan’s limit (e.g. 15 accounts), an orange banner at the top says so and includes an **Upgrade** link to Billing. Connect more accounts after upgrading.
-- **Platform sections** - Each platform (LinkedIn, Facebook, Bluesky, YouTube, Pinterest, Instagram, TikTok, X (Twitter), Threads) has a **Connect** button and a row of connected accounts.
-- **Connected account pills** - For each connected account you’ll see a small profile picture or initial, the username (e.g. @handle), a **refresh** (loop) icon to renew the connection, and an **X** icon to disconnect.
-- **Token expired / Reconnect** - If a connection has expired, that account may appear in red with a **Token expired - Reconnect** message. Click **Reconnect** to renew the token without disconnecting; you don’t need to remove and re-add the account.
-- **Token management** - At the bottom of the page, a **Token management** section may include **Refresh Twitter Premium Status**. Use it if you rely on Twitter Premium API access and need to refresh that status.
-- **Support** - At the bottom: “Having trouble connecting your accounts?” You can email **support@social0.app** for help.
+- **Account limit banner** — If you’ve hit your plan’s limit, an orange banner offers **Upgrade** to Billing. Upgrade CTAs only appear if **you** can access Billing (your personal plan). Teammates on someone else’s Pro team typically won’t see an Upgrade button here.
+- **Platform sections** — LinkedIn, Facebook, Bluesky, YouTube, Pinterest, Instagram, TikTok, X (Twitter), Threads — each with **Connect** (when allowed) and connected account pills.
+- **Connected account pills** — Profile picture or initial, username, **refresh** to renew, **X** to disconnect (Owner/Admin).
+- **Token expired / Reconnect** — Renew without removing the account.
+- **Token management** — May include **Refresh Twitter Premium Status**.
+- **Support** — Email **support@social0.app** if you’re stuck.
 
 ## How to connect another account
 
-1. On the Connected Accounts page, find the platform you want (e.g. LinkedIn, TikTok, X).
-2. Click **Connect** for that platform.
-3. Sign in to that platform when asked and approve the permissions.
-4. If the platform asks you to choose something (e.g. which Facebook Page, which Instagram account, which LinkedIn profile or pages), select what you want and confirm.
-5. You’ll return to the Connections page with the new account shown in that platform’s row.
+1. Confirm you’re in the correct workspace (Main or team).
+2. Click **Connect** for the platform.
+3. Sign in and approve permissions.
+4. If the platform asks you to choose (Facebook Page, Instagram, LinkedIn profile/pages), select and confirm.
+5. You’ll return to Connections with the new account in that workspace.
+
+Facebook / LinkedIn / Instagram-via-Facebook multi-select flows stay **workspace-scoped**.
 
 ## Connection flow by platform
 
-What happens after you click **Connect** (or the platform’s “Choose…” option) depends on the platform:
+- **Twitter/X** — Sign in and authorize. Connect again for another X account.
+- **Bluesky** — Sign in (or app password).
+- **LinkedIn** — Choose profile and/or company pages. See [Choose LinkedIn accounts](/docs/dashboard/connections/linkedin/select).
+- **Facebook** — Choose Page(s) (Pages only, not personal profiles). See [Choose Facebook Page](/docs/dashboard/connections/facebook/select).
+- **Instagram** — Via Facebook Page. See [Choose Instagram account](/docs/dashboard/connections/instagram/select).
+- **TikTok / YouTube / Pinterest / Threads** — Sign in and authorize as prompted.
 
-- **Twitter/X** - Sign in to X and authorize Social0. The account is added. You can connect multiple X accounts by connecting again and signing in with another account.
-- **Bluesky** - Sign in (or use your own app password if you use that option). The account is added.
-- **LinkedIn** - Sign in, then you choose which **profile and/or company pages** to use. See [Choose LinkedIn accounts](/docs/dashboard/connections/linkedin/select) for details.
-- **Facebook** - Sign in, then you choose which **Facebook Page(s)** to connect (we post to Pages, not personal profiles). See [Choose Facebook Page](/docs/dashboard/connections/facebook/select) for details.
-- **Instagram** - You sign in with Facebook and then choose which **Facebook Page** (and its linked Instagram account) to use. One Instagram per Page. See [Choose Instagram account (via Facebook Page)](/docs/dashboard/connections/instagram/select) and [Instagram via Facebook Page](/docs/dashboard/connect/instagram-facebook/select) for details.
-- **TikTok** - Sign in to TikTok and authorize. The account is added. TikTok may show your creator name; that’s normal.
-- **YouTube** - Sign in with Google and choose which YouTube channel to use. The channel is added.
-- **Pinterest** - Sign in to Pinterest and authorize. The account is added.
-- **Threads** - Sign in with Instagram (or the flow the app provides). The account is added.
+## Disconnect, refresh, or move
 
-## How to disconnect or refresh an account
-
-- **To disconnect an account** - Find the account in its platform row and click the **X** icon on that account’s pill. Confirm when prompted. The account will be removed and will no longer receive posts from Social0. You can connect it again anytime.
-- **To refresh an account’s connection** - Click the **refresh** (loop) icon on the account’s pill to renew the token without disconnecting. Use this when the connection is expiring soon or you’re asked to re-authorize. For **Token expired**, you can also click the **Reconnect** link on that account instead.
+- **Disconnect** — **X** on the account pill (Owner/Admin). Confirm when asked.
+- **Refresh / Reconnect** — Renew the token without removing history.
+- **Move** — On the [Workspaces board](/docs/dashboard/workspaces), move accounts between Main and workspaces. Moving into a team you admin assigns ownership to the **team owner**. Duplicate platform account in the destination → conflict error.
 
 ## Tips
 
-- If a post failed because an account was disconnected or expired, reconnect that account (or click **Reconnect** on the Connections page) and try publishing again from the Posts list.
-- TikTok may show your creator name in the account list; that’s normal.
-- If you hit connection or permission errors, email **support@social0.app** for help.
+- Reconnect expired accounts before retrying a failed post.
+- TikTok may show your creator name; that’s normal.
+- Members who need to connect accounts should ask an Owner/Admin, or get the Admin role.
 
 ## Common questions
 
-**Q: Why does it say “Expiring soon” or “Token expired”?**  
-A: That platform’s connection needs to be renewed. Click the **Reconnect** link (or the refresh icon) next to the account-this will renew the connection without disconnecting. You do not need to remove the account. (Disconnecting will remove it from your posts and history.)
+**Q: Why can’t I click Connect?**  
+A: You’re on Free, you hit your plan’s account limit, or you’re a **Member** in a team workspace (view-only for connections).
 
-**Q: Can I connect multiple accounts for the same platform?**  
-A: Yes. Connect the first, then click **Connect** again for that platform and sign in with the other account. Both will appear in that platform’s row.
+**Q: Why don’t I see Upgrade?**  
+A: Billing CTAs only show if you can open **your** Billing page. Team collaboration uses the **owner’s** Pro.
 
-**Q: What is “Refresh Twitter Premium Status”?**  
-A: It’s in the **Token management** section at the bottom. If you use Twitter Premium API access, use this button to refresh that status when needed.
+**Q: Can the same account live in Main and a team workspace?**  
+A: Yes — connections are per-workspace. Moving into a workspace that already has that account shows an error.
+
+**Q: Why does it say “Token expired”?**  
+A: Click **Reconnect** or the refresh icon — you don’t need to disconnect first.
