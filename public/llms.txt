@@ -31,7 +31,7 @@
 
 ## MCP Server
 - Official Model Context Protocol server for Claude, Cursor, ChatGPT, VS Code
-- 13 tools: list_accounts, create_post, publish_now, get_publish_status, etc.
+- 13 tools: list_accounts, create_draft, publish_now, get_publish_status, etc.
 - Requires API key and Node.js 20+
 - GitHub: https://github.com/Abhishek-B-R/social0-mcp
 

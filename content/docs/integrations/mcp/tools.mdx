@@ -8,14 +8,16 @@ Same tools on **remote** (`https://mcp.social0.app/mcp`) and **local** (`npx -y 
 | Tool | Purpose |
 |------|---------|
 | `list_accounts` | List connected social accounts (use first when multiple accounts per platform) |
-| `create_post` | Create a draft |
-| `update_post` / `delete_post` | Edit or delete a draft/scheduled post |
+| `create_draft` | Create an unpublished draft (does not post live) |
+| `update_draft` / `delete_draft` | Edit or delete a draft/scheduled post — **not** live published posts |
 | `list_posts` / `get_post` | Browse and inspect posts |
-| `publish_post` / `publish_now` | Publish a draft or create+publish |
+| `publish_post` / `publish_now` | Publish a draft or create+publish live |
 | `schedule_post` / `schedule_content` | Schedule a draft or create+schedule |
 | `upload_media` | Upload via `url` or base64 `data` (preferred). `file_path` works on **local** MCP only — hosted rejects sandbox paths |
 | `get_publish_status` | Poll a publish job by `tracking_id` |
 | `suggest_best_platforms` | Recommend platforms for a caption |
+
+Deprecated CallTool aliases (`create_post`, `update_post`, `delete_post`) still work for older agents but are not listed.
 
 ## Account collisions
 

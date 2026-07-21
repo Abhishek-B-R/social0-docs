@@ -76,7 +76,7 @@ Idempotency-Key: unique-uuid
 ```text
 1. list_accounts                          → confirm platforms connected
 2. upload_media (optional)                → media_id
-3. create_post OR publish_now             → post_id (+ tracking_id if publish_now)
+3. create_draft OR publish_now             → post_id (+ tracking_id if publish_now)
 4. publish_post (if draft)                → tracking_id (HTTP 202)
 5. get_publish_status({ tracking_id })    → poll until terminal
 6. get_post({ post_id })                  → final per-platform rows
