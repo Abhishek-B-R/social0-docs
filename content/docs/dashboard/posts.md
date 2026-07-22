@@ -37,7 +37,7 @@ You’ll see a list (or grid) of post cards. Each shows a preview of the content
 - If you see a banner like “Some posts failed because your trial ended,” go to **Billing** to upgrade, then retry the failed posts from this list.
 - After publishing to TikTok, it may take a few minutes for the post to appear on TikTok. That’s normal.
 - **Partial** status means some platforms succeeded and some failed — open the post to see per-platform errors and retry.
-- Prefer natural language from an agent with a shell? Use the [`social0` CLI](/docs/integrations/cli). For chat-only hosts (Claude.ai / ChatGPT), use [MCP](/docs/integrations/mcp).
+- Need an agent to post? Use the [`social0` CLI](/docs/integrations/cli) whenever it has a shell. Use [MCP](/docs/integrations/mcp) only if there is no shell.
 
 ## Common questions
 

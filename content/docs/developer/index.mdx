@@ -7,11 +7,11 @@ description: Connect Social0 from the CLI, AI apps via MCP, or programmatically 
 
 Social0 has three developer surfaces:
 
-- **CLI** — `social0` on npm for terminal, scripts, and CI
-- **MCP** — let any AI that supports remote MCP connectors post for you (Claude.ai, ChatGPT, Cursor, and others)
-- **REST API** — `https://api.social0.app/v1` for backends and custom automation
+- **CLI** — **preferred** (`social0` on npm) for terminal, CI, and agents with shell access
+- **MCP** — only when you **can’t** use the CLI (chat hosts without a shell)
+- **REST API** — `https://api.social0.app/v1` for custom backends
 
-## CLI (terminal)
+## CLI (preferred)
 
 ```bash
 npm install -g social0
@@ -25,11 +25,13 @@ social0 publish -c "Hello from the CLI" -p twitter linkedin
 - [CLI commands](/docs/integrations/cli/commands)
 - npm: [`social0`](https://www.npmjs.com/package/social0)
 
-## MCP (AI assistants)
+## MCP (only if you can’t use the CLI)
 
-**Remote URL (recommended):** add `https://mcp.social0.app/mcp` in any AI that supports remote MCP connectors, then authorize with Social0 OAuth. No Node.js. No API key in config.
+Skip MCP when a shell is available — use the CLI above.
 
-**Local stdio (fallback):** `npx -y @social0/mcp` with `SOCIAL0_API_KEY=sk_live_…` (Cursor / Claude Desktop / VS Code when remote isn’t available).
+**Remote URL:** add `https://mcp.social0.app/mcp` for connector-only hosts, then authorize with Social0 OAuth.
+
+**Local stdio:** `npx -y @social0/mcp` with `SOCIAL0_API_KEY=sk_live_…` only when neither CLI nor remote MCP works.
 
 - [MCP overview](/docs/integrations/mcp)
 - [MCP quickstart](/docs/integrations/mcp/quickstart)
@@ -45,8 +47,8 @@ social0 publish -c "Hello from the CLI" -p twitter linkedin
 ## Get started
 
 1. Connect at least one account in [Dashboard → Connections](/docs/dashboard/connections)
-2. Create a key in [Developer settings](/docs/dashboard/api-keys) (CLI / local MCP / REST), **or** use remote MCP OAuth with no key in config
-3. Follow the [CLI quickstart](/docs/integrations/cli/quickstart), [MCP quickstart](/docs/integrations/mcp/quickstart), or [API quickstart](/docs/api/quickstart)
+2. Create a key in [Developer settings](/docs/dashboard/api-keys) for CLI / REST (or use remote MCP OAuth only if you can’t run the CLI)
+3. Start with the [CLI quickstart](/docs/integrations/cli/quickstart). Use [MCP](/docs/integrations/mcp/quickstart) only without a shell; [API quickstart](/docs/api/quickstart) for custom backends.
 
 ## Documentation
 
@@ -62,6 +64,6 @@ social0 publish -c "Hello from the CLI" -p twitter linkedin
 
 ## Tips
 
-- Use the CLI for terminal and CI; prefer remote MCP wherever your AI supports it.
+- Always prefer the [`social0` CLI](/docs/integrations/cli) when a shell is available. Use MCP only if you can’t run the CLI; use REST for custom backends.
 - Don't share your Social0 password with third-party tools — use OAuth or API keys and revoke them anytime.
 - Use [webhooks](/docs/api/webhooks) instead of polling for publish status when using the REST API.

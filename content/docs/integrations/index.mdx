@@ -1,22 +1,22 @@
 ---
 title: "Integrations"
-description: Connect Social0 from the terminal (CLI), AI apps (MCP), or your own code (REST API).
+description: Connect Social0 from the terminal (CLI preferred), MCP only if you can’t use the CLI, or REST for custom backends.
 ---
 
 ## Overview
 
 Social0 integrates with external tools in three ways:
 
-- **[CLI](/docs/integrations/cli)** — publish and schedule from your terminal (`social0`); preferred for agents with shell access
-- **[MCP](/docs/integrations/mcp)** — manage posts from Claude.ai, ChatGPT, and other AI hosts without a shell
-- **[REST API](/docs/api)** — programmatic access for scripts, backends, and custom apps
+- **[CLI](/docs/integrations/cli)** — **preferred** for terminal, CI, and any agent with shell access (`social0`)
+- **[MCP](/docs/integrations/mcp)** — only when you **can’t** use the CLI (chat hosts without a shell)
+- **[REST API](/docs/api)** — custom backends and scripts that call HTTP directly
 
 ## Choose your path
 
 | I want to… | Start here |
 |------------|------------|
-| Use the terminal, CI, or an agent with shell | [CLI quickstart](/docs/integrations/cli/quickstart) |
-| Use an AI chat host (remote MCP URL) | [MCP quickstart](/docs/integrations/mcp/quickstart) |
+| Use the terminal, CI, or an agent with shell | [CLI quickstart](/docs/integrations/cli/quickstart) (**preferred**) |
+| Use a chat host with **no** shell (Claude.ai / ChatGPT) | [MCP quickstart](/docs/integrations/mcp/quickstart) |
 | Build a custom integration or script | [REST API](/docs/api/quickstart) |
 | Create or revoke an API key | [Developer settings](/docs/dashboard/api-keys) |
 | Connect social accounts first | [Connections](/docs/dashboard/connections) |
@@ -32,13 +32,15 @@ social0 publish -c "Hello from the CLI" -p twitter linkedin
 
 [Get started with the CLI →](/docs/integrations/cli/quickstart)
 
-## MCP (AI assistants)
+## MCP (only if you can’t use the CLI)
 
-**Remote URL (recommended):** add `https://mcp.social0.app/mcp` in any AI that supports remote MCP connectors, then authorize with Social0 OAuth. No Node.js. No API key in config.
+Skip MCP if the agent has a shell — use the [CLI](/docs/integrations/cli) instead.
 
-**Local stdio (fallback):** `npx -y @social0/mcp` with a `sk_live_` key when your host only supports stdio.
+**Remote URL:** add `https://mcp.social0.app/mcp` in chat hosts that only support MCP connectors, then authorize with Social0 OAuth.
 
-[Get started with MCP →](/docs/integrations/mcp/quickstart)
+**Local stdio:** `npx -y @social0/mcp` with a `sk_live_` key only when the host has neither shell nor remote MCP.
+
+[MCP quickstart →](/docs/integrations/mcp/quickstart)
 
 ## REST API
 

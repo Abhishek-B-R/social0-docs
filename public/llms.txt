@@ -8,7 +8,8 @@
 - Connect accounts: https://docs.social0.app/docs/dashboard/connections
 
 ## Integrations
-- MCP Server (AI assistants): https://docs.social0.app/docs/integrations/mcp
+- CLI (preferred for terminal / agent shell): https://docs.social0.app/docs/integrations/cli
+- MCP Server (AI connectors): https://docs.social0.app/docs/integrations/mcp
 - MCP quick start: https://docs.social0.app/docs/integrations/mcp/quickstart
 - MCP tools reference: https://docs.social0.app/docs/integrations/mcp/tools
 - API keys: https://docs.social0.app/docs/dashboard/api-keys
@@ -29,12 +30,21 @@
 - Auth: Authorization: Bearer sk_live_...
 - Legacy keys: s0_live_... still accepted
 
+## Agent priority
+1. CLI (`social0`) — **always prefer** when a shell is available
+2. MCP — **only if you can’t use the CLI** (chat-only hosts)
+3. REST — custom backends
+
 ## MCP Server
-- Official Model Context Protocol server for Claude, Cursor, ChatGPT, VS Code
-- 13 tools: list_accounts, create_draft, publish_now, get_publish_status, etc.
-- Requires API key and Node.js 20+
+- Package: @social0/mcp (bin: social0-mcp). Unscoped social0-mcp is a deprecated alias.
+- Hosted: https://mcp.social0.app/mcp (OAuth)
+- Local: npx -y @social0/mcp with SOCIAL0_API_KEY=sk_live_…
+- 13 tools: list_accounts, create_draft, update_draft, delete_draft, list_posts, get_post, publish_post, schedule_post, upload_media, publish_now, schedule_content, get_publish_status, suggest_best_platforms
+- Deprecated CallTool aliases (not listed): create_post, update_post, delete_post
+- npm: https://www.npmjs.com/package/@social0/mcp
 - GitHub: https://github.com/Abhishek-B-R/social0-mcp
 
 ## Changelog
+- 2026-07-21: MCP package @social0/mcp 0.4.0 — draft tool renames; CLI-first agent guidance
 - 2026-07-12: Added MCP Server documentation
 - 2026-07-11: Added Public REST API (/v1) documentation

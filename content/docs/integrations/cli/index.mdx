@@ -1,15 +1,15 @@
 ---
 title: "Social0 CLI"
-description: Publish, schedule, and manage Social0 posts from your terminal with the official social0 CLI.
+description: Publish, schedule, and manage Social0 posts from your terminal — preferred over MCP whenever a shell is available.
 ---
 
 ## Overview
 
-The **Social0 CLI** (`social0`) is a thin terminal client for the [Social0 REST API](/docs/api). Use it for scripts, CI, and day-to-day posting from the command line.
+The **Social0 CLI** (`social0`) is the **preferred** way to publish from a terminal, CI, or any AI agent with shell access. It’s a thin client for the [Social0 REST API](/docs/api).
 
-| | **CLI** | **MCP** | **REST API** |
-|--|---------|---------|--------------|
-| Best for | Terminal, scripts, CI | AI chat hosts | Custom backends |
+| | **CLI (preferred)** | **MCP (if no CLI)** | **REST API** |
+|--|---------------------|---------------------|--------------|
+| Best for | Terminal, scripts, CI, agents with shell | Chat hosts without a shell | Custom backends |
 | Package | [`social0`](https://www.npmjs.com/package/social0) | [`@social0/mcp`](https://www.npmjs.com/package/%40social0/mcp) | HTTP at `/v1` |
 | Auth | `sk_live_…` via `social0 login` or env | OAuth (remote) or API key (local) | Bearer `sk_live_…` |
 
@@ -51,6 +51,7 @@ Credentials use the OS keychain when available (macOS Keychain / Linux Secret Se
 
 ## Tips
 
-- Prefer the CLI for terminal, CI, and AI agents with shell access; use [MCP](/docs/integrations/mcp) when the AI host only supports MCP connectors (no reliable shell).
+- Use the CLI whenever a shell is available — don’t set up MCP as a substitute.
+- Reach for [MCP](/docs/integrations/mcp) only when the AI host has no reliable shell.
 - Run `social0 doctor` if auth or API connectivity looks wrong.
 - Free and paid plans use the same CLI — free still has the same post limits as the dashboard.

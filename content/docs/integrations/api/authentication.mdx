@@ -16,12 +16,14 @@ Keys are shown **once** at creation. Store securely — never commit to git.
 
 ## Use with MCP
 
+Use MCP **only if you can’t run the [`social0` CLI](/docs/integrations/cli)**. Prefer remote MCP (`https://mcp.social0.app/mcp`) with OAuth on connector-only hosts. For local stdio:
+
 ```json
 {
   "mcpServers": {
     "social0": {
-      "command": "node",
-      "args": ["/path/to/social0-mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "@social0/mcp"],
       "env": {
         "SOCIAL0_API_KEY": "sk_live_your_key_here"
       }
@@ -30,11 +32,15 @@ Keys are shown **once** at creation. Store securely — never commit to git.
 }
 ```
 
+Unscoped `npx -y social0-mcp` still works as a deprecated alias. If a shell is available, use the [CLI](/docs/integrations/cli) instead of MCP.
+
+See [MCP quickstart](/docs/integrations/mcp/quickstart).
+
 ## Security
 
 - One key per integration (Claude vs Cursor vs CI)
 - Rotate immediately if leaked
-- MCP runs locally — key stays on your machine's env
+- MCP runs locally for stdio setups — key stays in the host `env` block (or use hosted OAuth with no key in config)
 - Revoked keys return `401 invalid_api_key`
 
 ## Full documentation

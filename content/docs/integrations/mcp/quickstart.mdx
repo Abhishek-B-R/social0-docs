@@ -1,11 +1,13 @@
 ---
 title: "MCP quickstart"
-description: Connect with the hosted remote URL and OAuth (recommended), or fall back to local npx with an API key.
+description: Use MCP only when you can’t run the social0 CLI — remote OAuth first, then local npx.
 ---
 
-## Option A — Remote URL (recommended)
+> **Use the CLI if you can.** Agents with a shell should use [`social0`](/docs/integrations/cli) (`npm install -g social0`). Continue here only for chat hosts without a reliable shell (Claude.ai, ChatGPT connectors, etc.).
 
-Works with **Claude.ai**, **ChatGPT**, **Cursor** (if HTTP MCP is supported), and any other host that accepts a remote MCP URL.
+## Option A — Remote URL (when you need MCP)
+
+Works with **Claude.ai**, **ChatGPT**, and other hosts that accept a remote MCP URL (no shell).
 
 1. Connect social accounts in [Dashboard → Connections](https://social0.app/dashboard/connections).
 2. Open your AI app’s connectors / MCP settings:
@@ -70,6 +72,10 @@ Use this for stdio-only hosts (Cursor / Claude Desktop / VS Code, and ChatGPT De
 4. Reload MCP / restart the app.
 5. Ask: “Show my connected Social0 accounts.”
 
+Unscoped `npx -y social0-mcp` still works as a **deprecated alias** — prefer `@social0/mcp`.
+
+If the agent has a shell, stop and use the [`social0` CLI](/docs/integrations/cli) instead of MCP.
+
 ### Where to paste
 
 | Host | Location |
@@ -90,6 +96,7 @@ Use this for stdio-only hosts (Cursor / Claude Desktop / VS Code, and ChatGPT De
 
 ## Next
 
+- [`social0` CLI](/docs/integrations/cli) — preferred when you have a terminal or agent shell
 - [Tools reference](/docs/integrations/mcp/tools)
 - [Connections](/docs/dashboard/connections)
-- [REST API](/docs/api) if you prefer HTTP over MCP
+- [REST API](/docs/api) for custom backends only

@@ -66,7 +66,7 @@ See [CLI quickstart](/docs/integrations/cli/quickstart).
 
 ### Use with MCP
 
-Prefer remote MCP (`https://mcp.social0.app/mcp`) with OAuth when your host supports it. For local stdio:
+Use MCP **only if you can’t run the CLI**. Prefer remote MCP (`https://mcp.social0.app/mcp`) with OAuth on connector-only hosts. For local stdio:
 
 ```json
 {

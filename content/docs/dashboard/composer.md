@@ -29,7 +29,7 @@ If something’s wrong (e.g. video aspect ratio), we’ll show a message so you 
 
 - Use the Composer when you want to move fast. Use **Manual Posting** when you want to choose “Text,” “Image,” “Video,” “Threads,” or “Collection” yourself.
 - You can reorder images or videos by dragging before you click Continue.
-- Prefer natural language from an agent with a shell? Use the [`social0` CLI](/docs/integrations/cli). For chat-only hosts (Claude.ai / ChatGPT), use the [MCP Server](/docs/integrations/mcp).
+- Need an agent to post? Use the [`social0` CLI](/docs/integrations/cli) whenever it has a shell. Use the [MCP Server](/docs/integrations/mcp) only if there is no shell.
 
 ## Common questions
 
