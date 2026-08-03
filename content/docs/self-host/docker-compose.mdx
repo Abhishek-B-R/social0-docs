@@ -1,0 +1,109 @@
+---
+title: "Docker Compose (local services)"
+description: Run Postgres and Redis locally with docker compose, then start the Social0 app with npm.
+---
+
+## Overview
+
+The repo’s `docker-compose.yml` runs **Postgres and Redis only**. It does not start the Social0 app. That is intentional: local development runs the Next.js app via `npm run dev`, and production typically uses managed Postgres plus Upstash Redis REST.
+
+Compose is for **local dev and quick setup**, not a full production stack.
+
+## What compose provides
+
+```yaml
+services:
+  db:       # postgres:16-alpine on :5432
+  redis:    # redis:7-alpine on :6379 (optional locally)
+```
+
+Default Postgres credentials match `.env.example`:
+
+```
+DATABASE_URL=postgresql://social0:social0@localhost:5432/social0
+```
+
+Production rate limits and sessions still expect **Upstash Redis REST** — keep a free Upstash database even when local Redis is running.
+
+## Quick start
+
+```bash
+git clone https://github.com/Abhishek-B-R/social0-selfhost.git
+cd social0-selfhost
+cp .env.example .env.local
+docker compose up -d
+npm install
+npm run db:migrate
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000).
+
+For Meta (Facebook / Instagram / Threads) OAuth locally, use HTTPS:
+
+```bash
+npm run dev:https
+```
+
+Then use `https://localhost:3000` in `.env.local` for `BETTER_AUTH_URL` and `NEXT_PUBLIC_APP_URL`.
+
+## `.env.local` checklist
+
+Minimum for local sign-in and API:
+
+| Variable | Local example |
+|----------|---------------|
+| `DATABASE_URL` | `postgresql://social0:social0@localhost:5432/social0` |
+| `UPSTASH_REDIS_REST_URL` | From Upstash console |
+| `UPSTASH_REDIS_REST_TOKEN` | From Upstash console |
+| `BETTER_AUTH_SECRET` | `openssl rand -hex 32` |
+| `BETTER_AUTH_URL` | `http://localhost:3000` (or `https://localhost:3000` for Meta) |
+| `NEXT_PUBLIC_APP_URL` | Same as `BETTER_AUTH_URL` |
+| `ENCRYPTION_KEY` | `openssl rand -hex 32` |
+| `CRON_SECRET` | Any long random string (needed for schedule testing in prod-like setups) |
+| `GOOGLE_CLIENT_*` and/or `RESEND_*` | At least one sign-in method |
+
+For media uploads locally, configure R2 — see [Object storage](/docs/self-host/object-storage).
+
+Self-host defaults:
+
+```
+BILLING_ENABLED=false
+NEXT_PUBLIC_BILLING_ENABLED=false
+```
+
+## First login
+
+1. Start compose and the dev server (steps above).
+2. Open the app URL and sign in with Google or email (Resend).
+3. If using email, complete verification (Resend must be configured).
+
+## After first login
+
+1. **Connect a platform** — Dashboard → Connections. Only configure OAuth env vars for platforms you use; unset platforms show instructions when you click Connect.
+2. **Create an API key** — Dashboard → [API keys](/docs/dashboard/api-keys) → create `sk_live_…`
+3. **Test the CLI** (optional):
+
+```bash
+export SOCIAL0_API_URL=http://localhost:3000/v1
+export SOCIAL0_API_KEY=sk_live_…
+social0 accounts
+```
+
+## Compose ≠ production
+
+| Concern | Local compose | Production |
+|---------|---------------|------------|
+| App process | `npm run dev` | Workers (`npm run self-host`) or Docker/Node |
+| Postgres | Container on localhost | Managed Postgres URL |
+| Redis | Optional local container | Upstash REST (required) |
+| Media | R2 (same as prod) | R2 |
+| Schedules | Cron Worker + `CRON_SECRET` | Same |
+
+For production paths, see [Self-hosting overview](/docs/self-host) and [Docker](/docs/self-host/docker).
+
+## Related
+
+- [Development](/docs/self-host/development)
+- [Configuration](/docs/self-host/configuration)
+- [Troubleshooting](/docs/self-host/troubleshooting)

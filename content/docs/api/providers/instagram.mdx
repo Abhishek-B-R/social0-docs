@@ -1,0 +1,112 @@
+---
+title: "Instagram"
+description: API metadata for publishing images, video, reels, and carousels to Instagram via Social0.
+---
+
+## Overview
+
+Platform enum: **`instagram`**
+
+Supported post types:
+
+| Type | Media | Notes |
+|------|-------|-------|
+| Image | 1+ images | Single or carousel |
+| Video | 1 video | Feed video or Reel |
+| Collection | Multiple assets | Carousel (2–10 items typical) |
+
+Instagram Business/Creator accounts connect in the dashboard — either **direct Instagram OAuth** or **via a linked Facebook Page**. Complete connect in the dashboard before publishing; the API cannot finish Meta OAuth in-request.
+
+See [Instagram (product)](/docs/platforms/instagram).
+
+---
+
+## Settings / metadata schema
+
+Most Instagram posts need **caption + media only**. Optional per-account metadata:
+
+| Field | Location | Required | Type | Description |
+|-------|----------|----------|------|-------------|
+| `content` | body | Yes* | string | Caption (max ~2,200 chars) |
+| `platforms` | body | Yes | UUID[] | Instagram account UUID |
+| `media` | body | Yes** | UUID[] | Image and/or video IDs |
+| `metadata.instagram.<uuid>.coverImageUrl` | metadata | No | string | HTTPS cover frame for video/Reel |
+| `metadata.instagram.<uuid>.isTrialReel` | metadata | No | boolean | Publish as trial reel when supported |
+| `platform_options.instagram.coverImageUrl` | platform_options | No | string | Compiled into per-account metadata |
+| `platform_options.instagram.trialReel` | platform_options | No | boolean | Compiled into `isTrialReel` |
+
+\* Caption can be empty for media-only posts in some cases.  
+\*\* Instagram requires at least one image or video.
+
+---
+
+## Complete example
+
+Reel with optional cover image:
+
+```bash
+curl -X POST https://api.social0.app/v1/posts/publish \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: $(uuidgen)" \
+  -d '{
+    "content": "Behind the scenes — shipping API docs.",
+    "platforms": ["550e8400-e29b-41d4-a716-446655440000"],
+    "media": ["a1b2c3d4-e5f6-7890-abcd-ef1234567890"],
+    "metadata": {
+      "contentType": "video",
+      "instagram": {
+        "550e8400-e29b-41d4-a716-446655440000": {
+          "coverImageUrl": "https://cdn.example.com/reel-cover.jpg",
+          "isTrialReel": false
+        }
+      }
+    }
+  }'
+```
+
+Carousel (collection):
+
+```json
+{
+  "content": "Swipe for the full changelog →",
+  "platforms": ["550e8400-e29b-41d4-a716-446655440000"],
+  "media": [
+    "media-uuid-1",
+    "media-uuid-2",
+    "media-uuid-3"
+  ]
+}
+```
+
+**Response 202:**
+
+```json
+{
+  "post_id": "uuid",
+  "tracking_id": "uuid",
+  "status": "queued",
+  "stream_url": "/v1/jobs/{tracking_id}/stream"
+}
+```
+
+---
+
+## Quirks
+
+- **Connect prerequisite:** Connect in the dashboard first — direct Instagram OAuth or via Facebook Page. The API cannot finish Meta OAuth in-request.
+- **Via Facebook Page:** If you used the Page-linked connect flow, the Instagram account must be linked to that Page on Meta; wrong Page or missing link causes connect or publish failures.
+- **Reels:** Video posts are published as Reels when the media is video; use vertical aspect ratio for best results.
+- **Carousels:** Pass multiple media UUIDs in order; Instagram treats multi-image posts as carousels.
+- **Processing delay:** Meta container processing can take 30–120 seconds after job acceptance; poll until terminal.
+- **Cover image:** `coverImageUrl` must be a valid `https:` URL (typically from your Social0 media CDN after upload).
+- **No text-only:** Instagram requires media — text-only posts will fail validation.
+
+---
+
+## Related
+
+- [Instagram platform guide](/docs/platforms/instagram)
+- [Posts reference](/docs/api/reference/posts)
+- [Upload media](/docs/api/guides/media)
+- [Provider settings overview](/docs/api/providers)

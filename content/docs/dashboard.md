@@ -5,7 +5,7 @@ description: Your home base in Social0-where you create posts, manage connection
 
 ## Overview
 
-The Dashboard is where you spend most of your time in Social0. When you sign in, you land here. On the free tier you can only explore-you cannot connect accounts or post. With a paid plan you can open the Composer to create a post, go to Connections to add accounts, open Posts to see drafts and scheduled and published posts, change Settings, and open Billing. Everything is one or two clicks away.
+The Dashboard is where you spend most of your time in Social0. When you sign in, you land here. On **Free** you can connect up to **3** accounts and publish or schedule up to **10** lifetime posts (drafts do not count). Paid plans raise account limits and remove the free-post cap. From here you can open the Composer to create a post, go to Connections to add accounts, open Posts to see drafts and scheduled and published posts, change Settings, and open Billing. Everything is one or two clicks away.
 
 You can also use Social0 programmatically via the [REST API](/docs/api/quickstart) or [MCP Server](/docs/integrations/mcp) for AI assistants-create API keys in **Developer** settings and publish from your backend or Claude/Cursor.
 

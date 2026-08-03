@@ -1,0 +1,67 @@
+---
+title: "Uploads & media"
+description: File size and type limits, failed uploads, video metadata, and self-host storage requirements.
+---
+
+## Overview
+
+Social0 accepts images and video for posts in the dashboard, API, and CLI. Uploads go through presigned storage (cloud uses our CDN; self-host needs R2 or compatible object storage). The same limits apply everywhere unless your self-host config sets stricter caps.
+
+API flow: [Upload media](/docs/api/guides/media) · CLI: [Commands — upload](/docs/integrations/cli/commands).
+
+## Size and MIME limits
+
+| Type | Max size | Allowed types |
+|------|----------|---------------|
+| Images | ~50 MB | `image/jpeg`, `image/png`, `image/gif`, `image/webp` |
+| Video | ~500 MB | `video/mp4`, `video/quicktime`, `video/webm` (`.mov` included) |
+
+On presign/API, set `content_type` to the real MIME type of the file. Mismatch can cause confirm or publish to fail.
+
+## Upload fails or stalls
+
+| Symptom | Likely cause | Fix |
+|---------|--------------|-----|
+| "File too large" | Over limit | Compress or re-encode; stay under ~50 MB (image) or ~500 MB (video) |
+| Wrong type / rejected | Unsupported MIME | Use JPEG/PNG/GIF/WebP or MP4/MOV/WebM |
+| Stuck progress bar | Slow network or large video | Wait; on bad networks try smaller file or Wi‑Fi |
+| Cancel mid-upload | User cancelled | Start upload again; partial objects may be discarded |
+| Works in dashboard, fails in API | Wrong `content_type` or skipped confirm step | Follow presign → PUT → confirm — [Media guide](/docs/api/guides/media) |
+| CLI upload fails | Path or auth | `social0 upload ./file.png --json`; check `social0 doctor` |
+
+## Video metadata failures
+
+Some platforms reject video when duration, codec, or dimensions are unsupported.
+
+- Prefer **H.264** in **MP4** for broad compatibility
+- TikTok and others have their own length and aspect rules — [TikTok](/docs/platforms/tiktok)
+- If publish fails after upload succeeds, check job/platform error in status — [Known issues](/docs/troubleshooting/known-issues)
+
+## MCP and remote URL uploads
+
+Hosted MCP **`upload_media`** accepts public **`url`** or base64 **`data`**. It cannot read arbitrary local paths from your machine.
+
+- **Non-direct URLs fail** — redirects, HTML landing pages, or auth-gated links often break fetch
+- Use a **direct** HTTPS URL to the file, or upload via dashboard/CLI/API presign instead
+
+Details: [MCP troubleshooting](/docs/integrations/mcp/troubleshooting).
+
+For REST/API clients, always use **presign** for local files — do not POST raw binary to `/v1/posts` unless the reference explicitly supports it.
+
+## Self-host: R2 required
+
+Self-host media storage expects **Cloudflare R2** (or compatible S3 API) configured in your deployment. Without it, presign/confirm will fail and posts with media will not publish.
+
+See [Self-host troubleshooting](/docs/self-host/troubleshooting) for bucket bindings and env vars.
+
+## Tips
+
+- Upload before composing multi-platform video posts; video confirm can take longer than images
+- After publish, poll **`status`** until terminal — video processing continues after upload
+- Include `x-request-id` from failed API calls when contacting support
+
+## Related
+
+- [Media API reference](/docs/api/reference/media)
+- [Post types — video](/docs/post-types/video)
+- [Support](/docs/support)

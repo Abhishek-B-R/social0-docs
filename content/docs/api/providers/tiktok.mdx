@@ -1,0 +1,139 @@
+---
+title: "TikTok"
+description: API metadata for publishing video and photo posts to TikTok via Social0.
+---
+
+## Overview
+
+Platform enum: **`tiktok`**
+
+Supported post types:
+
+| Type | Media | Notes |
+|------|-------|-------|
+| Video | 1 video | Primary use case |
+| Image | 1+ images | Photo mode when supported |
+
+TikTok publish **requires** per-account metadata under `metadata.tiktok.<account-uuid>`. Connect TikTok in the dashboard first.
+
+See [TikTok (product)](/docs/platforms/tiktok).
+
+---
+
+## Settings / metadata schema
+
+| Field | Location | Required | Type | Description |
+|-------|----------|----------|------|-------------|
+| `content` | body | No* | string | Caption (max ~2,200 chars) |
+| `platforms` | body | Yes | UUID[] | TikTok account UUID |
+| `media` | body | **Yes** | UUID[] | Video or image media IDs |
+| `metadata.contentType` | metadata | Yes | string | `"video"` or `"image"` |
+| `metadata.tiktok.<uuid>.privacy_level` | metadata | Yes | string | See privacy values below |
+| `metadata.tiktok.<uuid>.video_title` | metadata | No | string | On-video title (max ~85 chars) |
+| `metadata.tiktok.<uuid>.disable_comment` | metadata | No | boolean | Default `false` |
+| `metadata.tiktok.<uuid>.disable_duet` | metadata | No | boolean | Default `false` |
+| `metadata.tiktok.<uuid>.disable_stitch` | metadata | No | boolean | Default `false` |
+| `metadata.tiktok.<uuid>.brand_content_toggle` | metadata | No | boolean | Commercial disclosure |
+| `metadata.tiktok.<uuid>.brand_organic` | metadata | No | boolean | Your brand |
+| `metadata.tiktok.<uuid>.brand_content` | metadata | No | boolean | Paid partnership / branded |
+| `metadata.tiktok.<uuid>.post_as_draft` | metadata | No | boolean | Send to TikTok drafts |
+| `metadata.tiktok.<uuid>.mark_ai_generated` | metadata | No | boolean | AI-generated label |
+
+**`privacy_level` values:**
+
+| Value | Description |
+|-------|-------------|
+| `PUBLIC_TO_EVERYONE` | Public |
+| `MUTUAL_FOLLOW_FRIENDS` | Friends |
+| `FOLLOWER_OF_CREATOR` | Followers |
+| `SELF_ONLY` | Private / only me |
+
+Branded content (`brand_content` or `brand_content_toggle`) **cannot** use `SELF_ONLY`.
+
+Settings must be keyed by **connected account UUID** under `metadata.tiktok`. A flat `tiktok: { privacy_level }` object (without the account id key) is ignored and publish fails with a missing-privacy error.
+
+On **hosted** Social0, `platform_options.tiktok` is compiled per-account and may default `privacy_level` to `PUBLIC_TO_EVERYONE` when omitted. Flat, non-UUID-keyed objects still fail — prefer explicit `metadata.tiktok[<uuid>]`. Self-hosted deployments that only do simple metadata merge do not apply that default; always pass UUID-keyed privacy.
+
+---
+
+## Complete example
+
+```bash
+curl -X POST https://api.social0.app/v1/posts/publish \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: $(uuidgen)" \
+  -d '{
+    "content": "Quick demo of our new API docs.",
+    "platforms": ["550e8400-e29b-41d4-a716-446655440000"],
+    "media": ["a1b2c3d4-e5f6-7890-abcd-ef1234567890"],
+    "metadata": {
+      "contentType": "video",
+      "tiktok": {
+        "550e8400-e29b-41d4-a716-446655440000": {
+          "privacy_level": "PUBLIC_TO_EVERYONE",
+          "video_title": "API docs drop",
+          "disable_comment": false,
+          "disable_duet": false,
+          "disable_stitch": false,
+          "brand_content_toggle": false,
+          "brand_organic": false,
+          "brand_content": false,
+          "post_as_draft": false,
+          "mark_ai_generated": false
+        }
+      }
+    }
+  }'
+```
+
+`platform_options` is merged into post metadata the same way — still use the per-account map:
+
+```json
+{
+  "content": "Caption here",
+  "platforms": ["550e8400-e29b-41d4-a716-446655440000"],
+  "media": ["VIDEO_UUID"],
+  "metadata": { "contentType": "video" },
+  "platform_options": {
+    "tiktok": {
+      "550e8400-e29b-41d4-a716-446655440000": {
+        "privacy_level": "PUBLIC_TO_EVERYONE",
+        "video_title": "API docs drop",
+        "disable_comment": false
+      }
+    }
+  }
+}
+```
+
+**Response 202:**
+
+```json
+{
+  "post_id": "uuid",
+  "tracking_id": "uuid",
+  "status": "queued",
+  "stream_url": "/v1/jobs/{tracking_id}/stream"
+}
+```
+
+---
+
+## Quirks
+
+- **Metadata required:** Omitting `metadata.tiktok.<uuid>` causes publish failure — unlike most platforms.
+- **Video or images:** At least one media item required; video is the common path.
+- **Processing delay:** TikTok often needs several minutes after successful API publish before the post appears in-app.
+- **Privacy + branded content:** If `brand_content` is true, do not set `privacy_level` to `SELF_ONLY`.
+- **Draft mode:** `post_as_draft: true` sends to TikTok's draft inbox instead of publishing live.
+- **Per-account keys:** When posting to multiple TikTok accounts, include an entry under `metadata.tiktok` for **each** UUID.
+
+---
+
+## Related
+
+- [TikTok platform guide](/docs/platforms/tiktok)
+- [Upload media](/docs/api/guides/media)
+- [Posts reference](/docs/api/reference/posts)
+- [Provider settings overview](/docs/api/providers)

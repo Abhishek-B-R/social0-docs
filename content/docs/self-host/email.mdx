@@ -1,0 +1,69 @@
+---
+title: "Email"
+description: Configure Resend and Google OAuth for sign-in and transactional email on self-hosted Social0.
+---
+
+## Overview
+
+Self-hosted Social0 needs at least one **sign-in method**: Google OAuth and/or **Resend** for email/password auth. Resend also sends transactional emails (verification, password reset).
+
+Configure in `.env.local` or `.env.self-host`:
+
+```
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+RESEND_API_KEY=
+RESEND_FROM_EMAIL=
+```
+
+The Cloudflare self-host script exits if neither Google nor Resend is fully configured.
+
+## Google sign-in
+
+1. [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services → Credentials
+2. Create OAuth 2.0 Client ID (Web application)
+3. Authorized redirect URIs must include Better Auth callbacks on your app URL, e.g.:
+   - `https://your-domain.com/api/auth/callback/google`
+   - `https://localhost:3000/api/auth/callback/google` (dev)
+
+Set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`.
+
+Google OAuth also covers **YouTube** platform connections when you enable the YouTube Data API in the same project.
+
+## Resend (email sign-in)
+
+1. Create an account at [resend.com](https://resend.com)
+2. Verify your sending domain (or use Resend’s test domain for experiments)
+3. Create an API key → `RESEND_API_KEY`
+4. Set `RESEND_FROM_EMAIL` to a verified sender, e.g. `Social0 <noreply@your-domain.com>`
+
+### Emails Social0 sends via Resend
+
+| Flow | When |
+|------|------|
+| Email verification | User signs up with email/password |
+| Password reset | User requests forgot-password |
+| (Auth-related) | Other Better Auth email flows configured in the app |
+
+If verification emails never arrive, check Resend logs, domain DNS (SPF/DKIM), and spam folders.
+
+## Using both
+
+You can enable Google and Resend together. Users pick sign-in method on the auth screen.
+
+## Local development
+
+- **Google:** `http://localhost:3000` redirect URIs work for quick tests
+- **Resend:** use a verified domain or Resend sandbox; set `RESEND_FROM_EMAIL` accordingly
+- **Meta OAuth** is separate from email — requires `npm run dev:https` — see [Development](/docs/self-host/development)
+
+## No email provider?
+
+There is no built-in SMTP relay or “console-only” auth for production. You must configure Google and/or Resend for real users.
+
+## Related
+
+- [Configuration](/docs/self-host/configuration)
+- [Development](/docs/self-host/development)
+- [Troubleshooting](/docs/self-host/troubleshooting) — email not sending

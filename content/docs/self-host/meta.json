@@ -1,0 +1,19 @@
+{
+  "title": "Self-hosting",
+  "defaultOpen": true,
+  "pages": [
+    "index",
+    "requirements",
+    "docker-compose",
+    "docker",
+    "development",
+    "configuration",
+    "docker-config",
+    "uploads-storage",
+    "object-storage",
+    "email",
+    "reverse-proxy",
+    "mcp-cli",
+    "troubleshooting"
+  ]
+}

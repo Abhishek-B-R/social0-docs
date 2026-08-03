@@ -1,0 +1,83 @@
+---
+title: "Facebook"
+description: API metadata for publishing text, images, and video to Facebook Pages via Social0.
+---
+
+## Overview
+
+Platform enum: **`facebook`**
+
+Supported post types:
+
+| Type | Media | Notes |
+|------|-------|-------|
+| Text | — | Page feed post |
+| Image | 1+ images | Page photo post |
+| Video | 1 video | Page video post |
+
+Social0 publishes to **Facebook Pages**, not personal profiles. Connect the Page via dashboard OAuth (often linked through a Meta business account).
+
+See [Facebook (product)](/docs/platforms/facebook).
+
+---
+
+## Settings / metadata schema
+
+Facebook posts require **caption + media only** — no Facebook-specific metadata fields.
+
+| Field | Location | Required | Type | Description |
+|-------|----------|----------|------|-------------|
+| `content` | body | Yes* | string | Post text (max ~63,206 chars) |
+| `platforms` | body | Yes | UUID[] | Connected Page UUID |
+| `media` | body | No | UUID[] | Image or video media IDs |
+| `metadata.accountCaptions.<uuid>` | metadata | No | string | Per-Page caption override |
+| `platform_options.facebook.content` | platform_options | No | string | Caption override (compiled) |
+
+\* Text-only posts are supported; media optional.
+
+---
+
+## Complete example
+
+Page post with image:
+
+```bash
+curl -X POST https://api.social0.app/v1/posts/publish \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: $(uuidgen)" \
+  -d '{
+    "content": "New blog post: how we queue multi-platform publishes.",
+    "platforms": ["550e8400-e29b-41d4-a716-446655440000"],
+    "media": ["a1b2c3d4-e5f6-7890-abcd-ef1234567890"]
+  }'
+```
+
+**Response 202:**
+
+```json
+{
+  "post_id": "uuid",
+  "tracking_id": "uuid",
+  "status": "queued",
+  "stream_url": "/v1/jobs/{tracking_id}/stream"
+}
+```
+
+---
+
+## Quirks
+
+- **Pages only:** Personal Facebook profiles cannot be targeted through the API.
+- **Instagram linkage:** Instagram Business accounts are often connected via the same Meta flow; they appear as separate `instagram` account UUIDs, not `facebook`.
+- **Long captions:** Facebook allows very long text (~63k chars); most use cases stay well under that.
+- **Video processing:** Meta may delay video visibility while processing — poll `GET /v1/jobs/:id` for terminal status.
+- **Reconnect:** Page admin token issues require reconnecting in [Dashboard → Connections](/docs/dashboard/connections).
+
+---
+
+## Related
+
+- [Facebook platform guide](/docs/platforms/facebook)
+- [Posts reference](/docs/api/reference/posts)
+- [Provider settings overview](/docs/api/providers)

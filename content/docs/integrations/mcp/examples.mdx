@@ -1,0 +1,172 @@
+---
+title: "MCP examples"
+description: Practical agent recipes for Social0 MCP — schedule, reels, threads, LinkedIn, bulk schedule, and multi-platform publish.
+---
+
+Same tools on **remote** (`https://mcp.social0.app/mcp`) and **local** (`npx -y @social0/mcp`). Tool names below match [MCP tools](/docs/integrations/mcp/tools).
+
+**Agent rules:**
+
+1. Call `list_accounts` before the first publish in a session.
+2. After any publish, return `tracking_id` and poll `get_publish_status` until terminal (`completed`, `failed`, or `partial`).
+3. Remote hosts: `upload_media` with public `url` or base64 `data` — not sandbox `file_path`.
+4. MCP `scheduled_at` is **UTC ISO-8601** (CLI accepts natural language; MCP does not).
+5. No analytics tools — out of scope.
+
+---
+
+## Schedule to X
+
+```text
+Agent flow:
+1. list_accounts
+2. schedule_content({
+     content: "Blog post goes live in the morning — thread in replies.",
+     platforms: ["twitter_x"],
+     scheduled_at: "2026-08-04T09:00:00.000Z"
+   })
+```
+
+Confirm timezone with the user before converting local time to UTC.
+
+---
+
+## Instagram reel (upload + publish)
+
+Remote host (public URL):
+
+```text
+1. list_accounts
+2. upload_media({ url: "https://cdn.example.com/reel.mp4", filename: "reel.mp4" })
+   → media_id
+3. publish_now({
+     content: "60-second product walkthrough ✨",
+     platforms: ["instagram"],
+     media: ["<media_id>"]
+   })
+   → tracking_id
+4. get_publish_status({ tracking_id: "<tracking_id>" })  # poll every 2–5s
+```
+
+Local MCP (file on the same machine):
+
+```text
+upload_media({ file_path: "/Users/you/reel.mp4" })
+```
+
+Video jobs often stay in `processing` longer than text — keep polling.
+
+---
+
+## Thread (X / Threads / Bluesky)
+
+MCP has **no dedicated thread tool**. Options:
+
+**A — Legacy `---` split (X only):** API splits `content` on a line containing only `---` into a reply chain.
+
+```text
+publish_now({
+  content: "1/3 — We rebuilt the publish pipeline.\n---\n2/3 — Same queue as the dashboard.\n---\n3/3 — Docs: https://social0.app/docs",
+  platforms: ["twitter_x"]
+})
+```
+
+**B — Structured parts (recommended for media per tweet):** use REST `metadata.twitterThread.parts` or the dashboard thread composer. MCP `platform_options` today covers disclosure flags (`madeWithAi`, `paidPartnership`) but not multi-part arrays — for rich threads with per-part media, use the dashboard or REST API.
+
+**C — Draft workflow:** `create_draft` → user reviews → `publish_post` — still one caption unless you use REST metadata.
+
+Threads and Bluesky use the same structured `twitterThread.parts` shape when posting via API.
+
+---
+
+## LinkedIn post
+
+```text
+1. list_accounts
+2. publish_now({
+     content: "Three things we learned shipping agent-friendly CLI docs:\n\n1. Shell beats MCP when available\n2. Always poll publish status\n3. Platform names ≠ account UUIDs when accounts collide",
+     platforms: ["linkedin"]
+   })
+3. get_publish_status({ tracking_id: "..." })
+```
+
+With image:
+
+```text
+upload_media({ url: "https://cdn.example.com/chart.png" })
+publish_now({ content: "Q3 snapshot", platforms: ["linkedin"], media: ["<media_id>"] })
+```
+
+---
+
+## Bulk schedule (multiple `schedule_content` calls)
+
+One tool call per slot — no batch tool.
+
+```text
+1. list_accounts
+2. schedule_content({
+     content: "Monday motivation",
+     platforms: ["twitter_x", "linkedin"],
+     scheduled_at: "2026-08-04T08:00:00.000Z"
+   })
+3. schedule_content({
+     content: "Mid-week product tip",
+     platforms: ["instagram"],
+     media: ["<media_id>"],
+     scheduled_at: "2026-08-06T14:00:00.000Z"
+   })
+4. schedule_content({
+     content: "Friday recap",
+     platforms: ["threads", "bluesky"],
+     scheduled_at: "2026-08-08T16:00:00.000Z"
+   })
+```
+
+Return each scheduled post id to the user. Edit later with `update_draft` / cancel with `delete_draft` (drafts and schedules only — not live network posts).
+
+---
+
+## Multi-platform `publish_now` + poll
+
+```text
+1. list_accounts
+2. publish_now({
+     content: "Social0 MCP examples are live 🚀",
+     platforms: ["twitter_x", "linkedin", "threads"]
+   })
+   → { post_id, tracking_id }
+3. get_publish_status({ tracking_id })  # repeat until terminal
+```
+
+On `partial`:
+
+- Summarize which platforms in `platform_statuses` succeeded vs failed.
+- Read `errors` for failure reasons.
+- Do not invent new tracking IDs — use the one from step 2.
+
+TikTok in multi-platform jobs: set privacy via dashboard defaults or `platform_options.tiktok.privacy_level` — bare content may fail. See [TikTok settings](/docs/api/providers/tiktok).
+
+---
+
+## Optional: `suggest_best_platforms`
+
+Before publishing ambiguous copy:
+
+```text
+suggest_best_platforms({
+  content: "Long-form essay about B2B SaaS positioning…",
+  has_media: false
+})
+```
+
+Heuristic only — does not publish.
+
+---
+
+## Related
+
+- [MCP tools](/docs/integrations/mcp/tools)
+- [MCP quickstart](/docs/integrations/mcp/quickstart)
+- [CLI platform examples](/docs/integrations/cli/platform-examples) — preferred when the agent has a shell
+- [Provider settings](/docs/api/providers) — TikTok privacy, YouTube title, Pinterest board

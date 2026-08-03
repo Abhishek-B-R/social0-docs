@@ -1,0 +1,67 @@
+---
+title: "Uploads and storage"
+description: How Social0 stores media uploads and why local filesystem mounts are not the production path.
+---
+
+## Overview
+
+Social0 stores user media (images, videos, attachments) in **Cloudflare R2**, not on the app server’s local disk. This applies to the Cloudflare Workers deployment and to the Node/Docker standalone build when R2 env vars are set.
+
+There is no supported “uploads folder on the VPS” story for production. Plan on R2 from the start.
+
+## Why not local disk?
+
+| Deployment | Behavior |
+|------------|----------|
+| **Cloudflare Workers** | No persistent writable filesystem; R2 is required |
+| **Docker standalone** | Container filesystem is ephemeral; restarts lose local files |
+| **OpenNext cache** | Separate R2 bucket (`social0-next-cache`) on Cloudflare path |
+
+Trying to mount `/uploads` into the container without R2 will break composer uploads and API media endpoints.
+
+## Public URL serving
+
+Objects are served via **`R2_PUBLIC_URL`** — a public hostname or custom domain bound to the bucket (Cloudflare R2 public access or a Worker/route in front of the bucket).
+
+Set in env:
+
+```
+R2_PUBLIC_URL=https://media.your-domain.com
+```
+
+Platform publish flows and the dashboard use this base when referencing uploaded media. If `R2_PUBLIC_URL` is wrong or missing, uploads may succeed internally but fail to display or publish.
+
+## Upload flow (conceptual)
+
+1. Client requests upload permission from the app
+2. App writes to R2 using S3-compatible API (`R2_*` credentials)
+3. Media ID / URL stored in Postgres
+4. Publish jobs read from R2 when sending to platforms
+
+See [Object storage](/docs/self-host/object-storage) for bucket setup.
+
+## Avatar mirroring (optional)
+
+Platform connection avatars sometimes expire on third-party CDNs. Enable:
+
+```
+MIRROR_AVATARS_TO_R2=true
+```
+
+Copies avatars into your R2 bucket so the Connections UI stays stable.
+
+## Local development
+
+For full upload testing locally, configure the same R2 variables as production. You can use a dedicated dev bucket and public URL.
+
+Without R2, text-only flows may work; image and video composer paths will fail.
+
+## Mount paths
+
+**Not applicable** for standard deploys — do not rely on Docker volumes for media durability. The standalone Dockerfile exposes port 3000 only; no upload volume is defined.
+
+## Related
+
+- [Object storage](/docs/self-host/object-storage)
+- [Configuration](/docs/self-host/configuration)
+- [Troubleshooting](/docs/self-host/troubleshooting) — upload and R2 errors

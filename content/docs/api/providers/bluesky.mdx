@@ -1,0 +1,104 @@
+---
+title: "Bluesky"
+description: API metadata for publishing text, media, and threads to Bluesky via Social0.
+---
+
+## Overview
+
+Platform enum: **`bluesky`**
+
+Supported post types:
+
+| Type | Media | Notes |
+|------|-------|-------|
+| Text | — | Single skeet (~3,000 chars) |
+| Image | 1+ images | With caption |
+| Video | 1 video | With caption |
+| Thread | Per-part text/media | Via `metadata.twitterThread.parts` |
+
+Bluesky uses **bring-your-own-key (BYOK)** — you provide an app password when connecting in the dashboard. Social0 stores credentials for publish; the REST API does not accept app passwords in post bodies.
+
+See [Bluesky (product)](/docs/platforms/bluesky).
+
+---
+
+## Settings / metadata schema
+
+Bluesky posts are mostly **caption + media only**. Thread metadata is optional.
+
+| Field | Location | Required | Type | Description |
+|-------|----------|----------|------|-------------|
+| `content` | body | Yes* | string | Post text (max ~3,000 chars) |
+| `platforms` | body | Yes | UUID[] | Bluesky account UUID |
+| `media` | body | No | UUID[] | Image or video media IDs |
+| `metadata.twitterThread.parts` | metadata | No | array | Multi-part thread |
+| `metadata.accountCaptions.<uuid>` | metadata | No | string | Per-account caption |
+
+\* Text-only posts supported.
+
+**Thread part shape:** same as [X / Twitter](/docs/api/providers/twitter) — `{ text, mediaIds[] }` per part.
+
+---
+
+## Complete example
+
+Single post:
+
+```bash
+curl -X POST https://api.social0.app/v1/posts/publish \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: $(uuidgen)" \
+  -d '{
+    "content": "Publishing to Bluesky through the Social0 API — same pipeline as the dashboard.",
+    "platforms": ["550e8400-e29b-41d4-a716-446655440000"]
+  }'
+```
+
+Thread:
+
+```json
+{
+  "content": "Thread fallback",
+  "platforms": ["550e8400-e29b-41d4-a716-446655440000"],
+  "metadata": {
+    "twitterThread": {
+      "parts": [
+        { "text": "1/3 — Bluesky threads use metadata.twitterThread.parts.", "mediaIds": [] },
+        { "text": "2/3 — Each part replies to the previous.", "mediaIds": [] },
+        { "text": "3/3 — Up to ~3000 chars per part.", "mediaIds": [] }
+      ]
+    }
+  }
+}
+```
+
+**Response 202:**
+
+```json
+{
+  "post_id": "uuid",
+  "tracking_id": "uuid",
+  "status": "queued",
+  "stream_url": "/v1/jobs/{tracking_id}/stream"
+}
+```
+
+---
+
+## Quirks
+
+- **App password at connect:** Generate an app password in the Bluesky app → connect in Social0 dashboard. Cannot pass credentials via `/v1/posts/publish`.
+- **3,000 char limit:** Much higher than Threads; suitable for long-form single posts.
+- **Threads:** Use `metadata.twitterThread.parts` — Bluesky publisher chains replies automatically.
+- **No legacy `---` split:** Use structured parts only.
+- **Rate limits:** Bluesky enforces posting limits; repeated failures may require waiting or reconnecting.
+
+---
+
+## Related
+
+- [Bluesky platform guide](/docs/platforms/bluesky)
+- [Connect accounts](/docs/api/guides/connect-accounts)
+- [Posts reference](/docs/api/reference/posts)
+- [Provider settings overview](/docs/api/providers)

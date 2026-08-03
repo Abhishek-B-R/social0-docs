@@ -1,0 +1,99 @@
+---
+title: "YouTube"
+description: API metadata for publishing video to YouTube via Social0.
+---
+
+## Overview
+
+Platform enum: **`youtube`**
+
+Supported post types:
+
+| Type | Media | Notes |
+|------|-------|-------|
+| Video | 1 video | **Required** — YouTube does not accept text-only or image-only posts |
+
+Connect YouTube (Google OAuth) in the dashboard before publishing. See [YouTube (product)](/docs/platforms/youtube).
+
+---
+
+## Settings / metadata schema
+
+| Field | Location | Required | Type | Description |
+|-------|----------|----------|------|-------------|
+| `content` | body | Yes* | string | Video description (max ~5,000 chars) |
+| `platforms` | body | Yes | UUID[] | YouTube channel UUID |
+| `media` | body | **Yes** | UUID[] | Exactly one video media ID |
+| `metadata.youtube.title` | metadata | No | string | Video title (max ~100 chars; truncated server-side) |
+| `metadata.contentType` | metadata | No | string | Set `"video"` for clarity |
+| `platform_options.youtube.title` | platform_options | No | string | Compiled into `metadata.youtube.title` |
+
+\* Description can be empty but video media is mandatory.
+
+---
+
+## Complete example
+
+```bash
+curl -X POST https://api.social0.app/v1/posts/publish \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: $(uuidgen)" \
+  -d '{
+    "content": "Walkthrough of the Social0 API publish flow — presign media, create post, poll jobs.",
+    "platforms": ["550e8400-e29b-41d4-a716-446655440000"],
+    "media": ["a1b2c3d4-e5f6-7890-abcd-ef1234567890"],
+    "metadata": {
+      "contentType": "video",
+      "youtube": {
+        "title": "Social0 API publish in 5 minutes"
+      }
+    }
+  }'
+```
+
+Equivalent via `platform_options`:
+
+```json
+{
+  "content": "Full description here…",
+  "platforms": ["550e8400-e29b-41d4-a716-446655440000"],
+  "media": ["VIDEO_MEDIA_UUID"],
+  "platform_options": {
+    "youtube": {
+      "title": "Social0 API publish in 5 minutes"
+    }
+  }
+}
+```
+
+**Response 202:**
+
+```json
+{
+  "post_id": "uuid",
+  "tracking_id": "uuid",
+  "status": "queued",
+  "stream_url": "/v1/jobs/{tracking_id}/stream"
+}
+```
+
+---
+
+## Quirks
+
+- **Video only:** Image carousels or text-only posts fail for YouTube targets. Remove YouTube from `platforms` for mixed-media collection posts.
+- **Title length:** `metadata.youtube.title` is capped at ~100 characters.
+- **Title fallback:** If `metadata.youtube.title` is missing, the publisher uses a truncated version of post `content` as the video title (and may append `#Shorts` for Shorts).
+- **Processing time:** YouTube transcodes uploads — job may stay `processing` for several minutes; poll `GET /v1/jobs/:id`.
+- **One video per post:** Multiple video media IDs are treated as a collection unsupported on YouTube.
+- **Upload flow:** Video must go through [presign → PUT → confirm](/docs/api/guides/media) before attaching the media UUID.
+
+---
+
+## Related
+
+- [YouTube platform guide](/docs/platforms/youtube)
+- [Upload media](/docs/api/guides/media)
+- [Posts reference](/docs/api/reference/posts)
+- [Provider settings overview](/docs/api/providers)

@@ -1,0 +1,97 @@
+---
+title: "CLI authentication"
+description: Log in with an API key, use env vars for CI, configure self-host URLs, and manage credential storage.
+---
+
+Global package: [`social0`](https://www.npmjs.com/package/social0). Thin client over `https://api.social0.app/v1`.
+
+## API keys
+
+Create a key (`sk_live_…`) in [Dashboard → API keys](https://social0.app/dashboard/api-keys). Keys must start with `sk_live_…` (legacy `s0_live_…` still works).
+
+```bash
+social0 login                    # masked prompt
+echo "sk_live_..." | social0 login
+social0 whoami                   # name, email, plan, API URL, masked key
+social0 logout
+```
+
+`whoami` calls `GET /v1/me` and confirms the key works.
+
+## Environment variables (CI / headless)
+
+Set `SOCIAL0_API_KEY` — the CLI uses it as-is and **does not write it to disk**:
+
+```bash
+export SOCIAL0_API_KEY=sk_live_...
+social0 accounts --json
+social0 publish -c "CI deploy" -p twitter
+```
+
+| Variable | Purpose | Default |
+|----------|---------|---------|
+| `SOCIAL0_API_KEY` | API key for CI / headless | — |
+| `SOCIAL0_API_URL` | API base URL | `https://api.social0.app/v1` |
+| `SOCIAL0_CREDENTIAL_PASSPHRASE` | Encrypt local fallback credentials | — |
+| `SOCIAL0_REQUEST_TIMEOUT_MS` | Request timeout | `30000` |
+| `SOCIAL0_MAX_RETRIES` | Retries on HTTP 429 | `3` |
+| `SOCIAL0_VERBOSE` | Verbose logs (`1` to enable) | `0` |
+
+When both a stored key and `SOCIAL0_API_KEY` are set, env wins for that run.
+
+## Credential storage
+
+| Method | Where | Notes |
+|--------|-------|-------|
+| OS keychain | macOS Keychain / Linux Secret Service / Windows Credential Manager | Preferred after `social0 login` |
+| File fallback | `~/.social0/` (mode `0600`) | Used when keychain is unavailable |
+| Env only | Not stored | `SOCIAL0_API_KEY` — ideal for CI |
+
+Config file: `~/.social0/config.json` (non-secret settings like `apiUrl`, `defaultTimezone`).
+
+## Passphrase encryption
+
+Optional AES encryption for the file fallback:
+
+```bash
+social0 login --require-passphrase
+social0 login --skip-passphrase
+social0 passphrase status
+social0 passphrase set
+social0 passphrase remove
+```
+
+Or set `SOCIAL0_CREDENTIAL_PASSPHRASE` before `social0 login`.
+
+## Self-host / custom API URL
+
+Priority (highest first):
+
+1. `--api-url <url>` (per command)
+2. `SOCIAL0_API_URL`
+3. `social0 config set apiUrl …`
+4. Default `https://api.social0.app/v1`
+
+The CLI appends `/v1` if you omit it.
+
+```bash
+social0 --api-url https://your-domain.com accounts
+export SOCIAL0_API_URL=https://your-domain.com/v1
+social0 config set apiUrl https://your-domain.com/v1
+social0 config get apiUrl
+```
+
+Use API keys from **your instance** dashboard — keys from social0.app do not work on self-host. See [Self-host CLI and MCP](/docs/self-host/mcp-cli).
+
+## Verify auth
+
+```bash
+social0 doctor          # auth + API connectivity
+social0 accounts        # connected platforms
+```
+
+## Related
+
+- [CLI quickstart](/docs/integrations/cli/quickstart)
+- [Commands reference](/docs/integrations/cli/commands)
+- [API keys](/docs/dashboard/api-keys)

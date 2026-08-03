@@ -1,0 +1,116 @@
+---
+title: "X / Twitter"
+description: API metadata for publishing text, media, threads, and collections to X (twitter_x).
+---
+
+## Overview
+
+Platform enum: **`twitter_x`**
+
+Supported post types:
+
+| Type | Media | Notes |
+|------|-------|-------|
+| Text | — | Single tweet |
+| Image | 1+ images | Optional caption in `content` |
+| Video | 1 video | Optional caption |
+| Thread | Per-part text/media | Via `metadata.twitterThread.parts` or legacy `---` split |
+| Collection | Multiple images/videos | Carousel-style post |
+
+Connect X from the dashboard before publishing. See [X / Twitter (product)](/docs/platforms/twitter).
+
+---
+
+## Settings / metadata schema
+
+Most X posts need only **`content`** and **`platforms`**. Optional metadata:
+
+| Field | Location | Required | Type | Description |
+|-------|----------|----------|------|-------------|
+| `content` | body | Yes* | string | Tweet text (~280 chars; higher if account has X Premium) |
+| `media` | body | No | UUID[] | Media IDs from [upload flow](/docs/api/guides/media) |
+| `metadata.x.madeWithAi` | metadata | No | boolean | Label post as AI-generated |
+| `metadata.x.paidPartnership` | metadata | No | boolean | Paid partnership disclosure |
+| `metadata.twitterThread.parts` | metadata | No | array | Multi-part thread (see below) |
+| `platform_options.twitter_x.madeWithAi` | platform_options | No | boolean | Compiled into `metadata.x` |
+| `platform_options.twitter_x.paidPartnership` | platform_options | No | boolean | Compiled into `metadata.x` |
+
+\* Or media-only posts with empty/minimal caption.
+
+**Thread part shape:**
+
+| Field | Required | Type | Description |
+|-------|----------|------|-------------|
+| `text` | Yes | string | Text for this tweet/part |
+| `mediaIds` | No | UUID[] | Media attached to this part only |
+
+---
+
+## Complete example
+
+Single tweet with AI disclosure:
+
+```bash
+curl -X POST https://api.social0.app/v1/posts/publish \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: $(uuidgen)" \
+  -d '{
+    "content": "Shipping a new API docs section today.",
+    "platforms": ["550e8400-e29b-41d4-a716-446655440000"],
+    "media": ["a1b2c3d4-e5f6-7890-abcd-ef1234567890"],
+    "metadata": {
+      "x": {
+        "madeWithAi": false,
+        "paidPartnership": false
+      }
+    }
+  }'
+```
+
+Thread with structured parts:
+
+```json
+{
+  "content": "Thread intro (fallback if parts omitted)",
+  "platforms": ["550e8400-e29b-41d4-a716-446655440000"],
+  "metadata": {
+    "twitterThread": {
+      "parts": [
+        { "text": "1/3 — We rebuilt our publish pipeline.", "mediaIds": [] },
+        { "text": "2/3 — Same queue as the dashboard.", "mediaIds": ["MEDIA_UUID"] },
+        { "text": "3/3 — Docs: https://social0.app/docs/api", "mediaIds": [] }
+      ]
+    }
+  }
+}
+```
+
+**Response 202:**
+
+```json
+{
+  "post_id": "uuid",
+  "tracking_id": "uuid",
+  "status": "queued",
+  "stream_url": "/v1/jobs/{tracking_id}/stream"
+}
+```
+
+---
+
+## Quirks
+
+- **Character limit:** ~280 for standard accounts; Social0 detects X Premium on the connected account and allows longer posts when applicable.
+- **Threads:** Prefer `metadata.twitterThread.parts` — each part is posted as a reply in order. Also used by [Threads](/docs/api/providers/threads) and [Bluesky](/docs/api/providers/bluesky) publishers.
+- **Legacy thread split:** For X only, you can split `content` on a line containing only `---` to create a reply chain. Structured `parts` is recommended for media per tweet.
+- **Collections:** Attach multiple media IDs; X treats them as a multi-asset tweet when supported.
+- **Processing:** Poll `GET /v1/jobs/:tracking_id` after publish — video uploads may take longer than text.
+
+---
+
+## Related
+
+- [X / Twitter platform guide](/docs/platforms/twitter)
+- [Posts reference](/docs/api/reference/posts)
+- [Provider settings overview](/docs/api/providers)

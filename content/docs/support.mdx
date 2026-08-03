@@ -1,0 +1,61 @@
+---
+title: "Support"
+description: How to get help with Social0 — cloud product support, self-host issues, and what to include in your message.
+---
+
+## Overview
+
+Social0 support depends on how you use the product. **Cloud** users (social0.app) get help from our team by email. **Self-host** users run their own deployment and should use GitHub for code and deployment issues. Either way, the more context you give us, the faster we can help.
+
+## Cloud (social0.app)
+
+For account, billing, connections, posting, API keys, and dashboard issues on the hosted product:
+
+- **Email:** [support@social0.app](mailto:support@social0.app)
+- **Feedback & ideas:** [Dashboard → Feedback](/docs/dashboard/feedback) — best for feature requests and product discussion, not urgent account fixes
+
+We do not offer Discord or live chat for cloud support. Email is the official channel.
+
+## Self-host
+
+If you deploy Social0 yourself (Postgres, Redis, R2, Workers, etc.):
+
+- **GitHub issues:** [github.com/Abhishek-B-R/social0-selfhost](https://github.com/Abhishek-B-R/social0-selfhost) — bugs, deploy failures, env vars, cron, storage
+- **Email:** [support@social0.app](mailto:support@social0.app) — only if you need help that is not a public issue (e.g. sensitive production details)
+
+Self-host docs: [Self-host troubleshooting](/docs/self-host/troubleshooting).
+
+## How to ask for help
+
+Copy this template into your email or GitHub issue:
+
+```
+Goal: What you were trying to do (e.g. connect Instagram, publish to LinkedIn, upgrade plan)
+
+What I tried: Steps you already took (disconnect/reconnect, new API key, different browser, etc.)
+
+Environment:
+- Cloud or self-host (if self-host: version/commit, Workers vs local)
+- Browser and OS (e.g. Chrome 128 on macOS)
+- CLI/MCP/API if relevant (command or tool name, --json output redacted)
+
+Result: What happened — exact error message, screenshot, or HTTP status + x-request-id if API
+```
+
+For API problems, include the **`x-request-id`** response header when you have it. See [API errors](/docs/api/errors).
+
+## Billing and refunds
+
+Plan changes, failed charges, trials, and cancellations: start with [Billing FAQ](/docs/billing/faq) and [Plans](/docs/billing/plans).
+
+Refund policy and payment terms are in our [Terms](/docs/terms) and on [social0.app/terms](https://social0.app/terms). For refund requests, email support with your account email and charge date.
+
+## Troubleshooting first
+
+Many issues are fixed without waiting on us:
+
+- [Troubleshooting hub](/docs/troubleshooting) — login, OAuth, billing, limits, uploads, known issues
+- [MCP troubleshooting](/docs/integrations/mcp/troubleshooting) — connector auth, media, publish status
+- [Connecting accounts](/docs/getting-started/connecting-accounts) — plan required, per-platform setup
+
+If you still need help after those pages, contact us with the template above.

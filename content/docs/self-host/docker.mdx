@@ -1,0 +1,99 @@
+---
+title: "Docker (standalone app)"
+description: Build and run Social0 as a standalone Node container on any Docker host.
+---
+
+## Overview
+
+Social0 ships a multi-stage `Dockerfile` that produces a **standalone Next.js** image. This is an alternative to the preferred Cloudflare Workers deploy (`npm run self-host`). Use it on Railway, Fly, Render, a VPS, or any host that runs Docker.
+
+The container is **only the app**. You still need:
+
+- External **Postgres** (`DATABASE_URL`)
+- **Upstash Redis REST**
+- **Cloudflare R2** for media
+- **Cloudflare Worker cron** for scheduled posts
+
+There is no all-in-one compose file for production.
+
+## Build
+
+From the repo root:
+
+```bash
+git clone https://github.com/Abhishek-B-R/social0-selfhost.git
+cd social0-selfhost
+OUTPUT_STANDALONE=1 docker build -t social0 .
+```
+
+`OUTPUT_STANDALONE=1` is required — it matches the Dockerfile’s standalone output layout.
+
+## Run
+
+Pass your env file and publish port 3000:
+
+```bash
+docker run --env-file .env.local -p 3000:3000 social0
+```
+
+Use the same variables as local/production Node — see [Configuration](/docs/self-host/configuration). At minimum: database, Redis, auth secrets, public URLs, encryption key, cron secret, sign-in (Google and/or Resend), and R2 for uploads.
+
+## Volumes
+
+The standalone image does **not** persist uploads on disk. Media goes to R2 when configured. You do not need to mount `/app/public` or an uploads directory for normal operation.
+
+Optional: mount nothing unless you inject custom static assets at build time. Database state lives in Postgres, not in the container.
+
+## Reverse proxy
+
+Expose the container on an internal port and terminate TLS with Nginx, Caddy, or a platform load balancer. Set:
+
+```
+NEXT_PUBLIC_APP_URL=https://your-domain.com
+BETTER_AUTH_URL=https://your-domain.com
+```
+
+See [Reverse proxy](/docs/self-host/reverse-proxy).
+
+## Cron / schedules
+
+Docker does not run the scheduler. Deploy the cron Worker separately:
+
+```bash
+cd scheduler/cloudflare-worker
+npm install
+npm run deploy
+```
+
+Configure the Worker with your public app URL and the same `CRON_SECRET` as the app. Cloudflare **Free** tier is enough for cron-only.
+
+Verify manually:
+
+```bash
+curl -X POST "https://your-domain.com/api/cron/publish-scheduled" \
+  -H "Authorization: Bearer $CRON_SECRET"
+```
+
+There is no Vercel cron, GitHub Actions schedule, or system crontab built in — the Cloudflare Worker is the production trigger.
+
+## Alternative: npm on the host
+
+If you prefer not to use Docker:
+
+```bash
+npm install
+npm run build
+npm start
+```
+
+Same env requirements apply.
+
+## Health checks
+
+Ensure Postgres and Upstash are reachable from the container network. Platform OAuth callbacks must hit your public HTTPS URL, not `localhost`, in production.
+
+## Related
+
+- [Docker config](/docs/self-host/docker-config) — env file patterns
+- [Requirements](/docs/self-host/requirements)
+- [Troubleshooting](/docs/self-host/troubleshooting)

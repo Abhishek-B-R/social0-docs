@@ -11,7 +11,7 @@ When you first sign up, Social0 walks you through a short onboarding flow: choos
 
 1. **Choose a plan** - Starter, Growth, or Pro. You can pay now or click “I’ll decide later” and upgrade from Billing when you’re ready.
 2. **Set your goal** - Tell us whether you’re building a personal brand, running a business, managing clients, or just exploring. We use this to show relevant tips and options.
-3. **Connect accounts** - If you have a paid plan, connect one or more social accounts (Twitter, LinkedIn, etc.). You need at least one to publish. You can add more later from **Connections**. (On the free tier you cannot connect accounts.)
+3. **Connect accounts** - Connect one or more social accounts (Twitter, LinkedIn, etc.). **Free** allows up to **3**; you need at least one to publish. You can add more later from **Connections** (upgrade for a higher cap).
 4. **You’re all set** - We’ll show a short “You’re all set” (or similar) screen and send you to the Dashboard.
 
 From there you can open the Composer and create your first post.
@@ -22,13 +22,13 @@ After connecting accounts and creating an [API key](/docs/dashboard/api-keys), y
 
 ## Tips
 
-- On the free tier you can only explore the dashboard-you cannot connect accounts or post. You need a paid plan to connect accounts and to publish or schedule. You can start with a **3-day free trial** to try everything, then continue by paying when the trial ends-or skip plan selection during onboarding and upgrade from Billing later.
+- **Free** includes up to **3** connected accounts and **10** lifetime posts (drafts do not count). Use those limits first, then upgrade from **Billing** when you need more-or skip plan selection during onboarding and stay on Free until you're ready.
 - If you just paid, the app may take a few seconds to recognize your new plan. Refresh if needed.
 
 ## Common questions
 
 **Q: Do I have to connect an account during onboarding?**  
-A: You need a paid plan to connect accounts. If you’ve just upgraded, connect at least one account during onboarding so you can try publishing. You can add or remove accounts anytime from **Connections**.
+A: No. On **Free** you can connect up to **3** accounts during onboarding or later from **Connections**. Connect at least one so you can try publishing. You can add or remove accounts anytime.
 
 **Q: I chose “I’ll decide later” for the plan. Where do I upgrade?**  
 A: Go to **Dashboard** → **Billing** and pick a plan there.

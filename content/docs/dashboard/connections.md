@@ -7,7 +7,7 @@ description: Connect and manage social accounts in Main or a team workspace.
 
 The **Connected Accounts** page (Connections) is where you link social accounts so you can publish from one place. You can connect multiple accounts per platform.
 
-**Connecting accounts requires a paid plan** — on Free you can only explore the dashboard. How many accounts you can connect depends on your plan (see [Plans](/docs/billing/plans)). Pro allows up to **50** connected accounts.
+How many accounts you can connect depends on your plan (see [Plans](/docs/billing/plans)): **Free** up to **3**, **Starter** **5**, **Growth** **15**, **Pro** up to **50**.
 
 ### Main vs workspace
 
@@ -54,7 +54,7 @@ Facebook / LinkedIn / Instagram-via-Facebook multi-select flows stay **workspace
 - **Bluesky** — Sign in (or app password).
 - **LinkedIn** — Choose profile and/or company pages. See [Choose LinkedIn accounts](/docs/dashboard/connections/linkedin/select).
 - **Facebook** — Choose Page(s) (Pages only, not personal profiles). See [Choose Facebook Page](/docs/dashboard/connections/facebook/select).
-- **Instagram** — Via Facebook Page. See [Choose Instagram account](/docs/dashboard/connections/instagram/select).
+- **Instagram** — Direct Instagram OAuth or via Facebook Page. The Page picker flow: [Choose Instagram account](/docs/dashboard/connections/instagram/select).
 - **TikTok / YouTube / Pinterest / Threads** — Sign in and authorize as prompted.
 
 ## Disconnect, refresh, or move

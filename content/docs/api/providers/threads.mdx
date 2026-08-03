@@ -1,0 +1,107 @@
+---
+title: "Threads"
+description: API metadata for publishing text, media, and multi-part threads to Meta Threads.
+---
+
+## Overview
+
+Platform enum: **`threads`**
+
+Supported post types:
+
+| Type | Media | Notes |
+|------|-------|-------|
+| Text | — | Single post (~500 chars) |
+| Image | 1+ images | With caption |
+| Video | 1 video | With caption |
+| Thread | Per-part text/media | Via `metadata.twitterThread.parts` |
+
+Connect Threads from the dashboard (Meta OAuth). See [Threads (product)](/docs/platforms/threads).
+
+---
+
+## Settings / metadata schema
+
+Most Threads posts need **caption + media only**. For multi-part threads, use the shared thread metadata shape:
+
+| Field | Location | Required | Type | Description |
+|-------|----------|----------|------|-------------|
+| `content` | body | Yes* | string | Post text (max ~500 chars per part) |
+| `platforms` | body | Yes | UUID[] | Threads account UUID |
+| `media` | body | No | UUID[] | Top-level media (single posts) |
+| `metadata.twitterThread.parts` | metadata | No | array | Multi-part thread (see [X settings](/docs/api/providers/twitter)) |
+| `metadata.accountCaptions.<uuid>` | metadata | No | string | Per-account caption |
+
+\* Or media with minimal caption.
+
+**Thread part shape:**
+
+| Field | Required | Type | Description |
+|-------|----------|------|-------------|
+| `text` | Yes | string | Text for this thread part |
+| `mediaIds` | No | UUID[] | Media for this part only |
+
+---
+
+## Complete example
+
+Single Threads post:
+
+```bash
+curl -X POST https://api.social0.app/v1/posts/publish \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: $(uuidgen)" \
+  -d '{
+    "content": "API provider docs are live on Social0.",
+    "platforms": ["550e8400-e29b-41d4-a716-446655440000"],
+    "media": ["a1b2c3d4-e5f6-7890-abcd-ef1234567890"]
+  }'
+```
+
+Multi-part thread:
+
+```json
+{
+  "content": "Fallback single-post text",
+  "platforms": ["550e8400-e29b-41d4-a716-446655440000"],
+  "metadata": {
+    "twitterThread": {
+      "parts": [
+        { "text": "1/2 — Threads supports the same thread parts shape as X.", "mediaIds": [] },
+        { "text": "2/2 — Each part publishes as a reply in order.", "mediaIds": ["MEDIA_UUID"] }
+      ]
+    }
+  }
+}
+```
+
+**Response 202:**
+
+```json
+{
+  "post_id": "uuid",
+  "tracking_id": "uuid",
+  "status": "queued",
+  "stream_url": "/v1/jobs/{tracking_id}/stream"
+}
+```
+
+---
+
+## Quirks
+
+- **500 chars per part:** Threads has a shorter limit than X or Bluesky; keep each `parts[].text` under ~500 characters.
+- **Thread parts key:** Uses `metadata.twitterThread.parts` (shared with X and Bluesky publishers via `getThreadParts`) — not a Threads-specific key.
+- **No legacy `---` split:** Unlike X, Threads does not split on `---` in content; use structured `parts`.
+- **Carousels:** Multiple images in one post attach via top-level `media` array.
+- **Meta processing:** Similar to Instagram — allow time for container processing; poll the job.
+
+---
+
+## Related
+
+- [Threads platform guide](/docs/platforms/threads)
+- [X / Twitter settings](/docs/api/providers/twitter) (thread parts reference)
+- [Posts reference](/docs/api/reference/posts)
+- [Provider settings overview](/docs/api/providers)

@@ -1,0 +1,134 @@
+---
+title: "Configuration"
+description: Complete environment variable reference for self-hosting Social0.
+---
+
+## Overview
+
+Social0 reads configuration from `.env.local` (local/Docker) or `.env.self-host` (Cloudflare `npm run self-host`). Copy from [.env.example](https://github.com/Abhishek-B-R/social0-selfhost/blob/main/.env.example) or [.env.self-host.example](https://github.com/Abhishek-B-R/social0-selfhost/blob/main/.env.self-host.example) in the repo.
+
+Never commit secrets. Rotate `BETTER_AUTH_SECRET`, `ENCRYPTION_KEY`, and `CRON_SECRET` together if you change auth secrets in production — changing `BETTER_AUTH_SECRET` alone logs everyone out.
+
+## Core
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `DATABASE_URL` | Yes | Postgres connection string |
+| `NODE_ENV` | Dev | `development` locally; `production` in deploy |
+| `NEXT_PUBLIC_APP_URL` | Yes | Public app URL (scheme + host, no trailing path) |
+| `ENCRYPTION_KEY` | Yes | 32-byte hex — `openssl rand -hex 32`; encrypts sensitive tokens |
+| `CRON_SECRET` | Prod | Shared secret for `/api/cron/publish-scheduled`; must match cron Worker |
+
+## Auth (Better Auth)
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `BETTER_AUTH_SECRET` | Yes | ≥32 chars — `openssl rand -hex 32` |
+| `BETTER_AUTH_URL` | Yes | Same origin users use to sign in (usually = `NEXT_PUBLIC_APP_URL`) |
+
+## Redis (Upstash REST)
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `UPSTASH_REDIS_REST_URL` | Yes | Upstash REST endpoint |
+| `UPSTASH_REDIS_REST_TOKEN` | Yes | Upstash REST token |
+
+Local `docker compose` Redis does not replace these in production.
+
+## Email & sign-in
+
+Configure **Google and/or Resend** — at least one is required for users to sign in.
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `GOOGLE_CLIENT_ID` | One of | Google OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | One of | Google OAuth client secret |
+| `RESEND_API_KEY` | One of | Resend API key |
+| `RESEND_FROM_EMAIL` | With Resend | Verified sender address |
+
+See [Email](/docs/self-host/email).
+
+## Object storage (R2)
+
+Required for media uploads in production.
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `R2_ACCOUNT_ID` | Yes (media) | Cloudflare account ID |
+| `R2_ACCESS_KEY_ID` | Yes (media) | R2 S3 API token access key |
+| `R2_SECRET_ACCESS_KEY` | Yes (media) | R2 S3 API token secret |
+| `R2_BUCKET_NAME` | Yes (media) | Bucket name (e.g. `social0-media`) |
+| `R2_ENDPOINT` | Yes (media) | `https://<ACCOUNT_ID>.r2.cloudflarestorage.com` |
+| `R2_PUBLIC_URL` | Yes (media) | Public base URL for serving objects |
+
+See [Object storage](/docs/self-host/object-storage).
+
+## Platform OAuth (optional)
+
+Set **only** platforms you use. Leave others empty. Connections still lists every platform; Connect explains missing keys.
+
+| Variable | Platform |
+|----------|----------|
+| `LINKEDIN_CLIENT_ID` / `LINKEDIN_CLIENT_SECRET` | LinkedIn |
+| `FACEBOOK_CLIENT_ID` / `FACEBOOK_CLIENT_SECRET` | Facebook |
+| `FACEBOOK_LOGIN_CONFIG_ID` | Facebook Login config (Meta) |
+| `INSTAGRAM_CLIENT_ID` / `INSTAGRAM_CLIENT_SECRET` | Instagram |
+| `THREADS_CLIENT_ID` / `THREADS_CLIENT_SECRET` | Threads |
+| `YOUTUBE_CLIENT_ID` / `YOUTUBE_CLIENT_SECRET` | YouTube (Google Cloud) |
+| `TWITTER_CONSUMER_KEY` / `TWITTER_CONSUMER_SECRET` | X / Twitter |
+| `PINTEREST_CLIENT_ID` / `PINTEREST_CLIENT_SECRET` | Pinterest |
+| `TIKTOK_CLIENT_ID` / `TIKTOK_CLIENT_SECRET` | TikTok |
+
+**Bluesky** — no OAuth env vars. Users connect with an app password in the dashboard (BYOK).
+
+| Platform | Where to create apps |
+|----------|---------------------|
+| Google (sign-in / YouTube) | [Google Cloud Console](https://console.cloud.google.com/) |
+| LinkedIn | [LinkedIn Developers](https://www.linkedin.com/developers/) |
+| Meta (Facebook / Instagram / Threads) | [Meta for Developers](https://developers.facebook.com/) |
+| X / Twitter | [X Developer Portal](https://developer.x.com/) |
+| TikTok | [TikTok Developers](https://developers.tiktok.com/) |
+| Pinterest | [Pinterest Developers](https://developers.pinterest.com/) |
+
+## Self-host & billing
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `BILLING_ENABLED` | OSS | `false` — unlimited plan limits without Dodo |
+| `NEXT_PUBLIC_BILLING_ENABLED` | OSS | `false` — hide billing UI |
+| `APP_DOMAIN` | CF script | Hostname only (e.g. `app.example.com`) for `npm run self-host` |
+| `MIRROR_AVATARS_TO_R2` | Optional | `true` — copy connect avatars to R2 when CDN URLs expire |
+
+Dodo billing vars (`DODO_PAYMENTS_*`) are optional and unused when billing is disabled.
+
+## Security & misc
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Optional | Cloudflare Turnstile site key (both keys required to enforce) |
+| `TURNSTILE_SECRET_KEY` | Optional | Turnstile secret |
+| `PUBLISH_VIA_QUEUE` | Optional | Queue-based publish path (Cloudflare) |
+| `CANNY_PRIVATE_KEY` / `NEXT_PUBLIC_CANNY_BOARD_TOKEN` | Optional | In-app feedback widget |
+
+## CLI / MCP (client-side, not app env)
+
+Set on the machine running the CLI or MCP server:
+
+| Variable | Example |
+|----------|---------|
+| `SOCIAL0_API_URL` | `https://your-domain.com/v1` |
+| `SOCIAL0_API_KEY` | `sk_live_…` from Dashboard → API keys |
+
+See [MCP and CLI](/docs/self-host/mcp-cli).
+
+## Cloudflare self-host script
+
+`.env.self-host` adds `APP_DOMAIN`. The script auto-generates `BETTER_AUTH_SECRET`, `ENCRYPTION_KEY`, and `CRON_SECRET` if empty, then pushes secrets to Workers.
+
+`DATABASE_URL` is also used as the Hyperdrive local connection string during OpenNext deploy — do not put unrelated secrets in `wrangler.jsonc`.
+
+## Related
+
+- [Docker config](/docs/self-host/docker-config) — how to pass these into containers
+- [Email](/docs/self-host/email)
+- [Troubleshooting](/docs/self-host/troubleshooting)

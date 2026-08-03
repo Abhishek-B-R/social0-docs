@@ -94,9 +94,31 @@ If the agent has a shell, stop and use the [`social0` CLI](/docs/integrations/cl
 - “Schedule this for tomorrow at 9am UTC on Instagram and TikTok”
 - “Upload this image from a URL and publish it everywhere”
 
+## Self-host MCP
+
+Remote MCP at `https://mcp.social0.app/mcp` targets **hosted** Social0 OAuth. For self-host, use **local stdio** and point at your instance:
+
+```json
+{
+  "mcpServers": {
+    "social0": {
+      "command": "npx",
+      "args": ["-y", "@social0/mcp"],
+      "env": {
+        "SOCIAL0_API_KEY": "sk_live_…",
+        "SOCIAL0_API_URL": "https://your-domain.com/v1"
+      }
+    }
+  }
+}
+```
+
+Use API keys from **your instance** dashboard. Full walkthrough: [Self-host CLI and MCP](/docs/self-host/mcp-cli).
+
 ## Next
 
 - [`social0` CLI](/docs/integrations/cli) — preferred when you have a terminal or agent shell
 - [Tools reference](/docs/integrations/mcp/tools)
+- [Agent examples](/docs/integrations/mcp/examples)
 - [Connections](/docs/dashboard/connections)
 - [REST API](/docs/api) for custom backends only

@@ -1,0 +1,97 @@
+---
+title: "LinkedIn"
+description: API metadata for publishing text, images, and video to LinkedIn personal profiles and company pages.
+---
+
+## Overview
+
+Platform enum: **`linkedin`**
+
+Supported post types:
+
+| Type | Media | Notes |
+|------|-------|-------|
+| Text | — | Feed post |
+| Image | 1+ images | Multi-image supported |
+| Video | 1 video | Native video upload |
+
+Each connected LinkedIn account is a separate UUID — personal profile and company pages appear as distinct entries in `GET /v1/accounts`. The API does not distinguish them in metadata; account type is stored on the connection (`platformAccountType`: `person` vs `company`).
+
+Connect LinkedIn from the dashboard. See [LinkedIn (product)](/docs/platforms/linkedin).
+
+---
+
+## Settings / metadata schema
+
+LinkedIn posts are mostly **caption + media only**. No platform-specific metadata is required.
+
+| Field | Location | Required | Type | Description |
+|-------|----------|----------|------|-------------|
+| `content` | body | Yes* | string | Post text (max ~3,000 chars) |
+| `platforms` | body | Yes | UUID[] | LinkedIn account UUID(s) |
+| `media` | body | No | UUID[] | Image or video media IDs |
+| `metadata.accountCaptions.<uuid>` | metadata | No | string | Per-account caption override |
+| `metadata.accountMedia.<uuid>` | metadata | No | UUID[] | Per-account media override |
+| `platform_options.linkedin.content` | platform_options | No | string | Per-target caption (compiled to `accountCaptions`) |
+| `platform_options.linkedin.accounts.<uuid>.content` | platform_options | No | string | Override caption for one account |
+
+\* Or media-only with minimal caption.
+
+---
+
+## Complete example
+
+Post to personal profile and company page in one request:
+
+```bash
+curl -X POST https://api.social0.app/v1/posts/publish \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: $(uuidgen)" \
+  -d '{
+    "content": "We shipped provider-settings docs for the Social0 API.",
+    "platforms": [
+      "550e8400-e29b-41d4-a716-446655440001",
+      "550e8400-e29b-41d4-a716-446655440002"
+    ],
+    "media": ["a1b2c3d4-e5f6-7890-abcd-ef1234567890"],
+    "platform_options": {
+      "linkedin": {
+        "accounts": {
+          "550e8400-e29b-41d4-a716-446655440002": {
+            "content": "Social0 API docs are live — build automations on top of our publish pipeline."
+          }
+        }
+      }
+    }
+  }'
+```
+
+**Response 202:**
+
+```json
+{
+  "post_id": "uuid",
+  "tracking_id": "uuid",
+  "status": "queued",
+  "stream_url": "/v1/jobs/{tracking_id}/stream"
+}
+```
+
+---
+
+## Quirks
+
+- **Personal vs company:** Connect each page separately in the dashboard. Use numeric/account UUID from `GET /v1/accounts` — do not assume one LinkedIn connection covers all pages.
+- **Character limit:** ~3,000 characters for feed posts.
+- **Video processing:** LinkedIn may take a minute to process video after publish succeeds; poll the job for final status.
+- **No threads:** Multi-part threads are not supported on LinkedIn via Social0 — use a single post or separate publishes.
+- **Token expiry:** Reconnect in the dashboard if `token_status` is `expired` on the account.
+
+---
+
+## Related
+
+- [LinkedIn platform guide](/docs/platforms/linkedin)
+- [Posts reference](/docs/api/reference/posts)
+- [Provider settings overview](/docs/api/providers)

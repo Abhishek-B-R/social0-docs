@@ -1,0 +1,16 @@
+{
+  "title": "Provider settings",
+  "defaultOpen": false,
+  "pages": [
+    "index",
+    "twitter",
+    "linkedin",
+    "facebook",
+    "instagram",
+    "threads",
+    "bluesky",
+    "youtube",
+    "tiktok",
+    "pinterest"
+  ]
+}

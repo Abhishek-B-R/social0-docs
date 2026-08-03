@@ -1,0 +1,110 @@
+---
+title: "Local development"
+description: Clone social0-selfhost, configure env, run migrations, and develop with npm scripts.
+---
+
+## Overview
+
+Local development uses Postgres from `docker compose`, the Next.js dev server, and optional HTTPS for Meta OAuth. This matches the upstream README and is the starting point for contributions.
+
+## Clone and install
+
+```bash
+git clone https://github.com/Abhishek-B-R/social0-selfhost.git
+cd social0-selfhost
+cp .env.example .env.local
+docker compose up -d
+npm install
+npm run db:migrate
+npm run dev
+```
+
+App URL: [http://localhost:3000](http://localhost:3000)
+
+API base for CLI/MCP locally: `http://localhost:3000/v1`
+
+## Environment
+
+Edit `.env.local` after copying from `.env.example`. Required groups:
+
+- **Database** — `DATABASE_URL=postgresql://social0:social0@localhost:5432/social0`
+- **Redis** — Upstash REST URL + token (create a free DB at [upstash.com](https://upstash.com))
+- **Auth** — `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `NEXT_PUBLIC_APP_URL`, `ENCRYPTION_KEY`
+- **Sign-in** — Google OAuth and/or Resend
+- **Cron** — `CRON_SECRET` (for testing schedule endpoints)
+- **R2** — needed for media upload flows (see [Object storage](/docs/self-host/object-storage))
+
+Self-host billing off (default in `.env.example`):
+
+```
+BILLING_ENABLED=false
+NEXT_PUBLIC_BILLING_ENABLED=false
+```
+
+Generate secrets:
+
+```bash
+openssl rand -hex 32   # BETTER_AUTH_SECRET, ENCRYPTION_KEY
+```
+
+## npm scripts
+
+| Script | Purpose |
+|--------|---------|
+| `npm run dev` | Next.js dev server on port 3000 |
+| `npm run dev:https` | Dev server with experimental HTTPS (Meta OAuth) |
+| `npm run build` | Production build |
+| `npm run start` | Run production build locally |
+| `npm run db:migrate` | Apply Drizzle migrations |
+| `npm run db:studio` | Drizzle Studio (DB browser) |
+| `npm run self-host` | Cloudflare production deploy script |
+| `npm run cf:preview` | OpenNext Cloudflare preview |
+
+## HTTPS for Meta OAuth
+
+Facebook, Instagram, and Threads OAuth require HTTPS callback URLs even in development. Use:
+
+```bash
+npm run dev:https
+```
+
+Update `.env.local`:
+
+```
+BETTER_AUTH_URL=https://localhost:3000
+NEXT_PUBLIC_APP_URL=https://localhost:3000
+```
+
+Register `https://localhost:3000/...` redirect URIs in your Meta app settings.
+
+## Platform OAuth (optional)
+
+Only set env vars for platforms you test. Bluesky uses an app password in the UI (BYOK) — no OAuth app.
+
+The Connections page lists all platforms; clicking Connect on an unset platform explains which variables are missing.
+
+## Local URLs to keep aligned
+
+| Setting | Dev (HTTP) | Dev (Meta) | Production |
+|---------|------------|------------|------------|
+| `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` | `https://localhost:3000` | `https://your-domain.com` |
+| `BETTER_AUTH_URL` | Same | Same | Same |
+| `SOCIAL0_API_URL` (CLI/MCP) | `http://localhost:3000/v1` | same | `https://your-domain.com/v1` |
+
+Mismatch between `BETTER_AUTH_URL` and what the browser uses causes sign-in and session bugs — see [Troubleshooting](/docs/self-host/troubleshooting).
+
+## Database changes
+
+After pulling new migrations:
+
+```bash
+npm run db:migrate
+```
+
+Do not commit `.env.local`. See [CONTRIBUTING.md](https://github.com/Abhishek-B-R/social0-selfhost/blob/main/CONTRIBUTING.md) in the repo.
+
+## Related
+
+- [Docker Compose](/docs/self-host/docker-compose)
+- [Configuration](/docs/self-host/configuration)
+- [MCP and CLI](/docs/self-host/mcp-cli)

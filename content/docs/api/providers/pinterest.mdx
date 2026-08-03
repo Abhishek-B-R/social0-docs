@@ -1,0 +1,130 @@
+---
+title: "Pinterest"
+description: API metadata for publishing image and video pins to Pinterest via Social0.
+---
+
+## Overview
+
+Platform enum: **`pinterest`**
+
+Supported post types:
+
+| Type | Media | Notes |
+|------|-------|-------|
+| Image | 1 image | Standard pin |
+| Video | 1 video | Video pin (processed by Pinterest) |
+
+Every pin **must** target a board. Provide a board ID in post metadata, via `platform_options`, or set a default board on the connected account at connect time (`platformMetadata.pinterestDefaultBoardId` / dashboard default board).
+
+See [Pinterest (product)](/docs/platforms/pinterest).
+
+---
+
+## Settings / metadata schema
+
+| Field | Location | Required | Type | Description |
+|-------|----------|----------|------|-------------|
+| `content` | body | No* | string | Pin description (max ~500 chars) |
+| `platforms` | body | Yes | UUID[] | Pinterest account UUID |
+| `media` | body | **Yes** | UUID[] | One image or one video |
+| `metadata.pinterest.<uuid>.boardId` | metadata | **Yes**† | string | Target board ID |
+| `metadata.pinterest.<uuid>.title` | metadata | No | string | Pin title (max ~100 chars) |
+| `metadata.pinterest.<uuid>.link` | metadata | No | string | Destination URL |
+
+† Not required if the connected account already has a default board in `platformMetadata.pinterestDefaultBoardId`.
+
+**Account default (connect time):** When you select a default board in the dashboard, Social0 stores `platformMetadata.pinterestDefaultBoardId` on the account. At publish time, per-account keys under `metadata.pinterest.<uuid>` are merged on top of that default.
+
+**Create board at publish (hosted API):** On **hosted** Social0 (`api.social0.app`), you can create a board during publish via `platform_options`:
+
+```json
+"platform_options": {
+  "pinterest": {
+    "550e8400-e29b-41d4-a716-446655440000": {
+      "create_board": { "name": "Product updates", "privacy": "PUBLIC" },
+      "title": "Pin title",
+      "link": "https://example.com"
+    }
+  }
+}
+```
+
+(`createBoard` camelCase is also accepted.) This is a **cloud compile helper** — self-hosted deployments that only do simple metadata merge may not support `create_board`; pass an existing `boardId` instead.
+
+---
+
+## Complete example
+
+Pin with explicit board:
+
+```bash
+curl -X POST https://api.social0.app/v1/posts/publish \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: $(uuidgen)" \
+  -d '{
+    "content": "Social0 API reference — publish to nine networks from one request.",
+    "platforms": ["550e8400-e29b-41d4-a716-446655440000"],
+    "media": ["a1b2c3d4-e5f6-7890-abcd-ef1234567890"],
+    "metadata": {
+      "pinterest": {
+        "550e8400-e29b-41d4-a716-446655440000": {
+          "boardId": "1234567890123456789",
+          "title": "Social0 API docs",
+          "link": "https://social0.app/docs/api"
+        }
+      }
+    }
+  }'
+```
+
+Using only the account’s saved default board (no `boardId` in the body):
+
+```json
+{
+  "content": "Pin description",
+  "platforms": ["550e8400-e29b-41d4-a716-446655440000"],
+  "media": ["IMAGE_UUID"],
+  "metadata": {
+    "pinterest": {
+      "550e8400-e29b-41d4-a716-446655440000": {
+        "title": "July launch",
+        "link": "https://example.com/post"
+      }
+    }
+  }
+}
+```
+
+List boards in the dashboard when picking a default, or call your instance’s board helpers from the UI. For API automation, copy the board ID once and pass it in metadata.
+
+**Response 202:**
+
+```json
+{
+  "post_id": "uuid",
+  "tracking_id": "uuid",
+  "status": "queued",
+  "stream_url": "/v1/jobs/{tracking_id}/stream"
+}
+```
+
+---
+
+## Quirks
+
+- **Board required:** Publish fails with "No board" if neither post metadata nor account default provides `boardId`.
+- **Video processing:** Pinterest registers video, uploads to S3, then polls until processing succeeds — jobs may take 1–2 minutes.
+- **One primary asset:** One image or one video per pin; carousels are not the primary Pinterest flow in Social0.
+- **Default board:** Set in dashboard to avoid passing `boardId` on every request — stored as `platformMetadata.pinterestDefaultBoardId`.
+- **Create board at publish:** Supported on hosted API via `platform_options.pinterest.<uuid>.create_board`; self-host should pass an existing `boardId`.
+- **Title vs description:** `content` maps to pin description; use `metadata.pinterest.<uuid>.title` for the pin title field.
+
+---
+
+## Related
+
+- [Pinterest platform guide](/docs/platforms/pinterest)
+- [Upload media](/docs/api/guides/media)
+- [Posts reference](/docs/api/reference/posts)
+- [Provider settings overview](/docs/api/providers)

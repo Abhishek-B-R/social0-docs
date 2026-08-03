@@ -1,0 +1,222 @@
+---
+title: "CLI platform examples"
+description: Copy-paste social0 publish and schedule examples for all nine supported platforms.
+---
+
+Run `social0 accounts` first. Use platform **names** when you have one account per network; use **numeric IDs** when several accounts share a platform.
+
+**Canonical platforms:** `linkedin`, `facebook`, `instagram`, `youtube`, `pinterest`, `tiktok`, `twitter_x`, `threads`, `bluesky`.
+
+**Aliases:** `x` / `twitter` → `twitter_x`; `ig` → `instagram`; `fb` → `facebook`; `yt` → `youtube`; `li` → `linkedin`; `bsky` → `bluesky`; `pin` → `pinterest`.
+
+After every publish, poll until terminal:
+
+```bash
+social0 status <tracking-id>
+social0 status <tracking-id> --watch
+```
+
+---
+
+## X / Twitter (`twitter_x`)
+
+Single tweet:
+
+```bash
+social0 publish -c "Shipping Social0 CLI docs today." -p twitter
+```
+
+Thread — split `content` on a line containing only `---` (X-only legacy split; API also supports structured `metadata.twitterThread.parts` — see [X provider settings](/docs/api/providers/twitter)):
+
+```bash
+social0 publish -c "1/3 — We rebuilt the publish pipeline.
+---
+2/3 — Same queue as the dashboard.
+---
+3/3 — Docs: https://social0.app/docs" -p x
+```
+
+Keep captions ~280 characters unless the connected account has X Premium.
+
+---
+
+## LinkedIn (`linkedin`)
+
+```bash
+social0 publish -c "Excited to share what we shipped this week.
+
+Three highlights:
+• Faster publish queue
+• CLI media upload
+• MCP agent recipes
+
+What would you automate first?" -p linkedin
+```
+
+With image:
+
+```bash
+social0 upload ./chart.png
+social0 publish -c "Q3 growth snapshot" -p linkedin -m <media-uuid>
+```
+
+---
+
+## Instagram (`instagram`)
+
+Caption + image:
+
+```bash
+social0 upload ./product.jpg
+social0 publish -c "New drop — link in bio ✨
+
+#launch #product" -p ig -m <media-uuid>
+```
+
+Reel (video):
+
+```bash
+social0 upload ./reel.mp4
+social0 publish -c "60-second product walkthrough" -p instagram -m <media-uuid>
+social0 status <tracking-id> --watch
+```
+
+Richer options (cover frame, trial reel) live in the dashboard or [Instagram provider settings](/docs/api/providers/instagram) via API `metadata` / `platform_options` — the CLI one-liner above is caption + media only.
+
+---
+
+## Facebook (`facebook`)
+
+```bash
+social0 upload ./event.jpg
+social0 publish -c "Live demo this Thursday — see you there!" -p facebook -m <media-uuid>
+```
+
+---
+
+## Threads (`threads`)
+
+```bash
+social0 publish -c "Quick thread on agent workflows:
+
+1. List accounts
+2. Upload media
+3. Publish + poll status
+
+More in our docs." -p threads
+```
+
+Multi-part threads (like X) also work via `---` split or structured API metadata — see [Threads provider settings](/docs/api/providers/threads).
+
+---
+
+## Bluesky (`bluesky`)
+
+```bash
+social0 publish -c "Hello from the Social0 CLI — posting to Bluesky from the terminal." -p bsky
+```
+
+---
+
+## YouTube (`youtube`)
+
+YouTube requires **video** media. Title and description are richer in the dashboard or via API `platform_options` / `metadata` — see [YouTube provider settings](/docs/api/providers/youtube).
+
+Simple CLI path (caption becomes description; title may default from filename or content):
+
+```bash
+social0 upload ./demo.mp4
+social0 publish -c "Full walkthrough of our new CLI media flow." -p youtube -m <media-uuid>
+social0 status <tracking-id> --watch
+```
+
+For explicit title control, use the dashboard composer or REST/MCP `platform_options.youtube.title`.
+
+---
+
+## TikTok (`tiktok`)
+
+TikTok often needs **privacy level** and other per-account settings. A bare `publish -c … -p tiktok` may fail if those defaults are not set on the account.
+
+**Recommended:** set privacy in [Dashboard → Connections](/docs/dashboard/connections) or pass `platform_options` / `metadata.tiktok` via the [REST API](/docs/api/providers/tiktok) or MCP.
+
+When defaults are configured, video publish:
+
+```bash
+social0 upload ./vertical.mp4
+social0 publish -c "Quick tip #social0" -p tiktok -m <media-uuid>
+social0 status <tracking-id> --watch
+```
+
+TikTok may take several minutes to show the post on your profile after we accept the job.
+
+---
+
+## Pinterest (`pinterest`)
+
+Pinterest needs a **board**. Pick a default board during connect, or set `boardId` via dashboard / [Pinterest provider settings](/docs/api/providers/pinterest).
+
+Image pin:
+
+```bash
+social0 upload ./pin.jpg
+social0 publish -c "CLI media upload guide — save for later" -p pinterest -m <media-uuid>
+```
+
+Video pin:
+
+```bash
+social0 upload ./clip.mp4
+social0 publish -c "Product demo pin" -p pin -m <media-uuid>
+```
+
+---
+
+## Multi-platform
+
+```bash
+social0 publish -c "Launch day 🚀" -p twitter linkedin instagram
+social0 status <tracking-id> --watch
+```
+
+On `partial`, some platforms succeeded and others failed — re-run `social0 status` and read per-platform lines.
+
+---
+
+## Schedule (natural language)
+
+Times use your local wall-clock unless you set `defaultTimezone`:
+
+```bash
+social0 config set defaultTimezone America/New_York
+
+social0 schedule -c "Tomorrow's announcement" -p twitter linkedin -t "tomorrow 9am"
+social0 schedule -c "Weekend recap" -p instagram -t "next monday 10am"
+social0 schedule -c "Fixed time" -p 1 2 -t "2026-08-15 14:00"
+```
+
+Works: `tomorrow 9am`, `today 8pm`, `next monday`, `in 2 hours`, `2026-08-01 14:00`.
+
+Draft → schedule:
+
+```bash
+social0 post create -c "WIP launch copy" -p linkedin
+social0 drafts schedule <full-uuid> -t "tomorrow 9am"
+```
+
+---
+
+## When CLI basics are not enough
+
+| Platform | Extra fields | Where |
+|----------|--------------|-------|
+| TikTok | Privacy, duet/stitch, commercial flags | Dashboard, [TikTok settings](/docs/api/providers/tiktok), MCP `platform_options` |
+| YouTube | Title, tags | Dashboard, [YouTube settings](/docs/api/providers/youtube), MCP `platform_options` |
+| Pinterest | Board ID | Connect flow, [Pinterest settings](/docs/api/providers/pinterest), MCP `platform_options` |
+| X thread + media per tweet | Structured parts | REST `metadata.twitterThread.parts` or dashboard thread mode |
+
+## Related
+
+- [Media upload](/docs/integrations/cli/media)
+- [Provider settings](/docs/api/providers)
+- [MCP examples](/docs/integrations/mcp/examples) — same flows for agent hosts without a shell

@@ -1,0 +1,127 @@
+---
+title: "Troubleshooting"
+description: Fix common self-host issues — database, R2, email, auth secrets, URLs, cron, and Workers limits.
+---
+
+## Overview
+
+Most self-host problems fall into a few buckets: connectivity to Postgres/Redis, missing R2 config, URL/env mismatch, email not configured, cron not firing, or Cloudflare Worker size limits.
+
+## Out of memory (OOM)
+
+| Symptom | Fix |
+|---------|-----|
+| Container killed during `npm run build` or Docker build | Give build host ≥2 GB RAM; build on CI with more memory, push image |
+| Node process exits under load | Increase container memory limit; use managed Postgres/Upstash instead of co-located heavy services |
+
+Workers path avoids managing app RAM — Cloudflare runs the Worker.
+
+## Database connection refused
+
+| Symptom | Fix |
+|---------|-----|
+| `ECONNREFUSED` on `:5432` | Start `docker compose up -d` locally; check `DATABASE_URL` host (`localhost` vs `db`) |
+| Works locally, fails in production | Ensure Postgres accepts connections from app IP; use SSL params if provider requires |
+| Hyperdrive / Workers | Verify Hyperdrive binding and connection string in self-host script output |
+
+Run migrations after DB is up:
+
+```bash
+npm run db:migrate
+```
+
+## Uploads fail / media missing
+
+| Symptom | Fix |
+|---------|-----|
+| Upload errors in Composer | Set all six `R2_*` env vars — see [Object storage](/docs/self-host/object-storage) |
+| Broken image URLs | Fix `R2_PUBLIC_URL`; confirm bucket public access or custom domain |
+| CORS errors in browser | Add your `NEXT_PUBLIC_APP_URL` origin to R2 bucket CORS |
+
+Social0 does not persist uploads on local disk in production.
+
+## Email not sending
+
+| Symptom | Fix |
+|---------|-----|
+| No verification email | Configure `RESEND_API_KEY` + `RESEND_FROM_EMAIL`; verify domain in Resend |
+| Google sign-in works, email signup doesn’t | Resend-only flows need both Resend vars |
+| Emails in spam | Complete SPF/DKIM for sending domain |
+
+See [Email](/docs/self-host/email).
+
+## Everyone logged out after restart
+
+| Cause | Fix |
+|-------|-----|
+| `BETTER_AUTH_SECRET` changed | Expected — sessions invalidate; keep secret stable across deploys |
+| `ENCRYPTION_KEY` changed | Re-encrypt failures for stored tokens; do not rotate casually |
+| Redis URL/token changed | Sessions stored in Upstash may appear lost; restore previous Upstash DB or accept re-login |
+
+Store secrets in a password manager or platform secret store; avoid regenerating on every deploy unless intentional.
+
+## Origin / URL mismatch
+
+| Symptom | Fix |
+|---------|-----|
+| OAuth redirect error | Match redirect URIs in provider console to `https://your-domain.com/api/auth/callback/...` |
+| Sign-in loop or cookie not set | Align `BETTER_AUTH_URL` and `NEXT_PUBLIC_APP_URL` with browser URL (https, correct host) |
+| API CORS from custom frontend | Call `/v1` from allowed origins or same host |
+
+Behind reverse proxy, set `X-Forwarded-Proto` and use public HTTPS URL in env — see [Reverse proxy](/docs/self-host/reverse-proxy).
+
+## Schedules not firing
+
+| Symptom | Fix |
+|---------|-----|
+| Posts stay scheduled past due time | Deploy `scheduler/cloudflare-worker`; set Worker `APP_URL` to public app |
+| Cron returns 401 | Match `CRON_SECRET` in app env and Worker secret |
+| Manual trigger works, cron doesn’t | Check Worker cron trigger (every ~5 min) in Cloudflare dashboard |
+
+Manual test:
+
+```bash
+curl -X POST "https://your-domain.com/api/cron/publish-scheduled" \
+  -H "Authorization: Bearer $CRON_SECRET"
+```
+
+There is no built-in system crontab or GitHub Actions scheduler — only the Cloudflare Worker (or you calling the endpoint yourself).
+
+## Cloudflare Workers Free size limit
+
+| Symptom | Fix |
+|---------|-----|
+| Deploy fails on Free plan | Full app Worker ~4 MiB gzip; Free limit ~3 MiB |
+| Need Free tier | Run app on Docker/Node; deploy **cron-only** Worker on Free |
+| Want full stack on CF | Upgrade to **Workers Paid** (~$5/mo) or trim unused platforms |
+
+The repo includes a prompt for trimming platforms to fit Free: [workers-free-trim-platforms.md](https://github.com/Abhishek-B-R/social0-selfhost/blob/main/docs/prompts/workers-free-trim-platforms.md).
+
+## CLI / MCP 401
+
+| Symptom | Fix |
+|---------|-----|
+| `invalid_api_key` | Create key on **your** instance; hosted keys do not work |
+| Wrong accounts | Check `SOCIAL0_API_URL` includes `/v1` suffix |
+| Connection refused | Instance not reachable from machine running CLI/MCP |
+
+## Platform connect errors
+
+| Symptom | Fix |
+|---------|-----|
+| “Missing env vars” on Connect | Add that platform’s OAuth client ID/secret — [Configuration](/docs/self-host/configuration) |
+| Meta fails locally | Use `npm run dev:https` and `https://localhost:3000` |
+| Bluesky | App password in UI — no OAuth env vars |
+
+## Still stuck
+
+1. `npm run db:migrate` — schema current?
+2. Compare env to [.env.example](https://github.com/Abhishek-B-R/social0-selfhost/blob/main/.env.example)
+3. Check app logs (container stdout / Cloudflare Workers logs)
+4. Open an issue on [GitHub — social0-selfhost](https://github.com/Abhishek-B-R/social0-selfhost/issues) with deploy path and redacted env shape
+
+## Related
+
+- [Requirements](/docs/self-host/requirements)
+- [Configuration](/docs/self-host/configuration)
+- [MCP troubleshooting](/docs/integrations/mcp/troubleshooting)

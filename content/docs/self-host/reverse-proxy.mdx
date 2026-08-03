@@ -1,0 +1,91 @@
+---
+title: "Reverse proxy"
+description: Put Nginx or Caddy in front of Social0 and align public URLs with Better Auth.
+---
+
+## Overview
+
+When running the standalone Docker or `npm start` build, terminate TLS at a reverse proxy and forward HTTP to the app on port **3000**. The app does not need to terminate TLS itself.
+
+Critical: **`NEXT_PUBLIC_APP_URL`** and **`BETTER_AUTH_URL`** must match the URL users see in the browser (scheme, host, no port mismatch behind standard 443).
+
+## URL alignment
+
+| Wrong | Right |
+|-------|-------|
+| App env `http://internal:3000`, users visit `https://app.example.com` | Both env vars `https://app.example.com` |
+| `BETTER_AUTH_URL` http, site https | Both https |
+| Trailing slash on one only | Consistent, preferably no trailing slash |
+
+OAuth redirect URIs in Google/Meta/X consoles must use the same public host.
+
+## Nginx example
+
+```nginx
+server {
+    listen 443 ssl http2;
+    server_name app.example.com;
+
+    ssl_certificate     /etc/letsencrypt/live/app.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/app.example.com/privkey.pem;
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
+```
+
+Env on the app container:
+
+```
+NEXT_PUBLIC_APP_URL=https://app.example.com
+BETTER_AUTH_URL=https://app.example.com
+```
+
+## Caddy example
+
+```text
+app.example.com {
+    reverse_proxy localhost:3000
+}
+```
+
+Caddy handles TLS automatically with Let’s Encrypt. Set the same env vars as above.
+
+## WebSockets
+
+Next.js dev and some live features may use WebSockets. The Nginx example includes `Upgrade` / `Connection` headers for basic compatibility. If hot reload or realtime features fail through the proxy, ensure your platform forwards WebSockets (most do when upgrade headers are set).
+
+Production standalone builds rarely need special WebSocket config for normal dashboard use.
+
+## Cloudflare Tunnel (brief)
+
+If you cannot open inbound ports on a VPS, run `cloudflared tunnel` to expose localhost:3000 on a Cloudflare hostname. Still set:
+
+```
+NEXT_PUBLIC_APP_URL=https://your-tunnel-host.example.com
+BETTER_AUTH_URL=https://your-tunnel-host.example.com
+```
+
+Prefer **Cloudflare Workers** (`npm run self-host`) when you already use Cloudflare — it avoids tunnel + container ops.
+
+## Cloudflare Workers path
+
+When using `npm run self-host`, Cloudflare terminates TLS at the edge. You add **Workers → social0 → Domains** with `APP_DOMAIN` — no Nginx on your side.
+
+## Health and cron
+
+External cron Worker calls `https://your-domain.com/api/cron/publish-scheduled`. That URL must resolve publicly through the same proxy/tunnel, not only on localhost.
+
+## Related
+
+- [Docker](/docs/self-host/docker)
+- [Requirements](/docs/self-host/requirements)
+- [Troubleshooting](/docs/self-host/troubleshooting) — origin / URL mismatch

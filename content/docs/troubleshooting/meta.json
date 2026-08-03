@@ -1,0 +1,13 @@
+{
+  "title": "Troubleshooting",
+  "defaultOpen": true,
+  "pages": [
+    "index",
+    "activation-login",
+    "oauth-connect",
+    "billing",
+    "channel-limits",
+    "uploads-media",
+    "known-issues"
+  ]
+}

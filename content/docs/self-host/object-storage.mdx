@@ -1,0 +1,77 @@
+---
+title: "Object storage (Cloudflare R2)"
+description: Set up Cloudflare R2 for Social0 media uploads with S3-compatible credentials.
+---
+
+## Overview
+
+Social0 uses **Cloudflare R2** as S3-compatible object storage for media. The app talks to R2 over HTTPS with access keys — the same pattern whether you deploy on Workers or Docker.
+
+The `npm run self-host` script creates a bucket named `social0-media` (and `social0-next-cache` for OpenNext) if they do not exist. On other hosts, create the bucket manually in the Cloudflare dashboard.
+
+## Create R2 credentials
+
+1. Open [Cloudflare Dashboard](https://dash.cloudflare.com/) → **R2** → **Manage R2 API Tokens**
+2. Create an API token with **Object Read & Write** on your media bucket
+3. Note **Access Key ID**, **Secret Access Key**, and **Account ID**
+
+## Environment mapping
+
+| Env var | Value |
+|---------|--------|
+| `R2_ACCOUNT_ID` | Cloudflare account ID |
+| `R2_ACCESS_KEY_ID` | Token access key |
+| `R2_SECRET_ACCESS_KEY` | Token secret |
+| `R2_BUCKET_NAME` | e.g. `social0-media` |
+| `R2_ENDPOINT` | `https://<ACCOUNT_ID>.r2.cloudflarestorage.com` |
+| `R2_PUBLIC_URL` | Public base URL for browser/platform access |
+
+Example:
+
+```bash
+R2_BUCKET_NAME=social0-media
+R2_ENDPOINT=https://abc123.r2.cloudflarestorage.com
+R2_PUBLIC_URL=https://media.example.com
+```
+
+`R2_PUBLIC_URL` must match how browsers and social APIs reach objects — typically a custom domain on the bucket or R2 public bucket URL.
+
+## S3-compatible note
+
+R2 implements the S3 API. Social0 uses S3-style signing (via `aws4fetch`) against `R2_ENDPOINT`. You cannot substitute arbitrary S3 providers without code changes — plan on R2 for self-host.
+
+## CORS (browser uploads)
+
+If the dashboard uploads directly to R2 or presigned URLs, configure CORS on the bucket to allow your app origin:
+
+- **Allowed origin:** `https://your-domain.com` (and `https://localhost:3000` for dev)
+- **Methods:** `GET`, `PUT`, `POST`, `HEAD` as needed by your upload path
+- **Headers:** `*` or include `Content-Type`, `Authorization`
+
+Exact rules depend on whether uploads go through the app API only (common) or hit R2 from the browser. If uploads fail with CORS errors in the browser console, widen origins to match `NEXT_PUBLIC_APP_URL`.
+
+## Self-host script
+
+Add `R2_*` to `.env.self-host` before `npm run self-host`, or set Worker secrets later and redeploy. Media uploads fail until all six variables are present.
+
+## Verify
+
+After configure:
+
+1. Sign in to the dashboard
+2. Composer → add an image → publish or save draft
+3. Confirm the image preview URL uses your `R2_PUBLIC_URL` host
+
+CLI/API:
+
+```bash
+social0 upload ./test.png
+```
+
+(requires `SOCIAL0_API_URL` + `SOCIAL0_API_KEY` pointed at your instance)
+
+## Related
+
+- [Uploads and storage](/docs/self-host/uploads-storage)
+- [Configuration](/docs/self-host/configuration)
+- [Troubleshooting](/docs/self-host/troubleshooting)

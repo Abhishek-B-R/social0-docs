@@ -1,0 +1,105 @@
+---
+title: "Docker environment config"
+description: How to pass environment variables to Social0 via compose, env files, and docker run.
+---
+
+## Overview
+
+Social0 does not embed secrets in the Docker image. You supply configuration at runtime through env files or your platform’s secret manager. The repo’s `docker-compose.yml` only defines Postgres and Redis — not the app — so app env patterns depend on how you run the container.
+
+## `.env.local` (recommended)
+
+Copy from `.env.example`, fill values, and pass to Docker:
+
+```bash
+docker run --env-file .env.local -p 3000:3000 social0
+```
+
+Same file works for `npm run dev` and `npm start`, keeping one source of truth for local and container runs.
+
+## `docker run --env-file`
+
+```bash
+OUTPUT_STANDALONE=1 docker build -t social0 .
+docker run --env-file .env.local -p 3000:3000 --name social0 social0
+```
+
+Flags:
+
+- `--env-file` — load all keys from file ( `#` comments and blank lines ignored)
+- `-e VAR=value` — override single vars: `-e NODE_ENV=production`
+- `--rm` — remove container on exit (dev)
+
+Do not bake `.env.local` into the image (`.dockerignore` excludes env files).
+
+## Platform-specific patterns
+
+| Platform | Pattern |
+|----------|---------|
+| **Railway / Render / Fly** | Set env vars in dashboard; mount or paste `DATABASE_URL`, Redis, R2, auth |
+| **VPS + systemd** | `EnvironmentFile=/etc/social0/env` in unit file pointing at your env file |
+| **Docker Compose (custom)** | Extend upstream compose with an `app` service — see below |
+
+## Optional: compose app service
+
+Upstream `docker-compose.yml` has no app service. To add one locally:
+
+```yaml
+services:
+  app:
+    build:
+      context: .
+      args:
+        OUTPUT_STANDALONE: "1"
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.local
+    depends_on:
+      db:
+        condition: service_healthy
+```
+
+Postgres URL in `.env.local` should use the compose service name as host when the app runs inside compose:
+
+```
+DATABASE_URL=postgresql://social0:social0@db:5432/social0
+```
+
+When the app runs on the host with `npm run dev`, use `localhost` instead of `db`.
+
+## Compose vs `.env` vs Worker secrets
+
+| Deploy | Config location |
+|--------|-----------------|
+| Local / Docker Node | `.env.local` |
+| Cloudflare `npm run self-host` | `.env.self-host` → script uploads Worker secrets |
+| Cron Worker only | `scheduler/cloudflare-worker` wrangler vars / secrets |
+
+After changing secrets on Workers, redeploy or update via Wrangler. Changing `BETTER_AUTH_SECRET` invalidates existing sessions.
+
+## Variable groups to set together
+
+1. **Public URLs** — `NEXT_PUBLIC_APP_URL`, `BETTER_AUTH_URL` (and `APP_DOMAIN` for self-host script)
+2. **Auth secrets** — `BETTER_AUTH_SECRET`, `ENCRYPTION_KEY`, `CRON_SECRET`
+3. **R2** — all six `R2_*` vars for uploads
+4. **Cron Worker** — same `CRON_SECRET` + public app URL as the main app
+
+## Validation
+
+Before going live:
+
+```bash
+# From host with env loaded
+curl -s -o /dev/null -w "%{http_code}" "$NEXT_PUBLIC_APP_URL"
+curl -X POST "$NEXT_PUBLIC_APP_URL/api/cron/publish-scheduled" \
+  -H "Authorization: Bearer $CRON_SECRET"
+```
+
+See [Configuration](/docs/self-host/configuration) for the full variable list.
+
+## Related
+
+- [Docker](/docs/self-host/docker)
+- [Reverse proxy](/docs/self-host/reverse-proxy)
+- [Troubleshooting](/docs/self-host/troubleshooting)

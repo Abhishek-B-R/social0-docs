@@ -1,0 +1,65 @@
+---
+title: "Activation & login"
+description: Fix sign-in, email verification, password reset, and session issues on Social0.
+---
+
+## Overview
+
+Social0 supports **Google sign-in** and **email + password**. Email sign-up requires a one-time verification code. Password reset uses a 6-digit code sent to your inbox. Most login problems on cloud are expired codes, wrong email, or using Google when you signed up with email (or the reverse).
+
+## Expired or invalid verify link / code
+
+When you sign up with email, we send a 6-digit code. Codes expire after a while for security.
+
+| Symptom | Fix |
+|---------|-----|
+| "Invalid or expired code" on verify | Click **Resend code** on the verify page and enter the new code promptly |
+| Old link from email does not work | Open the sign-in page, sign in with email if you already verified, or sign up again with the same email if you never finished |
+| No email arrived | Check spam and Promotions (Gmail). Wait a minute, then **Resend code**. Confirm the address you typed at sign-up |
+
+Full walkthrough: [Verify your email](/docs/auth/verify-email).
+
+## Cannot log in
+
+| Symptom | Likely cause | Fix |
+|---------|--------------|-----|
+| Wrong password | Typo or old password | Use [Forgot password](/docs/auth/forgot-password) → [Reset password](/docs/auth/reset-password) |
+| "No account" / sign-in fails | Signed up with Google | Use **Continue with Google** instead of email/password |
+| Google works but email does not | Account is Google-only | Sign in with Google, or set a password in **Dashboard → Settings** if the product offers it |
+| Email works but Google does not | Account is email-only | Use email sign-in, not Google |
+
+## Google vs email
+
+- **Google:** One-click sign-in; no Social0 password unless you add one later in Settings.
+- **Email:** Name, email, password at sign-up, then verify email before onboarding.
+
+If you forgot which you used, try Google first if you usually use Google elsewhere for that email address.
+
+## Forgot password
+
+1. Sign-in page → **Forgot password**
+2. Enter the email on your Social0 account
+3. Enter the 6-digit code from email on [Reset password](/docs/auth/reset-password)
+
+Details: [Forgot password](/docs/auth/forgot-password).
+
+## Logged out after every deploy (self-host)
+
+On **self-host**, if everyone is logged out after you redeploy, the auth secret likely changed.
+
+- **`BETTER_AUTH_SECRET`** (or equivalent Better Auth secret) must be **stable** across deploys. Rotating it invalidates existing sessions and JWTs.
+- Set the secret in your Worker/env config once and reuse it. Do not generate a new random value on each deploy unless you intend to force logout.
+
+Cloud users should not see this unless we announce maintenance that resets sessions (rare).
+
+## Tips
+
+- Use a private/incognito window only to rule out extensions — then sign in normally once it works.
+- Clear site data for social0.app only as a last step; you will need to sign in again.
+- For API/CLI auth issues (401), see [API authentication](/docs/api/authentication) — that is separate from dashboard login.
+
+## Related
+
+- [Getting started — sign up](/docs/getting-started)
+- [Support](/docs/support)
+- [Self-host troubleshooting](/docs/self-host/troubleshooting)

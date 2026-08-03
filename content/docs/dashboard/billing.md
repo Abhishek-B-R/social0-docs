@@ -29,7 +29,7 @@ Pro list price is **$49/mo**; early-adopter pricing may still appear in the app.
 
 | Plan | Connect & post | Solo multi-workspace | Collaborative teams |
 |------|----------------|----------------------|---------------------|
-| Free | Explore only | No | No |
+| Free | Yes (up to 3 accounts, 10 lifetime posts) | No | No |
 | Starter / Growth | Yes | Yes | No |
 | Pro | Yes (up to 50 accounts) | Yes | Yes (invite teammates) |
 

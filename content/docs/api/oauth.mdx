@@ -1,0 +1,167 @@
+---
+title: "Developer apps"
+description: How apps authenticate with Social0 — API keys for REST, OAuth only for hosted MCP connectors.
+---
+
+## Overview
+
+The Social0 public REST API (`/v1/*`) authenticates with **API keys** (`sk_live_…`), not OAuth2 client credentials or third-party app registration.
+
+| Auth model | Used for |
+|------------|----------|
+| **API keys** (`Authorization: Bearer sk_live_…`) | REST API, CLI, CI, server integrations |
+| **Session cookies** | Dashboard only (`/api/*` routes) — not for third-party clients |
+| **OAuth (hosted MCP)** | [Social0 MCP](/docs/integrations/mcp) connector for AI hosts without a shell |
+
+There is **no public OAuth2 app registration** for REST API access today. That is intentional: create an API key in your dashboard and call `/v1` directly.
+
+---
+
+## Create an API key
+
+1. Sign in at [social0.app](https://social0.app).
+2. Open **Developer** → [API keys](/docs/dashboard/api-keys).
+3. Click **Create key**, name it (e.g. `production-backend`), copy the raw key immediately.
+
+| Property | Detail |
+|----------|--------|
+| Format | `sk_live_` + secret (legacy `s0_live_` still works) |
+| Visibility | Raw key shown **once** on create/regenerate |
+| Scopes | **None** — keys inherit full access for the owning user |
+| Storage | Server stores hash only |
+
+---
+
+## Rotate and revoke
+
+| Action | Effect |
+|--------|--------|
+| **Regenerate** | New key issued; old key revoked immediately |
+| **Delete / revoke** | Key stops working instantly (`401 invalid_api_key`) |
+| **Multiple keys** | Supported — one key per integration recommended |
+
+Never commit keys to git. Use environment variables or a secrets manager.
+
+---
+
+## Request flow
+
+```mermaid
+sequenceDiagram
+  participant Dev as Your server
+  participant Dash as Social0 dashboard
+  participant API as Social0 /v1
+
+  Dev->>Dash: Create API key (one-time copy)
+  Dev->>API: GET /v1/accounts<br/>Authorization: Bearer sk_live_…
+  API-->>Dev: 200 connected accounts
+  Dev->>API: POST /v1/posts/publish
+  API-->>Dev: 202 tracking_id
+```
+
+1. Create and store `sk_live_…`.
+2. Send `Authorization: Bearer sk_live_…` on every `/v1` request.
+3. Use account UUIDs from `GET /v1/accounts` when publishing.
+
+---
+
+## Request header
+
+```
+Authorization: Bearer sk_live_xxxxxxxxxxxxxxxx
+Content-Type: application/json
+```
+
+### cURL
+
+```bash
+curl https://api.social0.app/v1/accounts \
+  -H "Authorization: Bearer sk_live_YOUR_KEY"
+```
+
+### Node.js (fetch)
+
+```javascript
+const API_KEY = process.env.SOCIAL0_API_KEY;
+
+const res = await fetch("https://api.social0.app/v1/posts/publish", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${API_KEY}`,
+    "Content-Type": "application/json",
+    "Idempotency-Key": crypto.randomUUID(),
+  },
+  body: JSON.stringify({
+    content: "Hello from Node",
+    platforms: ["550e8400-e29b-41d4-a716-446655440000"],
+  }),
+});
+
+if (res.status === 401) {
+  const { error } = await res.json();
+  throw new Error(`${error.code}: ${error.message}`);
+}
+
+const { tracking_id } = await res.json();
+console.log("Job:", tracking_id);
+```
+
+---
+
+## 401 errors
+
+| HTTP | `error.code` | When | Fix |
+|------|--------------|------|-----|
+| 401 | `invalid_api_key` | Missing `Authorization` header | Add `Bearer sk_live_…` |
+| 401 | `invalid_api_key` | Wrong or malformed key | Copy key again from dashboard |
+| 401 | `invalid_api_key` | Revoked or regenerated key | Create/regenerate key; update env |
+| 401 | `invalid_api_key` | Expired key (if `expires_at` set) | Create a new key |
+
+Example response:
+
+```json
+{
+  "error": {
+    "code": "invalid_api_key",
+    "message": "API key is invalid."
+  }
+}
+```
+
+Every response includes **`x-request-id`** — include it when contacting support.
+
+---
+
+## MCP OAuth (not REST OAuth)
+
+If you integrate through an AI host that cannot run the CLI or store API keys, use the hosted MCP connector:
+
+- Endpoint: `https://mcp.social0.app/mcp`
+- Auth: Social0 OAuth (approve in browser)
+- Docs: [Social0 MCP](/docs/integrations/mcp)
+
+MCP OAuth mints a connector-scoped key for the MCP session. That is separate from registering a third-party OAuth2 application for direct REST access — **REST integrations should use API keys**.
+
+Local MCP (`npx -y @social0/mcp`) uses `SOCIAL0_API_KEY` the same way as the REST API.
+
+---
+
+## What is not offered on `/v1`
+
+The public REST API does **not** include:
+
+- OAuth2 authorization-code flow for third-party apps
+- OAuth2 client ID / client secret registration
+- Per-key OAuth-style scopes
+
+Platform OAuth (connecting LinkedIn, Instagram, etc.) happens in the **dashboard** or via `POST /v1/accounts/connect` — that authorizes Social0 to post on your behalf, not your app to act as an OAuth provider.
+
+---
+
+## Related
+
+- [Authentication](/docs/api/authentication)
+- [Quickstart](/docs/api/quickstart)
+- [Errors](/docs/api/errors)
+- [Social0 MCP](/docs/integrations/mcp)
+- [Developer settings (dashboard)](/docs/dashboard/api-keys)
