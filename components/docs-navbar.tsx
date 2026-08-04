@@ -11,10 +11,11 @@ export function DocsNavbar() {
             href="https://social0.app"
             target="_blank"
             rel="noopener noreferrer"
+            aria-label="Social0"
             className="flex items-center gap-2"
           >
-            <span className="font-serif text-[22px] tracking-tight text-[var(--foreground)]">
-              Social0
+            <span className="font-serif text-[22px] tracking-tight text-[var(--foreground)]" aria-hidden="true">
+              𝐒𝐨𝐜𝐢𝐚𝐥𝟎
             </span>
           </a>
           <span className="text-[var(--border)]">|</span>

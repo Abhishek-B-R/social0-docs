@@ -1,8 +1,7 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
-import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
-import { Instrument_Serif } from "next/font/google";
+import { DM_Sans, Plus_Jakarta_Sans } from "next/font/google";
 import { RootProvider } from "fumadocs-ui/provider/next";
 import { DocsNavbar } from "@/components/docs-navbar";
 import {
@@ -66,11 +65,14 @@ export const metadata: Metadata = {
 
 const jsonLd = [buildOrganizationJsonLd(), buildWebSiteJsonLd()];
 
-const instrumentSerif = Instrument_Serif({
+const dmSans = DM_Sans({
   subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-  variable: "--font-instrument-serif",
+  variable: "--font-dm-sans",
+});
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-plus-jakarta",
 });
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -78,7 +80,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={instrumentSerif.variable}
+      className={`${dmSans.variable} ${plusJakartaSans.variable}`}
     >
       <head>
         <script
@@ -87,7 +89,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
       </head>
       <body
-        className={`${GeistSans.variable} ${GeistMono.variable} flex min-h-screen flex-col antialiased`}
+        className={`${GeistMono.variable} flex min-h-screen flex-col antialiased`}
       >
         <RootProvider>
           <DocsNavbar />

@@ -13,7 +13,7 @@ export default function HomePage() {
   return (
     <main className="flex min-h-[calc(100vh-3.5rem)] flex-col items-center justify-center px-6">
       <div className="max-w-xl text-center">
-        <h1 className="font-serif text-3xl tracking-tight text-(--foreground) sm:text-4xl">
+        <h1 className="font-serif text-3xl font-extrabold tracking-tight text-(--foreground) sm:text-4xl">
           Social0 Docs
         </h1>
         <p className="mt-3 text-(--muted-foreground)">

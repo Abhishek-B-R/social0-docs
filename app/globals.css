@@ -13,9 +13,10 @@
   --muted-foreground: #6b6b6b;
   --card: #ffffff;
   --sidebar-bg: #f5f2ed;
-  --font-sans: var(--geist-sans), system-ui, sans-serif;
+  --font-sans: var(--font-dm-sans), system-ui, sans-serif;
   --font-mono: var(--geist-mono), monospace;
-  --font-serif: var(--font-instrument-serif), Georgia, serif;
+  /* ponytail: keep --font-serif name so existing font-serif classes map to headings */
+  --font-serif: var(--font-plus-jakarta), system-ui, sans-serif;
 
   /* Fumadocs fd-* overrides so components use Social0 green */
   --color-fd-primary: #1a6b4a;
@@ -68,11 +69,16 @@ body {
   font-family: var(--font-sans);
 }
 
-h1,
+h1 {
+  font-family: var(--font-serif);
+  font-weight: 800;
+}
+
 h2,
 h3,
 h4 {
   font-family: var(--font-serif);
+  font-weight: 700;
 }
 
 /* No shadow - border only (Social0 anti-pattern) */
