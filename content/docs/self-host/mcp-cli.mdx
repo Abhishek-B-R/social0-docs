@@ -1,13 +1,13 @@
 ---
 title: "CLI and MCP"
-description: Point the Social0 CLI and MCP server at your self-hosted /v1 API.
+description: Point the Social0 CLI and MCP packages at your self-hosted Social0 v1 /v1 API.
 ---
 
 ## Overview
 
-The [CLI](/docs/integrations/cli) and [MCP](/docs/integrations/mcp) packages talk to the same REST API as the hosted product. On self-host, change the base URL to your instance — **`https://your-domain.com/v1`** — and authenticate with an API key from your dashboard.
+The public [CLI](/docs/cli) and [MCP](/docs/mcp) packages are thin clients over REST `/v1`. On self-host they talk to **your** Social0 v1 instance — not to social0.app — when you set the base URL to **`https://your-domain.com/v1`** and use an API key from **your** dashboard.
 
-Create keys at **Dashboard → API keys** on your instance (`sk_live_…`).
+Create keys at **Dashboard → API keys** on your instance (`sk_live_…`). Hosted keys from social0.app will not work against a self-hosted API.
 
 ## Environment variables
 
@@ -48,7 +48,7 @@ One-shot:
 SOCIAL0_API_URL=https://your-domain.com/v1 SOCIAL0_API_KEY=sk_live_… social0 accounts
 ```
 
-See [CLI quickstart](/docs/integrations/cli/quickstart) and [commands](/docs/integrations/cli/commands).
+See [CLI quickstart](/docs/cli/quickstart) and [commands](/docs/cli/commands).
 
 ## MCP (local npx)
 
@@ -91,12 +91,11 @@ curl -sH "Authorization: Bearer $SOCIAL0_API_KEY" "$SOCIAL0_API_URL/accounts"
 
 ## REST API docs
 
-OpenAPI and guides on hosted docs still apply to path shapes; only the host changes:
+Path shapes are documented under [API](/docs/api). Hosted OpenAPI at [api.social0.app/docs](https://api.social0.app/docs) is for the **cloud** product — use it as a guide, but confirm against **your** v1 instance (`/v1/accounts`, `/v1/posts`, …). Self-host and hosted may diverge over time.
 
-- [API quickstart](/docs/api/quickstart)
-- [Interactive docs](https://api.social0.app/docs) — compare request/response shapes
-
-Your instance serves `/v1` routes from the same Next.js app (e.g. `/v1/accounts`, `/v1/publish`).
+```bash
+curl -sH "Authorization: Bearer $SOCIAL0_API_KEY" "$SOCIAL0_API_URL/accounts"
+```
 
 ## Prerequisites
 
@@ -106,6 +105,6 @@ Your instance serves `/v1` routes from the same Next.js app (e.g. `/v1/accounts`
 
 ## Related
 
-- [Integrations overview](/docs/integrations)
+- [Integrations overview](/docs/cli)
 - [API authentication](/docs/api/authentication)
-- [MCP troubleshooting](/docs/integrations/mcp/troubleshooting)
+- [MCP troubleshooting](/docs/mcp/troubleshooting)

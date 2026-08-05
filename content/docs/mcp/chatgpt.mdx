@@ -1,0 +1,42 @@
+---
+title: "ChatGPT setup"
+description: Connect Social0 MCP to ChatGPT via remote URL (recommended) or local stdio if needed.
+---
+
+## Prefer remote first
+
+In ChatGPT, open **Settings → Connectors** (wording may vary) and add:
+
+```text
+https://mcp.social0.app/mcp
+```
+
+Click **Connect** and authorize on social0.app (OAuth). No Node.js. No API key in config.
+
+See the [MCP quickstart](/docs/mcp/quickstart).
+
+## Local npx (fallback)
+
+Only if your ChatGPT build does not support remote MCP connectors:
+
+```json
+{
+  "mcpServers": {
+    "social0": {
+      "command": "npx",
+      "args": ["-y", "@social0/mcp"],
+      "env": {
+        "SOCIAL0_API_KEY": "sk_live_your_key_here"
+      }
+    }
+  }
+}
+```
+
+Requires [Node.js 20+](https://nodejs.org/) and an API key from [Developer settings](/docs/dashboard/api-keys).
+
+## Related
+
+- [MCP quickstart](/docs/mcp/quickstart)
+- [MCP overview](/docs/mcp)
+- [Troubleshooting](/docs/mcp/troubleshooting)

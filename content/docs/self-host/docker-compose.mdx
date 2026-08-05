@@ -5,7 +5,7 @@ description: Run Postgres and Redis locally with docker compose, then start the 
 
 ## Overview
 
-The repo’s `docker-compose.yml` runs **Postgres and Redis only**. It does not start the Social0 app. That is intentional: local development runs the Next.js app via `npm run dev`, and production typically uses managed Postgres plus Upstash Redis REST.
+In the [social0-selfhost](https://github.com/Abhishek-B-R/social0-selfhost) repo, `docker-compose.yml` runs **Postgres and Redis only**. It does not start the Social0 app. That is intentional: local development runs the Next.js app via `npm run dev`, and production typically uses managed (often free-tier) Postgres plus Upstash Redis REST.
 
 Compose is for **local dev and quick setup**, not a full production stack.
 

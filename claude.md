@@ -57,18 +57,18 @@ This document describes the **social0-docs** project: a standalone Fumadocs site
 
 ---
 
-## 5. Documentation content policy (user-facing product docs)
+## 5. Documentation content policy
 
-All docs in **`content/docs/`** are **user-facing product documentation**. They are for people who signed up for Social0 and want to use it-not for developers or internal technical readers.
+Docs are split into **root section tabs** (Fumadocs `"root": true` folders). Product copy rules apply to the **Docs** tab only. Build tabs are technical.
 
-**Audience:** A regular person who uses Social0 to schedule and publish posts. They don’t need to know what an API or database is. They care about what to click, what they see, and how to get things done.
+### Docs tab (`content/docs/(docs)/`) — product docs
 
-**Rules when writing or editing docs:**
+For people who use Social0 to schedule and publish posts. They care about what to click, what they see, and how to get things done.
 
 - **NEVER mention:** Code, functions, components, or file names; API routes, endpoints, database, or server actions; Next.js, React, Drizzle, BullMQ, or any tech stack; internal architecture or how things work under the hood; error codes or technical error messages.
 - **ALWAYS:** Write in plain English; focus on what the user clicks, sees, and does; use short sentences; use “you” and talk directly to the user; explain what each feature does and how to use it step by step.
 
-**Standard page format:** Each doc page should have:
+**Standard page format:** Each product doc page should have:
 
 - **Frontmatter:** `title`, `description` (one sentence: what this page helps you do).
 - **Overview** - One short paragraph: what this is and why it exists.
@@ -79,9 +79,22 @@ All docs in **`content/docs/`** are **user-facing product documentation**. They 
 
 **Tone:** Friendly, clear, direct-like a helpful teammate explaining the product. Not a lawyer. Not an engineer.
 
-**Sections covered:** index (welcome), getting-started, platforms/_, post-types/_, features/_, billing/_, dashboard/\* (composer, create, connections, posts, settings, queue, feedback, bulk-tools, etc.), onboarding, auth (sign in, verify email, forgot/reset password), privacy, terms. The **developer/** section is intentionally non-technical: “Integrations and API” points users to contact for API/integrations; no internal architecture or code.
+**Product sections:** Introduction, how-it-works, getting-started, platforms/_, post-types/_, features/_, billing/_, dashboard/\* (composer, create, connections, posts, settings, queue, feedback, bulk-tools, etc.), onboarding, auth, troubleshooting, support, privacy, terms.
 
-**Free tier:** Document that on the free tier users can **only explore the dashboard**-they **cannot connect accounts or post anything** (no drafts, no scheduling, no publishing). Connecting accounts and posting require a paid plan (Starter, Growth, or Pro).
+### Build tabs — technical docs allowed
+
+| Tab | Path | Audience |
+|-----|------|----------|
+| **API** | `content/docs/api/` | REST `/v1`, auth, providers, guides |
+| **CLI** | `content/docs/cli/` | `social0` terminal / agents |
+| **MCP** | `content/docs/mcp/` | AI connectors |
+| **Self-host** | `content/docs/self-host/` | Deploy, config, contributing |
+
+These tabs may include endpoints, env vars, CLI flags, and code samples. Prefer clarity over jargon; still write for humans.
+
+**Free tier:** Document Free plan limits accurately (connected accounts and lifetime posts as defined in Billing docs). Do not invent restrictions that contradict `billing/` content.
+
+**Nav:** Custom `DocsNavbar` stays for brand/theme; Fumadocs `tabMode: "top"` renders Docs / API / CLI / MCP / Self-host. Keep `nav.enabled: false` in `baseOptions()` so the built-in brand nav does not duplicate.
 
 ---
 
@@ -137,8 +150,8 @@ All docs in **`content/docs/`** are **user-facing product documentation**. They 
 
 ## 11. Constraints for edits
 
-- **Do not** re-enable Fumadocs’ built-in nav without removing or reworking the custom `DocsNavbar` to avoid duplicate navs.
+- **Do not** re-enable Fumadocs’ built-in nav without removing or reworking the custom `DocsNavbar` to avoid duplicate navs. Section tabs use `tabMode: "top"` only.
 - **Do not** add new docs under `content/docs/` without valid **`title`** and **`description`** in frontmatter.
-- **Do not** introduce technical or developer content into product docs: no code, APIs, endpoints, database, or internal architecture. Keep the audience (regular users) and tone (friendly, plain English) per §5.
+- **Do not** introduce technical or developer content into the **Docs** tab (`(docs)/`): no code, APIs, endpoints, database, or internal architecture. Keep that audience and tone per §5. API / CLI / MCP / Self-host tabs are exempt.
 - **Keep** styling aligned with Social0: use CSS variables from `globals.css`; avoid shadows; use the same green accent for links and interactive elements.
 - **Favicon:** Single logo only; if you need a dark favicon later, add it in metadata with `prefers-color-scheme` and ensure assets exist in `public/`.

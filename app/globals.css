@@ -13,10 +13,10 @@
   --muted-foreground: #6b6b6b;
   --card: #ffffff;
   --sidebar-bg: #f5f2ed;
-  --font-sans: var(--font-dm-sans), system-ui, sans-serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
   --font-mono: var(--geist-mono), monospace;
-  /* ponytail: keep --font-serif name so existing font-serif classes map to headings */
-  --font-serif: var(--font-plus-jakarta), system-ui, sans-serif;
+  --font-serif: var(--font-inter), system-ui, sans-serif;
+  --font-brand: var(--font-instrument-serif), Georgia, serif;
 
   /* Fumadocs fd-* overrides so components use Social0 green */
   --color-fd-primary: #1a6b4a;
@@ -69,15 +69,42 @@ body {
   font-family: var(--font-sans);
 }
 
+/* Keep the page firm — no rubber-band / whole-page bounce at scroll edges */
+html,
+body {
+  overscroll-behavior: none;
+}
+
+#nd-docs-layout,
+#nd-sidebar,
+#nd-page,
+#nd-toc {
+  overscroll-behavior: contain;
+}
+
+/* Pin cloud CTA + theme bar to the bottom of the sidebar */
+#nd-sidebar > div:last-child {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  flex-shrink: 0;
+  margin-top: auto;
+  background: var(--color-fd-card, var(--card));
+}
+
+.font-brand {
+  font-family: var(--font-brand);
+}
+
 h1 {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-weight: 800;
 }
 
 h2,
 h3,
 h4 {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-weight: 700;
 }
 

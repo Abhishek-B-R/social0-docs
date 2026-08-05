@@ -5,7 +5,7 @@ description: Complete environment variable reference for self-hosting Social0.
 
 ## Overview
 
-Social0 reads configuration from `.env.local` (local/Docker) or `.env.self-host` (Cloudflare `npm run self-host`). Copy from [.env.example](https://github.com/Abhishek-B-R/social0-selfhost/blob/main/.env.example) or [.env.self-host.example](https://github.com/Abhishek-B-R/social0-selfhost/blob/main/.env.self-host.example) in the repo.
+Social0 v1 reads configuration from `.env.local` (local/Docker) or `.env.self-host` (Cloudflare `npm run self-host`). Copy from [.env.example](https://github.com/Abhishek-B-R/social0-selfhost/blob/main/.env.example) or [.env.self-host.example](https://github.com/Abhishek-B-R/social0-selfhost/blob/main/.env.self-host.example) in the [open self-host repo](https://github.com/Abhishek-B-R/social0-selfhost) — not from the closed hosted product.
 
 Never commit secrets. Rotate `BETTER_AUTH_SECRET`, `ENCRYPTION_KEY`, and `CRON_SECRET` together if you change auth secrets in production — changing `BETTER_AUTH_SECRET` alone logs everyone out.
 

@@ -1,0 +1,90 @@
+---
+title: "Stream Job"
+description: "SSE stream for live publish progress."
+icon: "GET"
+---
+
+## GET /v1/jobs/:trackingId/stream
+
+Optional **Server-Sent Events (SSE)** stream for live publish progress. Same Bearer API key auth as other `/v1` routes.
+
+**When to use:** building a UI that shows live publish progress. For backends/CI, polling is usually enough.
+
+**Auth:** Bearer API key (required)
+
+### Full URL
+
+```
+https://api.social0.app/v1/jobs/{tracking_id}/stream
+```
+
+The `stream_url` from publish responses is a relative path on the same host.
+
+### Event types
+
+| Event | When |
+|-------|------|
+| `progress` | Meaningful phase change (`platform_uploading`, `platform_success`, `platform_failed`) |
+| `done` | Job finished — payload is the same shape as `GET /v1/jobs/:trackingId` |
+
+### `progress` payload
+
+```json
+{
+  "status": "processing",
+  "phase": "platform_uploading",
+  "platform": "bluesky",
+  "message": "Uploading to bluesky",
+  "completed": 0,
+  "failed": 0,
+  "total": 1
+}
+```
+
+### `done` payload
+
+Full job snapshot (same as poll response):
+
+```json
+{
+  "tracking_id": "uuid",
+  "post_id": "uuid",
+  "status": "completed",
+  "platform_statuses": [],
+  "created_at": "2026-07-11T14:00:00.000Z",
+  "completed_at": "2026-07-11T14:01:00.000Z"
+}
+```
+
+### Late subscribers
+
+If the job is already `completed` or `failed` when you open the stream, you receive a single `done` event (no replay of historical progress chunks).
+
+### JavaScript — SSE client
+
+```javascript
+const url = `https://api.social0.app/v1/jobs/${trackingId}/stream`;
+const res = await fetch(url, {
+  headers: { Authorization: `Bearer ${process.env.SOCIAL0_API_KEY}` },
+});
+const reader = res.body.getReader();
+const decoder = new TextDecoder();
+
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) break;
+  const text = decoder.decode(value);
+  // Parse SSE events from text (event: progress\ndata: {...}\n\n)
+  console.log(text);
+}
+```
+
+### Dashboard-only SSE
+
+The dashboard session UI may use `/api/jobs/…/stream` internally. **Public API integrations should use `/v1/jobs/…/stream` only.**
+
+## Related
+
+- [Publish guide](/docs/api/guides/publish)
+- [Webhooks](/docs/api/webhooks)
+- [Posts reference](/docs/api/reference/list-posts)

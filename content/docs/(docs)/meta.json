@@ -1,0 +1,23 @@
+{
+  "title": "Documentation",
+  "description": "Product guides for using Social0",
+  "root": true,
+  "pages": [
+    "index",
+    "how-it-works",
+    "getting-started",
+    "onboarding",
+    "dashboard",
+    "---Product---",
+    "features",
+    "post-types",
+    "platforms",
+    "billing",
+    "auth",
+    "---Help---",
+    "troubleshooting",
+    "support",
+    "privacy",
+    "terms"
+  ]
+}

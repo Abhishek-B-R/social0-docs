@@ -1,0 +1,43 @@
+---
+title: "Troubleshooting"
+description: Fix common Social0 MCP connection, auth, media, and publish issues.
+---
+
+## Remote connector
+
+Use when you need MCP (no CLI). Hosted URL: `https://mcp.social0.app/mcp`.
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| Connector won’t connect | Wrong URL | Use exactly `https://mcp.social0.app/mcp` |
+| OAuth fails / loops | Session or popup blocked | Allow popups; retry Connect; revoke old connector key in [API keys](/docs/dashboard/api-keys) and reconnect |
+| Tools missing after connect | Host cache | Disconnect/reconnect the connector; restart the AI app |
+| Media upload fails with `file_path` | Hosted server can’t read sandbox paths | Use `upload_media` with a public `url` or base64 `data` |
+
+## Local npx auth
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| `SOCIAL0_API_KEY is required` | Missing env var | Set `SOCIAL0_API_KEY` in MCP host config `env` |
+| `401` / `invalid_api_key` | Revoked or wrong key | Create a new key in [Developer settings](/docs/dashboard/api-keys) |
+| `npx` fails | Old Node | Install [Node.js 20+](https://nodejs.org/) |
+
+## Accounts and platforms
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| No connected accounts | Platforms not linked | [Connect accounts](/docs/dashboard/connections) first |
+| Multiple accounts on one platform | Ambiguous name | Call `list_accounts`, then pass a UUID |
+
+## Publish status
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| Status stuck on `processing` | Video still uploading | Poll `get_publish_status` every few seconds; video can take minutes |
+| `partial` | Mixed platform results | Check per-platform errors; reconnect failed accounts |
+
+## Related
+
+- [MCP quickstart](/docs/mcp/quickstart)
+- [Tools reference](/docs/mcp/tools)
+- [API keys](/docs/dashboard/api-keys)

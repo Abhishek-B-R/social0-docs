@@ -1,0 +1,83 @@
+---
+title: "Get Me"
+description: "Return the authenticated user profile and API key metadata."
+icon: "GET"
+---
+
+## GET /v1/me
+
+Return the authenticated user’s profile, plan tier, timezone, and the API key used for this request.
+
+**Auth:** Bearer API key (required)
+
+### Response 200
+
+```json
+{
+  "id": "user_abc123",
+  "email": "jane@example.com",
+  "name": "Jane",
+  "image": "https://example.com/avatar.jpg",
+  "plan": "growth",
+  "timezone": "America/New_York",
+  "created_at": "2026-01-01T00:00:00.000Z",
+  "api_key": {
+    "id": "key_xyz",
+    "name": "production-backend",
+    "prefix": "sk_live_"
+  }
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | User ID |
+| `email` | string | Account email |
+| `name` | string | Display name |
+| `image` | string \| null | Avatar URL |
+| `plan` | string | Subscription tier: `free`, `starter`, `growth`, or `pro` |
+| `timezone` | string | Dashboard timezone (used for naive schedule times) |
+| `created_at` | datetime \| null | When the account was created |
+| `api_key` | object \| null | The key used on this request (`id`, `name`, `prefix`) |
+
+### cURL
+
+```bash
+curl https://api.social0.app/v1/me \
+  -H "Authorization: Bearer sk_live_YOUR_KEY"
+```
+
+### JavaScript
+
+```javascript
+const res = await fetch("https://api.social0.app/v1/me", {
+  headers: { Authorization: `Bearer ${process.env.SOCIAL0_API_KEY}` },
+});
+const me = await res.json();
+console.log(me.plan, me.timezone);
+```
+
+### Python
+
+```python
+import requests, os
+
+r = requests.get(
+    "https://api.social0.app/v1/me",
+    headers={"Authorization": f"Bearer {os.environ['SOCIAL0_API_KEY']}"},
+)
+me = r.json()
+```
+
+### Errors
+
+| HTTP | Code | When |
+|------|------|------|
+| 401 | `invalid_api_key` | Missing or invalid API key |
+| 404 | `not_found` | User record missing |
+
+### Related
+
+- CLI: `social0 whoami` calls this endpoint
+- [Authentication](/docs/api/authentication)
+- [Rate limits](/docs/api/rate-limits)

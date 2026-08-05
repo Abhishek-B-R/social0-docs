@@ -1,0 +1,57 @@
+---
+title: "Connect Account"
+description: "Start OAuth to connect a social account."
+icon: "POST"
+---
+
+## POST /v1/accounts/connect
+
+Returns an OAuth **authorization URL** to open in a browser. Does **not** connect an account inside the API call — the user must complete OAuth in the browser; then `GET /v1/accounts` shows the new account.
+
+**Recommended flow:** connect once in [Dashboard → Connections](https://social0.app/dashboard/connections), then use `GET /v1/accounts` for UUIDs. Use this endpoint only if you build custom onboarding that redirects users to OAuth.
+
+**Auth:** Bearer API key (required)
+
+### Request body
+
+```json
+{
+  "platform": "linkedin"
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `platform` | string | Yes | Platform to connect |
+
+**Supported `platform` values:** `linkedin`, `instagram`, `youtube`, `pinterest`, `tiktok`, `threads`, `facebook`
+
+**Not supported (dashboard only):** `twitter_x`, `bluesky` (BYOK — handle + app password in dashboard)
+
+### Response 200
+
+```json
+{
+  "authorization_url": "https://..."
+}
+```
+
+Redirect the end user to `authorization_url` in a browser. They must be logged into Social0.
+
+### cURL
+
+```bash
+curl -X POST https://api.social0.app/v1/accounts/connect \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"platform": "linkedin"}'
+```
+
+### Errors
+
+| HTTP | Code | When |
+|------|------|------|
+| 400 | `validation_error` | Unsupported platform (`twitter_x`, `bluesky`) |
+| 401 | `invalid_api_key` | Missing or invalid API key |
+
+---

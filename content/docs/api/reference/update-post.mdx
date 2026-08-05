@@ -1,0 +1,29 @@
+---
+title: "Update Post"
+description: "Update a draft or scheduled post."
+icon: "PATCH"
+---
+
+## PATCH /v1/posts/:id
+
+Update a draft or scheduled post.
+
+**Auth:** Bearer API key (required)
+
+### Request body
+
+Any combination of:
+
+```json
+{
+  "content": "Updated text",
+  "platforms": ["account-uuid"],
+  "media": ["media-uuid"]
+}
+```
+
+### Response 200
+
+Returns the updated post object.
+
+---

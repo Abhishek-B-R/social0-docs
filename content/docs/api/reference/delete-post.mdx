@@ -1,0 +1,17 @@
+---
+title: "Delete Post"
+description: "Delete a draft or scheduled post."
+icon: "DELETE"
+---
+
+## DELETE /v1/posts/:id
+
+Delete a draft or scheduled post.
+
+**Auth:** Bearer API key (required)
+
+### Response 204
+
+Empty body on success. Triggers `post.deleted` webhook if configured.
+
+---

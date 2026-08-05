@@ -7,7 +7,7 @@ description: Platform-specific metadata and platform_options for Social0 publish
 
 Most platforms accept **`content`**, **`platforms`** (connected account UUIDs), and optional **`media`**. When a network needs extra fields — TikTok privacy, Pinterest board, YouTube title, X disclosure flags — pass them in **`metadata`** and/or **`platform_options`**.
 
-Both objects are merged into the post's stored metadata before publish. Prefer **`metadata`** when you control the full shape; use **`platform_options`** for a flatter, per-platform API that Social0 compiles into metadata (see [Posts reference](/docs/api/reference/posts)).
+Both objects are merged into the post's stored metadata before publish. Prefer **`metadata`** when you control the full shape; use **`platform_options`** for a flatter, per-platform API that Social0 compiles into metadata (see [Posts reference](/docs/api/reference/list-posts)).
 
 **Base URL:** `https://api.social0.app/v1` (self-host: `https://your-domain.com/v1`)  
 **Auth:** `Authorization: Bearer sk_live_…`
@@ -112,7 +112,7 @@ curl https://api.social0.app/v1/jobs/TRACKING_ID \
   -H "Authorization: Bearer sk_live_YOUR_KEY"
 ```
 
-See [Jobs reference](/docs/api/reference/jobs) and [Publish guide](/docs/api/guides/publish).
+See [Jobs reference](/docs/api/reference/get-job) and [Publish guide](/docs/api/guides/publish).
 
 ---
 
@@ -150,7 +150,7 @@ Social0 truncates where the platform requires it; stay under limits to avoid cut
 
 ## Related
 
-- [Posts reference](/docs/api/reference/posts)
+- [Posts reference](/docs/api/reference/list-posts)
 - [Upload media](/docs/api/guides/media)
 - [Connect accounts](/docs/api/guides/connect-accounts)
 - [Authentication](/docs/api/authentication)

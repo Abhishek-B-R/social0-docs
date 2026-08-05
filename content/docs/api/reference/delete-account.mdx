@@ -1,0 +1,41 @@
+---
+title: "Delete Account"
+description: "Disconnect a connected social account."
+icon: "DELETE"
+---
+
+## DELETE /v1/accounts/:id
+
+Disconnect an account. Revokes token on the platform (best effort) and deletes the row.
+
+**Auth:** Bearer API key (required)
+
+### Path parameters
+
+| Param | Type | Description |
+|-------|------|-------------|
+| `id` | UUID | Connected account ID |
+
+### Response 204
+
+Empty body on success.
+
+### cURL
+
+```bash
+curl -X DELETE https://api.social0.app/v1/accounts/ACCOUNT_UUID \
+  -H "Authorization: Bearer sk_live_YOUR_KEY"
+```
+
+### Errors
+
+| HTTP | Code | When |
+|------|------|------|
+| 401 | `invalid_api_key` | Missing or invalid API key |
+| 403 | `forbidden` | Account belongs to another user |
+| 404 | `not_found` | Account not found |
+
+## Related
+
+- [Connect accounts guide](/docs/api/guides/connect-accounts)
+- [Posts reference](/docs/api/reference/list-posts)

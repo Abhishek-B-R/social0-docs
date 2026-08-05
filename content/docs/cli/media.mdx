@@ -1,0 +1,105 @@
+---
+title: "Media upload"
+description: Upload images and video with social0 upload, get media IDs, and attach them to publish or schedule.
+---
+
+Media must be uploaded through Social0 before you can attach it to a post. The CLI runs the same presign → PUT → confirm flow as the [REST API](/docs/api/guides/media).
+
+## Upload
+
+```bash
+social0 upload ./hero.png
+social0 upload ./clip.mp4 ./thumb.jpg
+social0 upload ./images/*
+social0 upload ./hero.png --json
+```
+
+Returns a **media ID** (UUID) for each file. Copy the ID into `-m` / `--media` on publish or schedule.
+
+## Supported types
+
+The CLI infers MIME from the file extension:
+
+| Extension | MIME |
+|-----------|------|
+| `.jpg`, `.jpeg` | `image/jpeg` |
+| `.png` | `image/png` |
+| `.gif` | `image/gif` |
+| `.webp` | `image/webp` |
+| `.mp4` | `video/mp4` |
+| `.mov` | `video/quicktime` |
+| `.webm` | `video/webm` |
+
+Common picks: **JPEG**, **PNG**, **MP4**, **MOV**. Very large files may hit plan or platform limits — see [Uploads and media troubleshooting](/docs/troubleshooting/uploads-media).
+
+## Image → publish
+
+```bash
+social0 upload ./hero.png --json
+# → copy "id" from JSON
+
+social0 publish -c "New look 👀" -p instagram -m <media-uuid>
+```
+
+Short form with table output:
+
+```bash
+social0 upload ./hero.png
+social0 publish -c "New look" -p instagram linkedin -m abc12345-...
+```
+
+## Video → publish
+
+```bash
+social0 upload ./reel.mp4 --json
+social0 publish -c "Behind the scenes" -p instagram tiktok -m <media-uuid>
+social0 status <tracking-id> --watch
+```
+
+Always poll `social0 status` after video or multi-platform publishes.
+
+## Multiple media
+
+```bash
+social0 upload ./a.png ./b.png
+social0 publish -c "Carousel" -p instagram -m <id-1> <id-2>
+```
+
+## Markdown front matter
+
+```markdown
+---
+platforms:
+  - instagram
+media:
+  - abc12345-6789-...
+---
+
+Caption goes here
+```
+
+```bash
+social0 publish post.md
+```
+
+Upload first, paste the media UUID into front matter.
+
+## JSON / automation
+
+```bash
+social0 upload ./hero.png --json
+# [{"filename":"hero.png","id":"…","url":"https://cdn…"}]
+```
+
+Pipe into scripts or CI — use the `id` field, not the CDN URL, in publish calls.
+
+## What not to do
+
+- Do not paste Google Drive / Dropbox share links as `-m` — pass Social0 media IDs only.
+- Do not skip upload for platforms that require media (e.g. YouTube needs video).
+
+## Related
+
+- [Platform examples](/docs/cli/platform-examples)
+- [Commands reference](/docs/cli/commands#publish--schedule--media--status)
+- [REST media guide](/docs/api/guides/media)

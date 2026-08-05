@@ -11,7 +11,7 @@ The Social0 public REST API (`/v1/*`) authenticates with **API keys** (`sk_live_
 |------------|----------|
 | **API keys** (`Authorization: Bearer sk_live_…`) | REST API, CLI, CI, server integrations |
 | **Session cookies** | Dashboard only (`/api/*` routes) — not for third-party clients |
-| **OAuth (hosted MCP)** | [Social0 MCP](/docs/integrations/mcp) connector for AI hosts without a shell |
+| **OAuth (hosted MCP)** | [Social0 MCP](/docs/mcp) connector for AI hosts without a shell |
 
 There is **no public OAuth2 app registration** for REST API access today. That is intentional: create an API key in your dashboard and call `/v1` directly.
 
@@ -138,7 +138,7 @@ If you integrate through an AI host that cannot run the CLI or store API keys, u
 
 - Endpoint: `https://mcp.social0.app/mcp`
 - Auth: Social0 OAuth (approve in browser)
-- Docs: [Social0 MCP](/docs/integrations/mcp)
+- Docs: [Social0 MCP](/docs/mcp)
 
 MCP OAuth mints a connector-scoped key for the MCP session. That is separate from registering a third-party OAuth2 application for direct REST access — **REST integrations should use API keys**.
 
@@ -163,5 +163,5 @@ Platform OAuth (connecting LinkedIn, Instagram, etc.) happens in the **dashboard
 - [Authentication](/docs/api/authentication)
 - [Quickstart](/docs/api/quickstart)
 - [Errors](/docs/api/errors)
-- [Social0 MCP](/docs/integrations/mcp)
+- [Social0 MCP](/docs/mcp)
 - [Developer settings (dashboard)](/docs/dashboard/api-keys)

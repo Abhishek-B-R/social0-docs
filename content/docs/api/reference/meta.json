@@ -1,11 +1,28 @@
 {
   "title": "API Reference",
   "pages": [
-    "index",
-    "accounts",
-    "posts",
-    "jobs",
-    "media",
-    "webhooks"
+    "get-me",
+    "list-accounts",
+    "connect-account",
+    "delete-account",
+    "list-posts",
+    "create-draft",
+    "get-post",
+    "get-post-events",
+    "update-post",
+    "delete-post",
+    "publish-post",
+    "schedule-post",
+    "create-and-publish",
+    "create-and-schedule",
+    "get-job",
+    "stream-job",
+    "presign-media",
+    "confirm-media",
+    "get-media",
+    "list-webhooks",
+    "create-webhook",
+    "update-webhook",
+    "delete-webhook"
   ]
 }

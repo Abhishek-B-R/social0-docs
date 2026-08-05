@@ -1,24 +1,3 @@
 {
-  "pages": [
-    "index",
-    "getting-started",
-    "onboarding",
-    "dashboard",
-    "---Product---",
-    "features",
-    "post-types",
-    "platforms",
-    "billing",
-    "auth",
-    "---Build---",
-    "integrations",
-    "api",
-    "self-host",
-    "---Help---",
-    "troubleshooting",
-    "support",
-    "developer",
-    "privacy",
-    "terms"
-  ]
+  "pages": ["(docs)", "api", "cli", "mcp", "self-host"]
 }

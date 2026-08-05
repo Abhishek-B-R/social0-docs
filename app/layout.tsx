@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { GeistMono } from "geist/font/mono";
-import { DM_Sans, Plus_Jakarta_Sans } from "next/font/google";
+import { Instrument_Serif, Inter } from "next/font/google";
 import { RootProvider } from "fumadocs-ui/provider/next";
 import { DocsNavbar } from "@/components/docs-navbar";
 import {
@@ -65,14 +65,16 @@ export const metadata: Metadata = {
 
 const jsonLd = [buildOrganizationJsonLd(), buildWebSiteJsonLd()];
 
-const dmSans = DM_Sans({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-dm-sans",
+  variable: "--font-inter",
 });
 
-const plusJakartaSans = Plus_Jakarta_Sans({
+const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
-  variable: "--font-plus-jakarta",
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-instrument-serif",
 });
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -80,7 +82,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${dmSans.variable} ${plusJakartaSans.variable}`}
+      className={`${inter.variable} ${instrumentSerif.variable}`}
     >
       <head>
         <script

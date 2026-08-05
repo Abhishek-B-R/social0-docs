@@ -1,0 +1,6 @@
+{
+  "title": "CLI",
+  "description": "Publish from the terminal with the social0 CLI",
+  "root": true,
+  "pages": ["index", "quickstart", "auth", "commands", "media", "platform-examples"]
+}

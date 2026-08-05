@@ -1,0 +1,34 @@
+---
+title: "Delete Webhook"
+description: "Remove a webhook subscription."
+icon: "DELETE"
+---
+
+## DELETE /v1/webhooks/:id
+
+Remove a webhook subscription.
+
+**Auth:** Bearer API key (required)
+
+### Response 204
+
+Empty body on success.
+
+### cURL
+
+```bash
+curl -X DELETE https://api.social0.app/v1/webhooks/WEBHOOK_UUID \
+  -H "Authorization: Bearer sk_live_YOUR_KEY"
+```
+
+### Errors
+
+| HTTP | Code | When |
+|------|------|------|
+| 401 | `invalid_api_key` | Missing or invalid API key |
+| 404 | `not_found` | Webhook not found |
+
+## Related
+
+- [Webhooks guide](/docs/api/webhooks) — delivery, signatures, events
+- [Developer settings](/docs/dashboard/api-keys) — dashboard UI for webhooks

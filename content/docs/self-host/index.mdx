@@ -1,36 +1,57 @@
 ---
 title: "Self-hosting Social0"
-description: Run Social0 on your own infrastructure with the open-source edition, or use the hosted service at social0.app.
+description: Run the open-source Social0 v1 edition on your own stack — Cloudflare Workers (~$5/mo) plus free Postgres and Redis.
 ---
 
 ## Overview
 
-Social0 is available in two forms:
+**[social0.app](https://social0.app)** is the hosted product. Its current production codebase is **not** open source.
 
-- **[social0.app](https://social0.app)** — hosted SaaS with managed infrastructure, automatic updates, and billing handled for you.
-- **[social0-selfhost](https://github.com/Abhishek-B-R/social0-selfhost)** — the self-hostable edition (AGPL-3.0). Also known as `social0-v1` internally. Same product surface: dashboard, REST `/v1`, [CLI](/docs/integrations/cli), and [MCP](/docs/integrations/mcp).
+What you can self-host is the **open-source Social0 v1** edition — a Next.js monolith published as [social0-selfhost](https://github.com/Abhishek-B-R/social0-selfhost) (AGPL-3.0; package name `social0-v1`). It includes a dashboard, REST `/v1`, and works with the public [CLI](/docs/cli) and [MCP](/docs/mcp) packages when you point them at your instance.
 
-Self-hosting is a good fit if you want full control over data, unlimited usage without SaaS billing (`BILLING_ENABLED=false`), or deployment inside your own network. You bring Postgres, Upstash Redis, Cloudflare R2 for media, and a public URL. Scheduling relies on a small Cloudflare Worker cron job.
+| | Hosted ([social0.app](https://social0.app)) | Self-host ([social0-selfhost](https://github.com/Abhishek-B-R/social0-selfhost)) |
+|--|---------------------------------------------|----------------------------------------------------------------------------------|
+| Source | Closed / proprietary | Open (AGPL-3.0; package `social0-v1`) |
+| Stack | Current SaaS app (private) | Next.js monolith (OpenNext → Workers or Node) |
+| Billing | SaaS plans | Turn off with `BILLING_ENABLED=false` for unlimited self-host limits |
+| Growth automation | Auto-repost / auto-plug on hosted | **Not implemented** in v1 cron (jobs no-op) |
+| Updates | Automatic | You pull and redeploy |
+
+Core compose, schedule, publish, connections, and REST `/v1` work on self-host. It is **not** a 1:1 clone of every hosted feature — don’t expect full parity with social0.app.
+
+Clone only `https://github.com/Abhishek-B-R/social0-selfhost.git` (a `social0-v1` GitHub path is not the public repo).
+
+## Cost (typical)
+
+You can keep data services on free tiers. The usual paid line item is Cloudflare Workers:
+
+| Piece | Typical cost |
+|-------|----------------|
+| **Cloudflare Workers Paid** | ~**$5/month** — preferred path for the full app Worker (~4 MiB gzip) |
+| **Postgres** | Free tier (e.g. Neon, Supabase) is enough to start |
+| **Upstash Redis** | Free REST database is enough for small instances |
+| **Cloudflare R2** | Free allowance for media; pay only if you exceed it |
+| **Domain** | Whatever you already pay (or Cloudflare DNS) |
+
+Workers **Free** is fine for the **cron-only** Worker if the app runs on Docker/Node elsewhere. The full app Worker usually needs Workers Paid unless you [trim unused platforms](https://github.com/Abhishek-B-R/social0-selfhost/blob/main/docs/prompts/workers-free-trim-platforms.md).
 
 ## Who it's for
 
-- Teams comfortable running Postgres and setting env vars
-- Homelab or VPS operators who already use Cloudflare (R2, Workers)
-- Developers evaluating or extending the codebase before contributing
+- People comfortable with env vars, OAuth apps, and a public HTTPS URL
+- Operators who already use Cloudflare (Workers, R2, DNS)
+- Contributors to the open [social0-selfhost](https://github.com/Abhishek-B-R/social0-selfhost) repo
 
-If you mainly want to post without ops work, use [social0.app](https://social0.app) instead.
+If you only want to schedule posts, use [social0.app](https://social0.app).
 
 ## Pick an install path
 
-| Path | Best for | Entry point |
-|------|----------|-------------|
-| **Cloudflare (preferred)** | Production with the fewest moving parts — app, cron, R2, and DNS in one account | [Requirements](/docs/self-host/requirements) → `npm run self-host` |
-| **Docker + Node** | Railway, Fly, Render, VPS, or any host that runs containers | [Docker](/docs/self-host/docker) + cron Worker |
-| **Local development** | Contributing, testing OAuth, or trying the UI locally | [Development](/docs/self-host/development) |
+| Path | Best for | Entry |
+|------|----------|-------|
+| **Cloudflare (preferred)** | Fewest moving parts — app, cron, R2, DNS in one account | [Requirements](/docs/self-host/requirements) → `npm run self-host` |
+| **Docker + Node** | Railway, Fly, Render, VPS | [Docker](/docs/self-host/docker) + cron Worker |
+| **Local development** | Trying the UI or contributing | [Development](/docs/self-host/development) |
 
 ### Cloudflare (preferred)
-
-Workers Paid (~$5/mo) fits the full app Worker (~4 MiB gzip). The `npm run self-host` script provisions R2 buckets, Hyperdrive, queues, and deploys both the app Worker and cron Worker.
 
 ```bash
 git clone https://github.com/Abhishek-B-R/social0-selfhost.git
@@ -43,11 +64,11 @@ npm run self-host
 
 Then add your hostname under **Workers → social0 → Domains**.
 
-Workers Free is enough for the **cron-only** Worker if the app runs elsewhere. The full app exceeds Free’s ~3 MiB gzip limit unless you trim unused platforms.
+The script provisions R2, Hyperdrive, queues, and deploys the app Worker plus the cron Worker.
 
 ### Docker + Node
 
-Build a standalone container and run it on any Node-capable host. You still need external Postgres, Upstash Redis, R2, and the cron Worker.
+Run the Next.js app anywhere Node/Docker runs. You still need external Postgres, Upstash Redis, R2, and the small cron Worker (Cloudflare Free works for cron-only).
 
 ```bash
 OUTPUT_STANDALONE=1 docker build -t social0 .
@@ -57,8 +78,6 @@ docker run --env-file .env.local -p 3000:3000 social0
 See [Docker](/docs/self-host/docker) and [Reverse proxy](/docs/self-host/reverse-proxy).
 
 ### Local development
-
-Postgres and Redis via `docker compose`; the app runs with `npm run dev`.
 
 ```bash
 cp .env.example .env.local
@@ -73,21 +92,21 @@ See [Development](/docs/self-host/development) and [Docker Compose](/docs/self-h
 | Component | Technology |
 |-----------|------------|
 | App | Next.js monolith (OpenNext → Cloudflare Workers, or Node standalone) |
-| Database | Postgres |
-| Sessions / rate limits | Upstash Redis REST |
+| Database | Postgres (free-tier hosts work) |
+| Sessions / rate limits | Upstash Redis REST (free tier works) |
 | Media | Cloudflare R2 |
-| Schedules | Cloudflare Worker cron (every ~5 minutes) + queue |
+| Schedules | Cloudflare Worker cron (~every 5 minutes) + queue |
 
-## Next steps
+## After deploy
 
-1. Review [Requirements](/docs/self-host/requirements)
-2. Configure env vars — [Configuration](/docs/self-host/configuration)
-3. Deploy using your chosen path
-4. Sign in, connect platforms ([Connections](/docs/dashboard/connections)), create an [API key](/docs/dashboard/api-keys)
-5. Point [CLI and MCP](/docs/self-host/mcp-cli) at `https://your-domain.com/v1`
+1. Review [Requirements](/docs/self-host/requirements) and [Configuration](/docs/self-host/configuration)
+2. Sign in, connect platforms, create an API key on **your** instance
+3. Point [CLI and MCP](/docs/self-host/mcp-cli) at `https://your-domain.com/v1`
+4. Schedule a test post — cron publishes within a few minutes
 
 ## Related
 
 - [GitHub — social0-selfhost](https://github.com/Abhishek-B-R/social0-selfhost)
-- [REST API](/docs/api)
+- [Contributing](/docs/self-host/contributing)
+- [REST API](/docs/api) (path shapes; use your own host)
 - [Troubleshooting](/docs/self-host/troubleshooting)

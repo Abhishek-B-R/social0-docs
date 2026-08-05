@@ -1,0 +1,66 @@
+---
+title: "Presign Upload"
+description: "Get a presigned URL to upload media."
+icon: "POST"
+---
+
+## POST /v1/media/presign
+
+Get a presigned upload URL.
+
+**Auth:** Bearer API key (required)
+
+### Request body
+
+```json
+{
+  "filename": "photo.jpg",
+  "content_type": "image/jpeg",
+  "size_bytes": 1048576
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `filename` | string | Yes | Original filename |
+| `content_type` | string | Yes | MIME type (`image/jpeg`, `video/mp4`, etc.) |
+| `size_bytes` | integer | Yes | File size in bytes |
+
+### Response 200
+
+```json
+{
+  "upload_url": "https://...",
+  "key": "uploads/{userId}/{storage_filename}",
+  "storage_filename": "uuid.jpg"
+}
+```
+
+### cURL
+
+```bash
+curl -X POST https://api.social0.app/v1/media/presign \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "filename": "photo.jpg",
+    "content_type": "image/jpeg",
+    "size_bytes": 1048576
+  }'
+```
+
+---
+
+## Step 2 — Upload file
+
+Upload directly to the presigned URL (no API key on this request):
+
+```bash
+curl -X PUT "$upload_url" \
+  -H "Content-Type: image/jpeg" \
+  --data-binary @photo.jpg
+```
+
+Set `Content-Type` to match the file's MIME type. Images and video use the same flow.
+
+---

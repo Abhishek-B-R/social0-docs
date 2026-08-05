@@ -1,12 +1,14 @@
 {
-  "title": "Self-hosting",
-  "defaultOpen": true,
+  "title": "Self-host",
+  "description": "Open-source Social0 v1 — Cloudflare Workers (~$5/mo) plus free Postgres and Redis",
+  "root": true,
   "pages": [
     "index",
     "requirements",
     "docker-compose",
     "docker",
     "development",
+    "contributing",
     "configuration",
     "docker-config",
     "uploads-storage",

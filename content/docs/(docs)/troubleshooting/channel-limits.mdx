@@ -1,0 +1,61 @@
+---
+title: "Account limits"
+description: Max connected accounts, free vs paid tiers, and how to free a slot on Social0.
+---
+
+## Overview
+
+How many social accounts you can connect depends on your **plan**. Free includes a small connection cap and a lifetime free-post quota. Paid plans raise the account cap and remove the free-post limit.
+
+Full comparison: [Plans](/docs/billing/plans) · [Connecting accounts](/docs/getting-started/connecting-accounts).
+
+## Free vs paid
+
+| Tier | Connected accounts | Publish / schedule |
+|------|--------------------|--------------------|
+| **Free** | Up to **3** | Up to **10** lifetime posts (drafts do not count against the quota) |
+| **Starter** | Up to **5** | Unlimited posts (plan features apply) |
+| **Growth** | Up to **15** | Unlimited posts + growth tools |
+| **Pro** | Up to **50** | Unlimited posts + teams |
+
+When the free-post quota is used up, Social0 blocks **Post now** and **Schedule** until you upgrade. Saving drafts still works.
+
+## "Max accounts reached"
+
+You hit your plan’s connection limit. Social0 blocks new connects until you free a slot or upgrade.
+
+**Free a slot:**
+
+1. **Dashboard → Connections**
+2. **Disconnect** an account you no longer need
+3. Connect the new account
+
+Disconnecting removes Social0’s access to post on that account; it does not delete the account on the platform.
+
+**Upgrade for more slots:**
+
+- Free → Starter (3 → 5)
+- Starter → Growth (5 → 15)
+- Growth → Pro (15 → 50)
+
+Open **Billing** to change plan.
+
+## Multiple accounts on one platform
+
+You can connect more than one account per network (e.g. two Twitter accounts). Each connection counts toward your limit. When using the API, CLI, or MCP, pass the account **UUID** if multiple accounts share a platform — names alone can be ambiguous. See [API errors](/docs/api/errors).
+
+## Plan lapse
+
+If a paid plan ends, you return to Free limits (3 accounts active, free-post quota). Extra connections may be marked inactive until you upgrade again. See [Billing troubleshooting](/docs/troubleshooting/billing).
+
+## Tips
+
+- Disconnect unused accounts before connecting new ones on smaller plans
+- Workspace/team limits are separate from connection count — [Teams](/docs/dashboard/teams)
+- Free’s **10** lifetime posts cover every platform; paid plans remove that cap — [Plans](/docs/billing/plans) · [Fair usage](/docs/billing/fair-usage)
+
+## Related
+
+- [Billing FAQ](/docs/billing/faq)
+- [OAuth & connect](/docs/troubleshooting/oauth-connect)
+- [Support](/docs/support)

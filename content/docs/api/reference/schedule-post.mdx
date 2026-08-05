@@ -1,0 +1,28 @@
+---
+title: "Schedule Post"
+description: "Schedule an existing post."
+icon: "POST"
+---
+
+## POST /v1/posts/:id/schedule
+
+Schedule an existing post.
+
+**Auth:** Bearer API key (required)
+
+### Request body
+
+```json
+{
+  "scheduledAt": "2026-07-15T10:00:00.000Z",
+  "timezone": "default"
+}
+```
+
+See [Scheduling & timezones](#scheduling--timezones) below.
+
+### Response 200
+
+Returns the updated post with `status: "scheduled"`.
+
+---

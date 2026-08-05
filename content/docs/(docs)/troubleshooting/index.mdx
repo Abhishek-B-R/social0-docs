@@ -1,0 +1,50 @@
+---
+title: "Troubleshooting"
+description: Fix common Social0 issues — split by cloud vs self-host, with links to focused guides.
+---
+
+## Overview
+
+Use this hub when something does not work as expected. Most fixes are the same on cloud and self-host; a few (auth secrets, media storage, Workers limits) apply only when you run your own deployment.
+
+## Cloud (social0.app)
+
+You use the hosted dashboard at [social0.app](https://social0.app). Start with the topic that matches your symptom:
+
+| Topic | When to open it |
+|-------|-----------------|
+| [Activation & login](/docs/troubleshooting/activation-login) | Verify link expired, cannot sign in, Google vs email, password reset |
+| [OAuth & connect](/docs/troubleshooting/oauth-connect) | Platform connect failed, invalid state, popup blocked, reconnect |
+| [Billing](/docs/troubleshooting/billing) | Payment blocked, blank billing page, plan not updating, trial ended |
+| [Account limits](/docs/troubleshooting/channel-limits) | Max accounts reached, free post quota used up |
+| [Uploads & media](/docs/troubleshooting/uploads-media) | File too large, wrong type, video metadata, upload stuck |
+| [Known issues](/docs/troubleshooting/known-issues) | Workarounds for recurring product quirks |
+
+Also useful:
+
+- [Connecting accounts](/docs/getting-started/connecting-accounts)
+- [Billing FAQ](/docs/billing/faq)
+- [MCP troubleshooting](/docs/mcp/troubleshooting) — remote connector or `npx @social0/mcp`
+- [Support](/docs/support) — email template and when to contact us
+
+## Self-host
+
+If you deploy from [social0-selfhost](https://github.com/Abhishek-B-R/social0-selfhost):
+
+- [Self-host troubleshooting](/docs/self-host/troubleshooting) — env vars, R2, cron, Workers size limits
+- [Activation & login](/docs/troubleshooting/activation-login) — **`BETTER_AUTH_SECRET`** must stay stable across deploys or sessions invalidate
+- [Uploads & media](/docs/troubleshooting/uploads-media) — R2 (or compatible storage) required for media
+- [Known issues](/docs/troubleshooting/known-issues) — self-host section at the bottom
+
+Open a GitHub issue on the self-host repo for deploy-specific bugs. Cloud billing does not apply to self-host.
+
+## Quick checks (any deployment)
+
+1. **Plan / quota OK?** Free allows up to 3 accounts and 10 lifetime posts. See [Account limits](/docs/troubleshooting/channel-limits) and [Plans](/docs/billing/plans).
+2. **Connection healthy?** **Dashboard → Connections** — reconnect if expired.
+3. **Multi-platform publish?** Poll job status until terminal; `partial` means some platforms failed. See [Known issues](/docs/troubleshooting/known-issues).
+4. **API or CLI?** Use account **UUIDs** in `platforms`, not platform names. See [API errors](/docs/api/errors).
+
+## Still stuck?
+
+Email [support@social0.app](mailto:support@social0.app) with the [how to ask](/docs/support#how-to-ask-for-help) template. Include `x-request-id` for API failures.

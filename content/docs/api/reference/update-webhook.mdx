@@ -1,0 +1,44 @@
+---
+title: "Update Webhook"
+description: "Update a webhook URL, events, or active state."
+icon: "PATCH"
+---
+
+## PATCH /v1/webhooks/:id
+
+Update a webhook subscription.
+
+**Auth:** Bearer API key (required)
+
+### Request body
+
+Any combination of:
+
+```json
+{
+  "url": "https://new-url.com/webhooks",
+  "events": ["post.published"],
+  "active": false
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `url` | string | New endpoint URL |
+| `events` | string[] | Updated event list |
+| `active` | boolean | Enable or disable delivery |
+
+### Response 200
+
+Returns the updated webhook object (without `secret`).
+
+### cURL
+
+```bash
+curl -X PATCH https://api.social0.app/v1/webhooks/WEBHOOK_UUID \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"active": false}'
+```
+
+---

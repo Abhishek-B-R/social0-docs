@@ -1,0 +1,59 @@
+---
+title: "Confirm Media"
+description: "Confirm an uploaded file and get a media ID."
+icon: "POST"
+---
+
+## POST /v1/media/confirm
+
+Confirm the upload and get a media ID for use in posts.
+
+**Auth:** Bearer API key (required)
+
+### Request body
+
+```json
+{
+  "key": "uploads/…/uuid.jpg",
+  "storage_filename": "uuid.jpg",
+  "original_filename": "photo.jpg",
+  "content_type": "image/jpeg",
+  "size_bytes": 1048576
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `key` | string | Yes | From presign response |
+| `storage_filename` | string | Yes | From presign response |
+| `original_filename` | string | Yes | Original filename |
+| `content_type` | string | Yes | MIME type |
+| `size_bytes` | integer | Yes | File size |
+
+### Response 201
+
+```json
+{
+  "id": "media-uuid",
+  "url": "https://cdn…"
+}
+```
+
+Use `id` in `POST /v1/posts` → `media` array.
+
+### cURL
+
+```bash
+curl -X POST https://api.social0.app/v1/media/confirm \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "key": "uploads/user-id/uuid.jpg",
+    "storage_filename": "uuid.jpg",
+    "original_filename": "photo.jpg",
+    "content_type": "image/jpeg",
+    "size_bytes": 1048576
+  }'
+```
+
+---

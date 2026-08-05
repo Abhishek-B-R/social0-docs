@@ -1,0 +1,49 @@
+---
+title: "Create Draft"
+description: "Create a draft post."
+icon: "POST"
+---
+
+## POST /v1/posts
+
+Create a **draft** post. Returns **201** with `{ "id": "post-uuid" }` only — no `tracking_id`. To publish, call `POST /v1/posts/:id/publish`.
+
+**Auth:** Bearer API key (required)
+
+### Request body
+
+```json
+{
+  "content": "Post text",
+  "platforms": ["connected-account-uuid"],
+  "media": ["media-uuid-optional"]
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `content` | string | Yes | Post text |
+| `platforms` | UUID[] | Yes | Connected account IDs |
+| `media` | UUID[] | No | Media IDs from upload flow |
+
+### Response 201
+
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+### cURL
+
+```bash
+curl -X POST https://api.social0.app/v1/posts \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content": "Draft via API",
+    "platforms": ["ACCOUNT_UUID"]
+  }'
+```
+
+---

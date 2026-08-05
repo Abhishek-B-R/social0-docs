@@ -1,0 +1,17 @@
+{
+  "title": "MCP",
+  "description": "Connect AI assistants to Social0 via MCP",
+  "root": true,
+  "pages": [
+    "index",
+    "quickstart",
+    "tools",
+    "examples",
+    "---Host setup---",
+    "claude-desktop",
+    "cursor",
+    "vscode",
+    "chatgpt",
+    "troubleshooting"
+  ]
+}

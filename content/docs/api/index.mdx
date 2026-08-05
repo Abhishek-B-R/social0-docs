@@ -1,6 +1,6 @@
 ---
-title: "Social0 API — Publish to social media programmatically"
-description: REST API for scheduling and publishing posts to LinkedIn, Instagram, and more.
+title: "API Overview"
+description: Getting started with the Social0 public REST API.
 ---
 
 ## Overview
@@ -35,12 +35,14 @@ sequenceDiagram
 
 ## What you can do
 
+- **Who am I** — `GET /v1/me` for plan, timezone, and key metadata
 - **List accounts** — get connected account UUIDs for the `platforms` field
 - **Create drafts** — save posts without publishing
 - **Publish now** — enqueue immediate publishing
 - **Schedule** — set a future `scheduledAt` (absolute instant or dashboard timezone via `+default`)
 - **Upload media** — presign → PUT → confirm flow
 - **Track jobs** — poll or stream publish progress
+- **Post events** — `GET /v1/posts/:id/events` for per-platform publish timeline
 - **Receive webhooks** — `post.published`, `post.failed`, `post.scheduled`, `post.deleted`
 
 ## What you need first
@@ -72,7 +74,7 @@ Document these clearly before building:
 - [Quickstart](/docs/api/quickstart) — publish your first post in 5 minutes
 - [Developer apps](/docs/api/oauth) — API keys (REST) vs MCP OAuth
 - [Provider settings](/docs/api/providers) — TikTok privacy, Pinterest boards, YouTube titles, threads
-- [MCP Server](/docs/integrations/mcp) — manage posts from Claude, Cursor, or ChatGPT
+- [MCP Server](/docs/mcp) — manage posts from Claude, Cursor, or ChatGPT
 - [Authentication](/docs/api/authentication) — API keys and security
 - [API Reference](/docs/api/reference) — all endpoints
 - [Webhooks](/docs/api/webhooks) — event delivery and signature verification

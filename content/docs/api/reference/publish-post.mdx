@@ -1,0 +1,40 @@
+---
+title: "Publish Post"
+description: "Publish an existing post now."
+icon: "POST"
+---
+
+## POST /v1/posts/:id/publish
+
+Publish an existing post immediately.
+
+**Auth:** Bearer API key (required)
+
+### Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Idempotency-Key` | Recommended | Safe retry — see [Idempotency](/docs/api/idempotency) |
+
+### Response 202
+
+```json
+{
+  "tracking_id": "uuid",
+  "status": "queued",
+  "stream_url": "/v1/jobs/{tracking_id}/stream"
+}
+```
+
+- `status: "queued"` = job accepted; publish runs in the background
+- `stream_url` is a **relative path**. Full URL: `https://api.social0.app/v1/jobs/{tracking_id}/stream`
+
+### cURL
+
+```bash
+curl -X POST https://api.social0.app/v1/posts/POST_UUID/publish \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Idempotency-Key: $(uuidgen)"
+```
+
+---

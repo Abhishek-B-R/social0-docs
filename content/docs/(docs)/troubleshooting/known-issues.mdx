@@ -1,0 +1,57 @@
+---
+title: "Known issues"
+description: Living list of Social0 quirks and workarounds — connect, posting, API, uploads, and self-host.
+---
+
+## Overview
+
+This page tracks real product behavior that looks like a bug but has a known cause or workaround. We update it as platforms and APIs change. For step-by-step fixes, see the topic guides linked from [Troubleshooting](/docs/troubleshooting).
+
+## Connect
+
+| Issue | Workaround |
+|-------|------------|
+| **Instagram connect fails or wrong account** | Try **direct Instagram OAuth** first. If you connected **via Facebook Page**, confirm the Instagram account is linked to that Page on Meta, then reconnect. [Instagram](/docs/platforms/instagram) |
+| **Meta OAuth errors on self-host** | Redirect URLs must use **HTTPS**. Configure public HTTPS for your dashboard origin |
+| **TikTok connected but slow to show posts** | TikTok often needs **several minutes** after we send the post before it appears on profile. Wait and refresh TikTok — [TikTok](/docs/platforms/tiktok) |
+| **CLI/MCP cannot finish OAuth** | By design. Connect in **Dashboard → Connections** first — [OAuth troubleshooting](/docs/troubleshooting/oauth-connect) |
+
+## Posting
+
+| Issue | Workaround |
+|-------|------------|
+| **Multi-platform job `partial` success** | Some platforms succeeded, others failed. Poll **`status`** / `get_publish_status` until terminal; read per-platform errors; reconnect failed accounts and retry only those |
+| **TikTok publish failed — privacy** | TikTok requires acceptable privacy/settings on the connected creator account. Check TikTok app settings, then reconnect if needed |
+| **Pinterest publish failed — board** | A **board** must be selected for the pin. Reconnect or pick board when creating the post — [Pinterest](/docs/platforms/pinterest) |
+| **Scheduled post did not fire (self-host)** | Self-host needs **cron** (or scheduled Worker) to process the queue. See [Self-host troubleshooting](/docs/self-host/troubleshooting) |
+
+## API & integrations
+
+| Issue | Workaround |
+|-------|------------|
+| **`platforms` validation error** | Pass **account UUIDs** from `GET /v1/accounts`, not platform names like `"linkedin"`. [API errors](/docs/api/errors) |
+| **429 rate limit** | Hourly API quota exceeded — back off and retry. [Rate limits](/docs/api/rate-limits) · [Fair usage](/docs/billing/fair-usage) |
+| **Free tier API publish limits** | **Free** allows API publish/schedule within the same **10** lifetime post quota (drafts do not count) and **3** account cap — [Plans](/docs/billing/plans) · [Channel limits](/docs/troubleshooting/channel-limits) |
+| **MCP `upload_media` with `url` fails** | URL must be a **direct** file link. Redirects and HTML pages fail. Use presign via REST or base64 `data` — [MCP troubleshooting](/docs/mcp/troubleshooting) |
+| **Ambiguous platform in CLI** | Run `social0 accounts --json` and use numeric ID or UUID when multiple accounts share a network |
+
+## Uploads
+
+| Issue | Workaround |
+|-------|------------|
+| **HEIC / WebP / GIF rejected** | Convert to **JPEG** or **PNG** (images) or **MP4** (video) |
+| **Video upload OK, publish fails metadata** | Re-encode to H.264 MP4; check platform duration limits |
+| **Self-host media 5xx** | Confirm **R2** bucket binding and public access for presigned PUT |
+
+## Self-host
+
+| Issue | Workaround |
+|-------|------------|
+| **Deploy exceeds Workers Free bundle size** | Full app may not fit **Workers Free** plan — upgrade Workers plan or trim deployment per repo docs |
+| **Schedules never run** | Enable **cron trigger** for the scheduler Worker |
+| **Everyone logged out after deploy** | Keep **`BETTER_AUTH_SECRET`** stable — [Activation & login](/docs/troubleshooting/activation-login) |
+| **Media uploads fail** | R2 (or compatible storage) required — [Uploads & media](/docs/troubleshooting/uploads-media) |
+
+## Report something missing
+
+If you hit behavior not listed here, check the focused guides or email [support@social0.app](mailto:support@social0.app) with the [support template](/docs/support#how-to-ask-for-help). Feature ideas: [Feedback](/docs/dashboard/feedback).

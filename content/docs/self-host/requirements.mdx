@@ -1,100 +1,105 @@
 ---
 title: "Requirements"
-description: Hardware, services, and network requirements for self-hosting Social0.
+description: What you need to self-host Social0 v1 — free Postgres/Redis options and ~$5/mo Cloudflare Workers Paid.
 ---
 
 ## Overview
 
-Social0 self-host needs a Postgres database, Upstash Redis (REST API), Cloudflare R2 for media uploads, a publicly reachable HTTPS URL, and outbound HTTPS to social platforms. Scheduling uses a Cloudflare Worker — even when the app runs on a VPS or in Docker.
+Self-hosting uses the **open-source Social0 v1** repo ([social0-selfhost](https://github.com/Abhishek-B-R/social0-selfhost)), not the closed hosted product. You need Postgres, Upstash Redis (REST), Cloudflare R2 for media, a public HTTPS URL, and outbound HTTPS to social platforms. Scheduling uses a Cloudflare Worker — even when the app runs on a VPS or in Docker.
 
-## Compute (reasonable floors)
+## Cost checklist
 
-These are practical minimums for a small team or personal instance, not hard limits enforced by the app.
+| Need | Free-tier friendly? | Notes |
+|------|---------------------|-------|
+| Postgres | Yes | Neon, Supabase, or similar free tiers |
+| Upstash Redis REST | Yes | Free database is enough for personal/small use |
+| Cloudflare R2 | Mostly | Free allowance; pay if you exceed storage/egress |
+| Cloudflare Workers (full app) | No (usually) | **Workers Paid ~$5/mo** for the full ~4 MiB gzip app Worker |
+| Cloudflare Workers (cron only) | Yes | Free tier works if the app is on Docker/Node elsewhere |
+| Domain | Your choice | Required for production OAuth |
+
+You are not required to pay for Postgres or Redis to get started. The predictable bill for the preferred all-on-Cloudflare path is **Workers Paid (~$5/month)**.
+
+## Compute
 
 | Resource | Minimum | Notes |
 |----------|---------|-------|
-| CPU | 1 vCPU | Build step is heavier; runtime is modest |
-| RAM | 1–2 GB | Node standalone or local dev; Workers path has no RAM you manage |
-| Disk | 5 GB+ | Mostly for Postgres data and Docker layers; media lives in R2 |
+| CPU | 1 vCPU | Only if you run Node/Docker yourself |
+| RAM | 1–2 GB | Node standalone or local dev; Workers path has no app RAM you manage |
+| Disk | 5 GB+ | Mostly Postgres/Docker layers; media lives in R2 |
 
-For the **Cloudflare Workers** path, you do not provision app servers — Cloudflare runs the Worker. You still need managed Postgres (Neon, Supabase, RDS, etc.) and Upstash Redis.
+On the **Cloudflare Workers** path you do not provision app servers — Cloudflare runs the Worker. You still attach managed Postgres and Upstash Redis.
 
 ## Required services
 
 ### Postgres
 
-Any Postgres 14+ compatible host works. Local dev uses the `docker compose` Postgres service (`postgresql://social0:social0@localhost:5432/social0`).
+Any Postgres 14+ host. Local dev uses `docker compose` (`postgresql://social0:social0@localhost:5432/social0`).
 
-Production examples: Neon, Supabase, Railway Postgres, RDS, or a VPS-hosted Postgres. Set `DATABASE_URL`.
+Production: Neon, Supabase, Railway Postgres, RDS, or self-managed. Set `DATABASE_URL`.
 
 ### Upstash Redis (REST)
 
-Sessions and rate limiting use **Upstash Redis REST** (`UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`). A free Upstash database is fine for small deployments.
+Sessions and rate limits use **Upstash Redis REST** (`UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`). A free Upstash database is fine for small deployments.
 
-The `redis` service in `docker-compose.yml` is optional for local experiments; production and rate limits expect Upstash REST.
+The optional `redis` service in `docker-compose.yml` is for local experiments; production expects Upstash REST.
 
 ### Cloudflare R2
 
-Media uploads (images, video) require R2. There is no durable local filesystem story for the Workers deployment path. See [Object storage](/docs/self-host/object-storage).
+Media uploads need R2. There is no durable local filesystem path for the Workers deploy. See [Object storage](/docs/self-host/object-storage).
 
 ### Cloudflare Worker (cron)
 
-Scheduled posts are published by `scheduler/cloudflare-worker`, which calls your app every ~5 minutes with `CRON_SECRET`. Cloudflare **Free** tier is enough for cron-only. The full app Worker needs **Workers Paid** (~$5/mo) unless you trim the build for Free.
+Scheduled posts are published by `scheduler/cloudflare-worker`, which calls your app every ~5 minutes with `CRON_SECRET`. Cloudflare **Free** is enough for cron-only. The full app Worker needs **Workers Paid** (~$5/mo) unless you trim the build for Free.
 
 ## Network
 
 ### Inbound
 
-- Your app must be reachable at a stable **HTTPS** URL (production).
-- Set `NEXT_PUBLIC_APP_URL` and `BETTER_AUTH_URL` to that URL (including scheme, no trailing slash issues — match what users type in the browser).
-- OAuth redirect URIs in platform developer consoles must match your public domain.
+- Stable **HTTPS** URL in production
+- `NEXT_PUBLIC_APP_URL` and `BETTER_AUTH_URL` match that URL
+- OAuth redirect URIs in each platform console match your domain
 
 ### Outbound
 
-The app and cron Worker need outbound HTTPS to:
-
-- Social platform APIs (Meta, X, LinkedIn, etc.)
-- Upstash Redis REST
-- Postgres (from your app host or Hyperdrive)
-- R2 (S3-compatible API)
-- Resend (if used for email)
+App and cron Worker need HTTPS to social APIs, Upstash, Postgres (or Hyperdrive), R2, and Resend (if used).
 
 ### Ports
 
 | Port | Use |
 |------|-----|
 | **3000** | Default Node / Docker app port |
-| **5432** | Postgres (local compose exposes this) |
+| **5432** | Postgres (local compose) |
 | **6379** | Optional local Redis (compose) |
 
 Behind a reverse proxy, terminate TLS at the proxy and forward to `:3000`. See [Reverse proxy](/docs/self-host/reverse-proxy).
 
 ## Domain
 
-You need a domain (or tunnel hostname) for production OAuth and for users to sign in:
-
 - **Cloudflare path:** domain on Cloudflare; set `APP_DOMAIN` in `.env.self-host`
-- **Other hosts:** point DNS at your server or tunnel; set `NEXT_PUBLIC_APP_URL` and `BETTER_AUTH_URL`
+- **Other hosts:** DNS to your server or tunnel; set `NEXT_PUBLIC_APP_URL` and `BETTER_AUTH_URL`
 
-Local dev uses `http://localhost:3000` (or `https://localhost:3000` for Meta OAuth — see [Development](/docs/self-host/development)).
+Local: `http://localhost:3000` (or `https://localhost:3000` for Meta OAuth — [Development](/docs/self-host/development)).
 
-## Cloudflare Workers Paid (preferred path)
+## Cloudflare Workers Paid vs Free
 
 | Plan | App Worker | Cron Worker |
 |------|------------|-------------|
-| **Workers Paid** (~$5/mo) | Full Social0 build (~4 MiB gzip) | Included |
-| **Workers Free** | Too large unless you trim platforms | Cron-only deployment works |
+| **Workers Paid** (~$5/mo) | Full Social0 v1 build (~4 MiB gzip) | Included |
+| **Workers Free** | Too large unless you trim platforms | Cron-only works |
 
-If you run the app on Docker/Node and only deploy the cron Worker to Cloudflare Free, you avoid the app size limit entirely.
+Trim guide: [workers-free-trim-platforms.md](https://github.com/Abhishek-B-R/social0-selfhost/blob/main/docs/prompts/workers-free-trim-platforms.md).
 
 ## Checklist before deploy
 
-- [ ] Postgres URL ready, migrations will run (`npm run db:migrate`)
+- [ ] Cloned [social0-selfhost](https://github.com/Abhishek-B-R/social0-selfhost) (open v1 edition)
+- [ ] Postgres URL ready (`npm run db:migrate`)
 - [ ] Upstash Redis REST URL + token
 - [ ] R2 bucket + API token + public URL
-- [ ] `BETTER_AUTH_SECRET`, `ENCRYPTION_KEY`, `CRON_SECRET` (≥32 chars; script can generate on self-host)
+- [ ] `BETTER_AUTH_SECRET`, `ENCRYPTION_KEY`, `CRON_SECRET` (≥32 chars; self-host script can generate)
 - [ ] Google OAuth and/or Resend for sign-in
-- [ ] Public HTTPS URL configured in env and reverse proxy
+- [ ] Public HTTPS URL configured
 - [ ] Cron Worker deployed with matching `CRON_SECRET` and app URL
+- [ ] `BILLING_ENABLED=false` if you want unlimited self-host limits without SaaS billing
 
-Next: [Docker Compose](/docs/self-host/docker-compose) (local) or [Configuration](/docs/self-host/configuration) (env reference).
+Next: [Docker Compose](/docs/self-host/docker-compose) (local) or [Configuration](/docs/self-host/configuration).

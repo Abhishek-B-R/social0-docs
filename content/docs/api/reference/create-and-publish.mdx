@@ -1,0 +1,53 @@
+---
+title: "Create & Publish"
+description: "Create and publish a post in one request."
+icon: "POST"
+---
+
+## POST /v1/posts/publish
+
+Create and publish in one request.
+
+**Auth:** Bearer API key (required)
+
+### Request body
+
+```json
+{
+  "content": "Hello from the API!",
+  "platforms": ["connected-account-uuid"],
+  "media": ["media-uuid-optional"]
+}
+```
+
+### Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Idempotency-Key` | Recommended | Safe retry |
+
+### Response 202
+
+```json
+{
+  "post_id": "uuid",
+  "tracking_id": "uuid",
+  "status": "queued",
+  "stream_url": "/v1/jobs/{tracking_id}/stream"
+}
+```
+
+### cURL
+
+```bash
+curl -X POST https://api.social0.app/v1/posts/publish \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: $(uuidgen)" \
+  -d '{
+    "content": "Hello from the Social0 API!",
+    "platforms": ["ACCOUNT_UUID"]
+  }'
+```
+
+---

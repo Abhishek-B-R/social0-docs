@@ -1,0 +1,73 @@
+---
+title: "Billing"
+description: Fix payment, checkout, plan updates, and trial issues on Social0 cloud billing.
+---
+
+## Overview
+
+Cloud billing runs through our payment provider (Stripe and/or Dodo, depending on region and checkout). Most billing UI lives at **Dashboard → Billing**. Self-host deployments do not use Social0 cloud billing.
+
+Start here: [Billing FAQ](/docs/billing/faq) · [Plans](/docs/billing/plans) · [Fair usage](/docs/billing/fair-usage).
+
+## Payment blocked or checkout fails
+
+| Symptom | Likely cause | Fix |
+|---------|--------------|-----|
+| Checkout never loads / spinner forever | Ad or tracker blocker | Disable adblock for social0.app and the payment provider domain; try another browser |
+| Card declined | Bank or card rules | Try another card; contact your bank; ensure billing country matches card |
+| 3-D Secure / authentication loop | Popup blocked | Allow popups; complete bank verification |
+| Discount or coupon fails | Code expired or wrong plan | Re-enter code on checkout; confirm the code applies to the plan you chose |
+
+## Blank or broken billing page
+
+1. Hard refresh **Dashboard → Billing**
+2. Disable adblock and privacy extensions
+3. Sign out and sign in again
+4. Try a different browser or network
+
+If the page loads but plan is wrong, wait a few seconds after payment and refresh again (webhook delay).
+
+## Plan not updating after payment
+
+Normal flow:
+
+1. Choose plan and complete checkout with payment provider
+2. Return to Social0 — plan should show active
+
+If it still shows Free or the old plan after ~1 minute:
+
+- Refresh Billing
+- Confirm the charge email matches your Social0 account email
+- Email [support@social0.app](mailto:support@social0.app) with charge date and receipt (no full card number)
+
+See [Billing FAQ — charged but plan didn’t update](/docs/billing/faq).
+
+## Trial / subscription ended — posts fail with "Payment required"
+
+When a paid subscription ends (or free lifetime posts are exhausted), publish/schedule can fail with a payment-required style message.
+
+1. **Dashboard → Billing** — upgrade or add payment method
+2. Confirm plan shows active (or free posts remaining on Free)
+3. Retry the failed post from **Posts**
+2. Retry failed posts from **Posts** after the plan is active
+
+Details: [Billing FAQ — trial ended](/docs/billing/faq).
+
+## Cancel, change plan, refunds
+
+- **Change plan:** Billing page → select another plan
+- **Cancel:** Manage subscription on Billing (may redirect to payment provider)
+- **Refunds:** Policy in [Terms](/docs/terms) and [social0.app/terms](https://social0.app/terms). Contact support with account email and reason.
+
+After cancel, you keep access until the period ends, then drop to **Free** (up to **3** accounts, **10** lifetime posts).
+
+## Tips
+
+- Keep your payment method current so your plan does not lapse unexpectedly
+- Teams collaboration requires **Pro** on the owner’s workspace — [Teams](/docs/dashboard/teams)
+- Usage limits (accounts, Free lifetime posts) are plan-based — [Plans](/docs/billing/plans) · [Fair usage](/docs/billing/fair-usage)
+
+## Related
+
+- [Account limits](/docs/troubleshooting/channel-limits)
+- [Support](/docs/support)

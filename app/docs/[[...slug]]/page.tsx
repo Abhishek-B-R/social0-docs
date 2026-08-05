@@ -4,12 +4,14 @@ import {
   DocsDescription,
   DocsPage,
   DocsTitle,
+  MarkdownCopyButton,
 } from 'fumadocs-ui/layouts/docs/page';
 import { notFound } from 'next/navigation';
 import { getMDXComponents } from '@/components/mdx';
 import type { Metadata } from 'next';
 import { createRelativeLink } from 'fumadocs-ui/mdx';
 import { buildDocsPageMetadata, buildTechArticleJsonLd } from '@/lib/seo';
+import { pageMarkdownUrl } from '@/lib/markdown';
 
 type PageProps = {
   params: Promise<{ slug?: string[] }>;
@@ -28,6 +30,7 @@ export default async function Page(props: PageProps) {
     description: page.data.description ?? '',
     path,
   });
+  const markdownUrl = pageMarkdownUrl(slug.length === 0 ? undefined : slug);
 
   return (
     <>
@@ -36,7 +39,12 @@ export default async function Page(props: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <DocsPage toc={page.data.toc} full={page.data.full}>
-        <DocsTitle className="font-extrabold">{page.data.title}</DocsTitle>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <DocsTitle className="font-extrabold">{page.data.title}</DocsTitle>
+          <MarkdownCopyButton markdownUrl={markdownUrl}>
+            Copy page
+          </MarkdownCopyButton>
+        </div>
         <DocsDescription>{page.data.description}</DocsDescription>
         <DocsBody>
           <MDX

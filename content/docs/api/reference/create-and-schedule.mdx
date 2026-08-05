@@ -1,0 +1,107 @@
+---
+title: "Create & Schedule"
+description: "Create and schedule a post in one request."
+icon: "POST"
+---
+
+## POST /v1/posts/schedule
+
+Create and schedule in one request.
+
+**Auth:** Bearer API key (required)
+
+### Request body
+
+```json
+{
+  "content": "Monday motivation",
+  "platforms": ["ACCOUNT_UUID"],
+  "scheduledAt": "2026-07-14T09:00:00.000Z"
+}
+```
+
+### Response 201
+
+Returns the created post with `status: "scheduled"`.
+
+### cURL
+
+```bash
+curl -X POST https://api.social0.app/v1/posts/schedule \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content": "Monday motivation",
+    "platforms": ["ACCOUNT_UUID"],
+    "scheduledAt": "2026-07-14T09:00:00.000Z"
+  }'
+```
+
+---
+
+## Scheduling & timezones
+
+`scheduledAt` is an **absolute instant** — when the post should go live. Pick one format:
+
+| Form | Example | Meaning |
+|------|---------|---------|
+| UTC | `"2026-07-20T10:00:00.000Z"` | 10:00 **UTC** |
+| Explicit offset | `"2026-07-20T15:30:00+05:30"` | Absolute instant (same as `04:30Z` for IST) |
+| **`+default` suffix** | `"2026-07-20T10:00:00+default"` | **10:00 in the user's dashboard timezone** |
+| Naive + `timezone` field | `"scheduledAt": "2026-07-20T10:00:00", "timezone": "default"` | Same as `+default` |
+| Naive + IANA zone | `"scheduledAt": "2026-07-20T10:00:00", "timezone": "Asia/Kolkata"` | 10:00 in that zone |
+
+Optional body field:
+
+```json
+{
+  "timezone": "default"
+}
+```
+
+- `"default"` → reads **Settings → timezone** for the API key's user (falls back to `UTC`)
+- Or pass any IANA name with a **naive** `scheduledAt` (no `Z`, no numeric offset)
+
+**Recommended for agents:** use `+default` when the user means "10am my time":
+
+```json
+{
+  "content": "Hello",
+  "platforms": ["account-uuid"],
+  "scheduledAt": "2026-07-20T10:00:00+default"
+}
+```
+
+### Rules
+
+- Must be in the **future** (small grace for clock skew)
+- Must be within **1 year**
+- If `scheduledAt` includes `Z` or `+05:30`, the optional `timezone` field is **ignored**
+
+### JavaScript examples
+
+```javascript
+// User's dashboard timezone (easiest)
+const scheduledAt = "2026-07-20T10:00:00+default";
+
+// Or explicit UTC / offset
+const scheduledAtUtc = "2026-07-20T04:30:00.000Z";
+const scheduledAtIst = "2026-07-20T10:00:00+05:30";
+```
+
+### Python — local → UTC (when not using +default)
+
+```python
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
+local = datetime(2026, 7, 20, 10, 0, tzinfo=ZoneInfo("Asia/Kolkata"))
+scheduled_at = local.astimezone(ZoneInfo("UTC")).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+```
+
+## Related
+
+- [Schedule guide](/docs/api/guides/schedule)
+- [Publish guide](/docs/api/guides/publish)
+- [Jobs reference](/docs/api/reference/get-job)
+- [Media reference](/docs/api/reference/presign-media)

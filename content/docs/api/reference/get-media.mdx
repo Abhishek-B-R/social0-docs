@@ -1,0 +1,70 @@
+---
+title: "Get Media"
+description: "Get metadata for an uploaded media asset."
+icon: "GET"
+---
+
+## GET /v1/media/:id
+
+Returns metadata for media you own.
+
+**Auth:** Bearer API key (required)
+
+### Response 200
+
+```json
+{
+  "id": "media-uuid",
+  "url": "https://cdn…",
+  "content_type": "image/jpeg",
+  "size_bytes": 1048576,
+  "original_filename": "photo.jpg",
+  "created_at": "2026-07-11T14:00:00.000Z"
+}
+```
+
+### Errors
+
+| HTTP | Code | When |
+|------|------|------|
+| 401 | `invalid_api_key` | Missing or invalid API key |
+| 404 | `not_found` | Media not found |
+
+---
+
+## Full upload example (Python)
+
+```python
+import requests, os
+
+API = "https://api.social0.app"
+KEY = os.environ["SOCIAL0_API_KEY"]
+HEADERS = {"Authorization": f"Bearer {KEY}", "Content-Type": "application/json"}
+
+# Step 1: presign
+presign = requests.post(f"{API}/v1/media/presign", headers=HEADERS, json={
+    "filename": "photo.jpg",
+    "content_type": "image/jpeg",
+    "size_bytes": 1048576,
+}).json()
+
+# Step 2: upload
+with open("photo.jpg", "rb") as f:
+    requests.put(presign["upload_url"], data=f, headers={"Content-Type": "image/jpeg"})
+
+# Step 3: confirm
+media = requests.post(f"{API}/v1/media/confirm", headers=HEADERS, json={
+    "key": presign["key"],
+    "storage_filename": presign["storage_filename"],
+    "original_filename": "photo.jpg",
+    "content_type": "image/jpeg",
+    "size_bytes": 1048576,
+}).json()
+
+print(media["id"])  # Use in posts
+```
+
+## Related
+
+- [Media upload guide](/docs/api/guides/media)
+- [Posts reference](/docs/api/reference/list-posts)

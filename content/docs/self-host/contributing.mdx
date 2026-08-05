@@ -1,0 +1,41 @@
+---
+title: "Contributing"
+description: How to contribute to the open-source Social0 v1 (self-host) edition.
+---
+
+## Overview
+
+Open-source contributions go to **Social0 v1** — the self-hostable Next.js edition. That is **not** the closed source that powers [social0.app](https://social0.app) today.
+
+## Repository
+
+- **Repo:** [github.com/Abhishek-B-R/social0-selfhost](https://github.com/Abhishek-B-R/social0-selfhost)
+- **Package name:** `social0-v1`
+- **License:** AGPL-3.0
+- **Contributor guide:** [CONTRIBUTING.md](https://github.com/Abhishek-B-R/social0-selfhost/blob/main/CONTRIBUTING.md)
+
+## How to contribute
+
+1. Read [Development](/docs/self-host/development) and get a local environment running.
+2. Open an issue or check existing ones before large changes.
+3. Fork the repo, branch from `main`, and open a pull request with a clear description.
+4. Follow the contributor guide for style, tests, and review expectations.
+
+Platform publish code lives under `lib/publish-platforms/` in that repo. Public API handlers live under `app/v1/`. Prefer small, focused PRs.
+
+## Tips
+
+- Small, focused PRs are easier to review than large rewrites.
+- Include steps to reproduce for bug fixes.
+- Don’t commit secrets or `.env` files.
+
+## Common questions
+
+**Q: Can I open-source or contribute to the current hosted social0.app codebase?**  
+A: No — the hosted product’s current codebase is proprietary. Open-source work belongs in **social0-selfhost** (v1).
+
+**Q: Will self-host always match social0.app feature-for-feature?**  
+A: No. Hosted keeps shipping on a private stack. The open edition is the self-hostable v1 lineage. Compose / schedule / publish / `/v1` are there; **auto-repost and auto-plug cron jobs are stubs** in v1 (they no-op). Prefer hosted if you need those growth features managed for you.
+
+**Q: Where do I report a self-host bug?**  
+A: [GitHub Issues](https://github.com/Abhishek-B-R/social0-selfhost/issues). Include your deploy path and a redacted env shape when relevant.
