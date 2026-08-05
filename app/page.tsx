@@ -25,12 +25,7 @@ const quiet =
 
 export default function HomePage() {
   return (
-    <main className="relative flex min-h-[calc(100vh-3.5rem)] flex-col items-center justify-center overflow-hidden px-6">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_30%,color-mix(in_oklab,var(--accent)_14%,transparent),transparent_55%)]"
-      />
-
+    <main className="relative flex min-h-full flex-col items-center justify-center overflow-hidden px-6">
       <div className="relative max-w-2xl text-center">
         <h1 className="text-3xl font-extrabold tracking-tight text-(--foreground) sm:text-4xl">
           Social0 Docs

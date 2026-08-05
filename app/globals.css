@@ -75,7 +75,14 @@ body {
   overscroll-behavior: none;
 }
 
-#nd-docs-layout,
+/* Docs shell: navbar is outside this scrollport; layout fills remaining height */
+#nd-docs-layout {
+  --fd-docs-height: 100%;
+  --fd-docs-row-1: 0px;
+  min-height: 100%;
+  overscroll-behavior: contain;
+}
+
 #nd-sidebar,
 #nd-page,
 #nd-toc {

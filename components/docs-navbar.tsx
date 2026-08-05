@@ -5,7 +5,7 @@ import { DocsSectionTabs } from "@/components/docs-section-tabs";
 
 export function DocsNavbar() {
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--background)]/80 backdrop-blur-sm">
+    <header className="z-50 shrink-0 border-b border-[var(--border)] bg-[var(--background)]/80 backdrop-blur-sm">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-4 px-6">
         <div className="flex min-w-0 items-center gap-3">
           <Link

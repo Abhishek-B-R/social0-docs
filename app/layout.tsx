@@ -91,11 +91,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
       </head>
       <body
-        className={`${GeistMono.variable} flex min-h-screen flex-col antialiased`}
+        className={`${GeistMono.variable} flex h-dvh flex-col overflow-hidden antialiased`}
       >
         <RootProvider>
           <DocsNavbar />
-          {children}
+          <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
         </RootProvider>
       </body>
     </html>

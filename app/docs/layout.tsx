@@ -3,6 +3,7 @@ import { source } from '@/lib/source';
 import { DocsLayout } from 'fumadocs-ui/layouts/docs';
 import { baseOptions } from '@/lib/layout.shared';
 import { SidebarCloudBar } from '@/components/sidebar-cloud-bar';
+import { SidebarGitHubBanner } from '@/components/sidebar-github-banner';
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
@@ -14,8 +15,8 @@ export default function Layout({ children }: { children: ReactNode }) {
       themeSwitch={{ enabled: false }}
       sidebar={{
         defaultOpenLevel: 1,
-        banner: null,
-        footer: <SidebarCloudBar />,
+        banner: <SidebarGitHubBanner key="sidebar-github" />,
+        footer: <SidebarCloudBar key="sidebar-cloud-bar" />,
       }}
     >
       {children}
