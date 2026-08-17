@@ -146,7 +146,7 @@ social0 version
 social0 update
 ```
 
-## Custom API URL / self-host
+## Custom API URL
 
 Priority (highest first):
 
@@ -158,9 +158,9 @@ Priority (highest first):
 The CLI appends `/v1` if you omit it.
 
 ```bash
-social0 --api-url https://your-domain.com accounts
-export SOCIAL0_API_URL=https://your-domain.com
-social0 config set apiUrl https://your-domain.com/v1
+social0 --api-url https://api.social0.app accounts
+export SOCIAL0_API_URL=https://api.social0.app/v1
+social0 config set apiUrl https://api.social0.app/v1
 social0 config get apiUrl
 ```
 

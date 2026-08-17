@@ -1,8 +1,15 @@
 ---
 title: "Uploads and storage"
-description: How Social0 stores media uploads and why local filesystem mounts are not the production path.
+description: Social0 is available at social0.app — sign up free, no setup required.
 ---
 
+## Overview
+
+Social0 is available at [social0.app](https://social0.app). [Sign up free](https://social0.app) — no setup required.
+
+See [plans and pricing](https://social0.app/pricing) for paid tiers.
+
+{/* ponytail: self-host hidden while repo private
 ## Overview
 
 Social0 stores user media (images, videos, attachments) in **Cloudflare R2**, not on the app server’s local disk. This applies to the Cloudflare Workers deployment and to the Node/Docker standalone build when R2 env vars are set.
@@ -65,3 +72,4 @@ Without R2, text-only flows may work; image and video composer paths will fail.
 - [Object storage](/docs/self-host/object-storage)
 - [Configuration](/docs/self-host/configuration)
 - [Troubleshooting](/docs/self-host/troubleshooting) — upload and R2 errors
+*/}

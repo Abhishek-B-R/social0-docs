@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import {
   IconBook,
   IconCode,
-  IconServer,
   IconTerminal2,
   IconRobot,
 } from "@tabler/icons-react";
@@ -12,7 +11,7 @@ import { buildPageMetadata } from "@/lib/seo";
 export const metadata: Metadata = buildPageMetadata({
   title: "Social0 Docs",
   description:
-    "Documentation for the Social0 dashboard, CLI, API, AI assistants, and self-hosting.",
+    "Documentation for Social0 — the multi-platform social scheduler for creators and AI agents, hosted at social0.app.",
   path: "/",
 });
 
@@ -30,9 +29,15 @@ export default function HomePage() {
         <h1 className="text-3xl font-extrabold tracking-tight text-(--foreground) sm:text-4xl">
           Social0 Docs
         </h1>
-        <p className="mx-auto mt-3 max-w-md text-(--muted-foreground)">
-          Documentation for the Social0 dashboard, CLI, API, AI assistants, and
-          self-hosting.
+        <p className="mx-auto mt-3 max-w-lg text-(--muted-foreground)">
+          Multi-platform social scheduler for creators and AI agents — hosted at{" "}
+          <a
+            href="https://social0.app"
+            className="text-(--foreground) underline-offset-2 hover:underline"
+          >
+            social0.app
+          </a>
+          . Dashboard, CLI, Public API, and MCP docs.
         </p>
 
         <div className="mt-10 flex flex-col items-center gap-5">
@@ -45,10 +50,9 @@ export default function HomePage() {
               <IconCode className="size-4 text-(--accent)" strokeWidth={1.75} />
               Build with the API
             </Link>
-            <Link href="/docs/self-host" className={soft}>
-              <IconServer className="size-4 text-(--accent)" strokeWidth={1.75} />
-              Self-hosting
-            </Link>
+            <a href="https://social0.app/pricing" className={soft}>
+              Plans & pricing
+            </a>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-3">

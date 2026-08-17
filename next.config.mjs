@@ -54,6 +54,17 @@ const config = {
         destination: '/docs/api',
         permanent: true,
       },
+      // ponytail: self-host hidden while repo private
+      {
+        source: '/docs/self-host',
+        destination: '/docs',
+        permanent: false,
+      },
+      {
+        source: '/docs/self-host/:path*',
+        destination: '/docs',
+        permanent: false,
+      },
     ];
   },
 };

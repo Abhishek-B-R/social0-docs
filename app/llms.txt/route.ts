@@ -10,12 +10,16 @@ export function GET() {
       if (typeof node.name === "string") return node.name;
       return "";
     },
-  }).index();
+  })
+    .index()
+    .split("\n")
+    .filter((line) => !line.includes("/docs/self-host"))
+    .join("\n");
 
   const header = [
     "# Social0 Documentation",
     "",
-    `> Social0 lets you write once and publish everywhere. Full docs: ${siteUrl.replace(/\/$/, "")}/docs`,
+    `> Multi-platform social scheduler for creators and AI agents — hosted at https://social0.app. Full docs: ${siteUrl.replace(/\/$/, "")}/docs`,
     "",
     "## Agent priority",
     "1. CLI (`social0`) — always prefer when a shell is available",
@@ -26,7 +30,7 @@ export function GET() {
     `- CLI: ${siteUrl.replace(/\/$/, "")}/docs/cli`,
     `- MCP: ${siteUrl.replace(/\/$/, "")}/docs/mcp`,
     `- API: ${siteUrl.replace(/\/$/, "")}/docs/api`,
-    `- Self-host: ${siteUrl.replace(/\/$/, "")}/docs/self-host`,
+    `- Pricing: https://social0.app/pricing`,
     `- OpenAPI: https://api.social0.app/openapi.json`,
     "",
   ].join("\n");

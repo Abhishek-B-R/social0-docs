@@ -4,11 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const sections = [
-  { href: "/docs", label: "Documentation", match: (path: string) => path === "/docs" || (!path.startsWith("/docs/api") && !path.startsWith("/docs/cli") && !path.startsWith("/docs/mcp") && !path.startsWith("/docs/self-host") && path.startsWith("/docs")) },
+  { href: "/docs", label: "Documentation", match: (path: string) => path.startsWith("/docs") && !path.startsWith("/docs/api") && !path.startsWith("/docs/cli") && !path.startsWith("/docs/mcp") },
   { href: "/docs/api", label: "Public API", match: (path: string) => path.startsWith("/docs/api") },
   { href: "/docs/cli", label: "CLI", match: (path: string) => path.startsWith("/docs/cli") },
   { href: "/docs/mcp", label: "MCP", match: (path: string) => path.startsWith("/docs/mcp") },
-  { href: "/docs/self-host", label: "Self-host", match: (path: string) => path.startsWith("/docs/self-host") },
+  // ponytail: self-host hidden while repo private
 ] as const;
 
 export function DocsSectionTabs() {

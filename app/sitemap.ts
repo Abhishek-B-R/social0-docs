@@ -20,7 +20,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  const docPages: MetadataRoute.Sitemap = source.getPages().map((page) => ({
+  const docPages: MetadataRoute.Sitemap = source
+    .getPages()
+    .filter((page) => !page.url.startsWith("/docs/self-host"))
+    .map((page) => ({
     url: absoluteUrl(page.url),
     lastModified: now,
     changeFrequency: "weekly" as const,

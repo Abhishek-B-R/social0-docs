@@ -1,6 +1,6 @@
 ---
 title: "Authentication"
-description: Log in with an API key, use env vars for CI, configure self-host URLs, and manage credential storage.
+description: Log in with an API key, use env vars for CI, and manage credential storage.
 ---
 
 Global package: [`social0`](https://www.npmjs.com/package/social0). Thin client over `https://api.social0.app/v1`.
@@ -63,7 +63,7 @@ social0 passphrase remove
 
 Or set `SOCIAL0_CREDENTIAL_PASSPHRASE` before `social0 login`.
 
-## Self-host / custom API URL
+## Custom API URL
 
 Priority (highest first):
 
@@ -75,13 +75,15 @@ Priority (highest first):
 The CLI appends `/v1` if you omit it.
 
 ```bash
-social0 --api-url https://your-domain.com accounts
-export SOCIAL0_API_URL=https://your-domain.com/v1
-social0 config set apiUrl https://your-domain.com/v1
+social0 --api-url https://api.social0.app accounts
+export SOCIAL0_API_URL=https://api.social0.app/v1
+social0 config set apiUrl https://api.social0.app/v1
 social0 config get apiUrl
 ```
 
+{/* ponytail: self-host hidden while repo private
 Use API keys from **your instance** dashboard — keys from social0.app do not work on self-host. See [Self-host CLI and MCP](/docs/self-host/mcp-cli).
+*/}
 
 ## Verify auth
 

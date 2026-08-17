@@ -52,7 +52,10 @@ Branded content (`brand_content` or `brand_content_toggle`) **cannot** use `SELF
 
 Settings must be keyed by **connected account UUID** under `metadata.tiktok`. A flat `tiktok: { privacy_level }` object (without the account id key) is ignored and publish fails with a missing-privacy error.
 
-On **hosted** Social0, `platform_options.tiktok` is compiled per-account and may default `privacy_level` to `PUBLIC_TO_EVERYONE` when omitted. Flat, non-UUID-keyed objects still fail — prefer explicit `metadata.tiktok[<uuid>]`. Self-hosted deployments that only do simple metadata merge do not apply that default; always pass UUID-keyed privacy.
+On **hosted** Social0, `platform_options.tiktok` is compiled per-account and may default `privacy_level` to `PUBLIC_TO_EVERYONE` when omitted. Flat, non-UUID-keyed objects still fail — prefer explicit `metadata.tiktok[<uuid>]`.
+{/* ponytail: self-host hidden while repo private
+Self-hosted deployments that only do simple metadata merge do not apply that default; always pass UUID-keyed privacy.
+*/}
 
 ---
 

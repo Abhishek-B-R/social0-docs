@@ -49,7 +49,10 @@ See [Pinterest (product)](/docs/platforms/pinterest).
 }
 ```
 
-(`createBoard` camelCase is also accepted.) This is a **cloud compile helper** — self-hosted deployments that only do simple metadata merge may not support `create_board`; pass an existing `boardId` instead.
+(`createBoard` camelCase is also accepted.) This is a **cloud compile helper** on hosted Social0.
+{/* ponytail: self-host hidden while repo private
+Self-hosted deployments that only do simple metadata merge may not support `create_board`; pass an existing `boardId` instead.
+*/}
 
 ---
 
@@ -117,8 +120,12 @@ List boards in the dashboard when picking a default, or call your instance’s b
 - **Video processing:** Pinterest registers video, uploads to S3, then polls until processing succeeds — jobs may take 1–2 minutes.
 - **One primary asset:** One image or one video per pin; carousels are not the primary Pinterest flow in Social0.
 - **Default board:** Set in dashboard to avoid passing `boardId` on every request — stored as `platformMetadata.pinterestDefaultBoardId`.
-- **Create board at publish:** Supported on hosted API via `platform_options.pinterest.<uuid>.create_board`; self-host should pass an existing `boardId`.
+- **Create board at publish:** Supported on hosted API via `platform_options.pinterest.<uuid>.create_board`.
 - **Title vs description:** `content` maps to pin description; use `metadata.pinterest.<uuid>.title` for the pin title field.
+
+{/* ponytail: self-host hidden while repo private
+self-host should pass an existing `boardId`.
+*/}
 
 ---
 

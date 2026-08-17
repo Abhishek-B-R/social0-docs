@@ -1,11 +1,11 @@
 ---
 title: "Troubleshooting"
-description: Fix common Social0 issues — split by cloud vs self-host, with links to focused guides.
+description: Fix common Social0 issues on social0.app — links to focused guides.
 ---
 
 ## Overview
 
-Use this hub when something does not work as expected. Most fixes are the same on cloud and self-host; a few (auth secrets, media storage, Workers limits) apply only when you run your own deployment.
+Use this hub when something does not work as expected on the hosted product at [social0.app](https://social0.app).
 
 ## Cloud (social0.app)
 
@@ -27,6 +27,7 @@ Also useful:
 - [MCP troubleshooting](/docs/mcp/troubleshooting) — remote connector or `npx @social0/mcp`
 - [Support](/docs/support) — email template and when to contact us
 
+{/* ponytail: self-host hidden while repo private
 ## Self-host
 
 If you deploy from [social0-selfhost](https://github.com/Abhishek-B-R/social0-selfhost):
@@ -37,8 +38,9 @@ If you deploy from [social0-selfhost](https://github.com/Abhishek-B-R/social0-se
 - [Known issues](/docs/troubleshooting/known-issues) — self-host section at the bottom
 
 Open a GitHub issue on the self-host repo for deploy-specific bugs. Cloud billing does not apply to self-host.
+*/}
 
-## Quick checks (any deployment)
+## Quick checks
 
 1. **Plan / quota OK?** Free allows up to 3 accounts and 10 lifetime posts. See [Account limits](/docs/troubleshooting/channel-limits) and [Plans](/docs/billing/plans).
 2. **Connection healthy?** **Dashboard → Connections** — reconnect if expired.

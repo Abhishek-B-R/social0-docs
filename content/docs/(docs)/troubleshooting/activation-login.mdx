@@ -43,6 +43,7 @@ If you forgot which you used, try Google first if you usually use Google elsewhe
 
 Details: [Forgot password](/docs/auth/forgot-password).
 
+{/* ponytail: self-host hidden while repo private
 ## Logged out after every deploy (self-host)
 
 On **self-host**, if everyone is logged out after you redeploy, the auth secret likely changed.
@@ -51,6 +52,7 @@ On **self-host**, if everyone is logged out after you redeploy, the auth secret 
 - Set the secret in your Worker/env config once and reuse it. Do not generate a new random value on each deploy unless you intend to force logout.
 
 Cloud users should not see this unless we announce maintenance that resets sessions (rare).
+*/}
 
 ## Tips
 
@@ -62,4 +64,7 @@ Cloud users should not see this unless we announce maintenance that resets sessi
 
 - [Getting started — sign up](/docs/getting-started)
 - [Support](/docs/support)
+
+{/* ponytail: self-host hidden while repo private
 - [Self-host troubleshooting](/docs/self-host/troubleshooting)
+*/}

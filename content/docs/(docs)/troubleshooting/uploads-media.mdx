@@ -1,11 +1,11 @@
 ---
 title: "Uploads & media"
-description: File size and type limits, failed uploads, video metadata, and self-host storage requirements.
+description: File size and type limits, failed uploads, and video metadata on social0.app.
 ---
 
 ## Overview
 
-Social0 accepts images and video for posts in the dashboard, API, and CLI. Uploads go through presigned storage (cloud uses our CDN; self-host needs R2 or compatible object storage). The same limits apply everywhere unless your self-host config sets stricter caps.
+Social0 accepts images and video for posts in the dashboard, API, and CLI. Uploads go through presigned storage on our CDN. The limits below apply to the hosted product at [social0.app](https://social0.app).
 
 API flow: [Upload media](/docs/api/guides/media) · CLI: [Commands — upload](/docs/cli/commands).
 
@@ -48,11 +48,13 @@ Details: [MCP troubleshooting](/docs/mcp/troubleshooting).
 
 For REST/API clients, always use **presign** for local files — do not POST raw binary to `/v1/posts` unless the reference explicitly supports it.
 
+{/* ponytail: self-host hidden while repo private
 ## Self-host: R2 required
 
 Self-host media storage expects **Cloudflare R2** (or compatible S3 API) configured in your deployment. Without it, presign/confirm will fail and posts with media will not publish.
 
 See [Self-host troubleshooting](/docs/self-host/troubleshooting) for bucket bindings and env vars.
+*/}
 
 ## Tips
 

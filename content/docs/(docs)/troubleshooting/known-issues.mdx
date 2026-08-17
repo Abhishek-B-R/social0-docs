@@ -1,6 +1,6 @@
 ---
 title: "Known issues"
-description: Living list of Social0 quirks and workarounds — connect, posting, API, uploads, and self-host.
+description: Living list of Social0 quirks and workarounds on social0.app — connect, posting, API, and uploads.
 ---
 
 ## Overview
@@ -12,7 +12,9 @@ This page tracks real product behavior that looks like a bug but has a known cau
 | Issue | Workaround |
 |-------|------------|
 | **Instagram connect fails or wrong account** | Try **direct Instagram OAuth** first. If you connected **via Facebook Page**, confirm the Instagram account is linked to that Page on Meta, then reconnect. [Instagram](/docs/platforms/instagram) |
+{/* ponytail: self-host hidden while repo private
 | **Meta OAuth errors on self-host** | Redirect URLs must use **HTTPS**. Configure public HTTPS for your dashboard origin |
+*/}
 | **TikTok connected but slow to show posts** | TikTok often needs **several minutes** after we send the post before it appears on profile. Wait and refresh TikTok — [TikTok](/docs/platforms/tiktok) |
 | **CLI/MCP cannot finish OAuth** | By design. Connect in **Dashboard → Connections** first — [OAuth troubleshooting](/docs/troubleshooting/oauth-connect) |
 
@@ -23,7 +25,9 @@ This page tracks real product behavior that looks like a bug but has a known cau
 | **Multi-platform job `partial` success** | Some platforms succeeded, others failed. Poll **`status`** / `get_publish_status` until terminal; read per-platform errors; reconnect failed accounts and retry only those |
 | **TikTok publish failed — privacy** | TikTok requires acceptable privacy/settings on the connected creator account. Check TikTok app settings, then reconnect if needed |
 | **Pinterest publish failed — board** | A **board** must be selected for the pin. Reconnect or pick board when creating the post — [Pinterest](/docs/platforms/pinterest) |
+{/* ponytail: self-host hidden while repo private
 | **Scheduled post did not fire (self-host)** | Self-host needs **cron** (or scheduled Worker) to process the queue. See [Self-host troubleshooting](/docs/self-host/troubleshooting) |
+*/}
 
 ## API & integrations
 
@@ -41,6 +45,7 @@ This page tracks real product behavior that looks like a bug but has a known cau
 |-------|------------|
 | **HEIC / WebP / GIF rejected** | Convert to **JPEG** or **PNG** (images) or **MP4** (video) |
 | **Video upload OK, publish fails metadata** | Re-encode to H.264 MP4; check platform duration limits |
+{/* ponytail: self-host hidden while repo private
 | **Self-host media 5xx** | Confirm **R2** bucket binding and public access for presigned PUT |
 
 ## Self-host
@@ -51,6 +56,7 @@ This page tracks real product behavior that looks like a bug but has a known cau
 | **Schedules never run** | Enable **cron trigger** for the scheduler Worker |
 | **Everyone logged out after deploy** | Keep **`BETTER_AUTH_SECRET`** stable — [Activation & login](/docs/troubleshooting/activation-login) |
 | **Media uploads fail** | R2 (or compatible storage) required — [Uploads & media](/docs/troubleshooting/uploads-media) |
+*/}
 
 ## Report something missing
 

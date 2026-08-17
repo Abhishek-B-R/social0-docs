@@ -5,7 +5,7 @@ export const siteUrl =
 
 export const siteName = "Social0 Docs";
 export const siteDescription =
-  "Official documentation for Social0 — guides for scheduling, publishing, and managing posts across X, Instagram, LinkedIn, TikTok, YouTube, and more.";
+  "Official documentation for Social0 — the multi-platform social scheduler for creators and AI agents, hosted at social0.app.";
 
 export const ogImage = {
   url: "/og-image.png",

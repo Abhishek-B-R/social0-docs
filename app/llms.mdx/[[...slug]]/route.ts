@@ -8,6 +8,8 @@ type RouteProps = {
 
 export async function GET(_req: Request, props: RouteProps) {
   const { slug } = await props.params;
+  // ponytail: self-host hidden while repo private
+  if (slug?.[0] === "self-host") notFound();
   const page = source.getPage(slug);
   if (!page) notFound();
 
@@ -21,5 +23,5 @@ export async function GET(_req: Request, props: RouteProps) {
 }
 
 export function generateStaticParams() {
-  return source.generateParams();
+  return source.generateParams().filter(({ slug }) => slug?.[0] !== "self-host");
 }
