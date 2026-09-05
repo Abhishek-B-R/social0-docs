@@ -112,6 +112,24 @@ social0 accounts --json
 social0 post list --status draft --json
 ```
 
+### Analytics
+
+```bash
+social0 analytics
+social0 analytics --range 28d
+social0 analytics accounts
+social0 analytics post <post-id>
+```
+
+### Inbox
+
+```bash
+social0 inbox
+social0 inbox --unanswered
+social0 inbox reply <comment-id> --publication <publication-id> --text "Thanks!"
+social0 inbox dms
+```
+
 ## Core ideas
 
 | Concept | What to remember |
@@ -120,6 +138,8 @@ social0 post list --status draft --json
 | Drafts | `post create` → draft; `post create --publish` → publish now |
 | Publish | `publish` accepts content flags, draft id, `latest`, `.md`, or stdin |
 | Status | After publish, `social0 status <tracking-id>` (add `--watch` to poll) |
+| Analytics | `social0 analytics` (overview), `accounts`, `post <id>` — live from networks |
+| Inbox | `social0 inbox` comments; `dms` / `dm` / `dm-reply` for X and Bluesky |
 
 ## Troubleshooting
 

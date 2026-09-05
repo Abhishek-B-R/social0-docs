@@ -1,9 +1,9 @@
 ---
 title: "Commands"
-description: Full command reference for the Social0 CLI — auth, accounts, posts, publish, schedule, and ops.
+description: Full command reference for the Social0 CLI — auth, accounts, posts, analytics, inbox, and ops.
 ---
 
-Global package: [`social0`](https://www.npmjs.com/package/social0) (v0.1.2). Thin client over `https://api.social0.app/v1`.
+Global package: [`social0`](https://www.npmjs.com/package/social0) (v0.2.0). Thin client over `https://api.social0.app/v1`.
 
 ## Global flags
 
@@ -122,6 +122,74 @@ social0 drafts delete <id>
 ```
 
 Prefer the **full UUID** for draft publish/schedule/delete when short IDs fail.
+
+## Analytics
+
+Live metrics for posts you published through Social0, read from each network at request time. Default window is the last 7 days. Same live platforms as the dashboard: **X, Bluesky, YouTube, TikTok, Pinterest** (Meta and LinkedIn are not live yet).
+
+```bash
+social0 analytics                       # totals, by platform, top posts (overview)
+social0 analytics --range 28d
+social0 analytics --range custom --since 2026-01-01 --until 2026-02-01
+social0 analytics --account bluesky     # numeric ID, platform name, or UUID
+social0 analytics --fresh               # bypass warm cache
+social0 analytics accounts              # which accounts have live analytics
+social0 analytics post <post-id>        # per-network breakdown for one post
+social0 analytics --json | jq '.totals'
+```
+
+| Flag | Meaning |
+|------|---------|
+| `--range` | `7d` (default), `14d`, `28d`, `90d`, `365d`, or `custom` |
+| `--since` / `--until` | ISO dates; required with `--range custom` |
+| `--account` | Restrict to one connected account |
+| `--fresh` | Bypass warm cache (entries younger than 90s may still be cached) |
+
+Totals cover the most recent publications in the window, not lifetime numbers.
+
+**`sampled` vs `partial`:** do not fold these into one caveat.
+
+- **`sampled`** — the page was capped. Only the latest N publications were read (`sample_limit`). Do not quote the total as a lifetime figure.
+- **`partial`** — the live request budget ran out before every publication was read.
+
+When the response is capped the CLI prints a `Showing the latest N publications` warning.
+
+API keys see the **personal / main** account pool only (same as other `/v1` routes).
+
+## Inbox
+
+Comments on posts published through Social0, plus DMs on networks that support them.
+
+**Comments live:** X, Bluesky, YouTube. **DMs live:** X and Bluesky. TikTok and Pinterest have **no comments inbox**. YouTube / Pinterest / Facebook / Threads have **no DMs**. TikTok DMs are not live. Hide is Instagram + Facebook Pages only — not useful on the live inbox set today.
+
+```bash
+# Comments
+social0 inbox                                   # comment threads, last 7 days
+social0 inbox --unanswered                      # only threads you haven't answered
+social0 inbox --platform bluesky --range 28d
+social0 inbox --before <next_before>            # page older publications
+
+# Reply / moderate — both ids come from the list above
+social0 inbox reply <comment-id> --publication <publication-id> --text "Thanks!"
+social0 inbox like <comment-id> --publication <publication-id>
+social0 inbox unlike <comment-id> --publication <publication-id>
+social0 inbox hide <comment-id> --publication <publication-id>   # Instagram, Facebook Pages
+
+# DMs
+social0 inbox dms
+social0 inbox dm <conversation-id> --account <id>
+social0 inbox dm-reply <conversation-id> --account <id> --text "On it."
+
+# Which accounts have an inbox
+social0 inbox accounts
+social0 inbox accounts --dms
+```
+
+`--publication` is the `publication_id` shown in `social0 inbox --json`. Social0 verifies the comment is actually on that post before sending, so a wrong id is rejected rather than posted to the wrong thread. `reply` needs **both** `comment_id` and `publication_id`.
+
+Inbox pages are per *publication*, so a page can come back empty while older publications remain. The CLI follows `next_before` once on its own; if the page is still empty it prints `0 threads on this page` with the cursor to pass to `--before`. In `--json` mode check `has_more` before treating an empty `threads` array as "no comments".
+
+When the API answers `429`, the CLI already retried with `Retry-After`; the final error prints how many seconds to wait. Live analytics and inbox reads share a per-minute budget with the dashboard.
 
 ## Project / ops
 

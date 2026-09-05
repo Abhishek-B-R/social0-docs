@@ -1,0 +1,50 @@
+---
+title: "Reply to a comment"
+description: "Post a public reply on the originating network."
+icon: "POST"
+---
+
+## POST /v1/inbox/comments/:commentId/reply
+
+Posts a reply on the originating network. The comment must belong to `publication_id` — Social0 verifies this against the live thread before sending. A mismatched id is rejected rather than posted to the wrong thread.
+
+**Auth:** Bearer API key (required)
+
+### Path parameters
+
+| Param | Description |
+|-------|-------------|
+| `commentId` | From `GET /v1/inbox/comments` (`comment.id`) |
+
+### Request body
+
+```json
+{
+  "publication_id": "uuid",
+  "text": "Thanks!",
+  "media_id": "uuid"
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `publication_id` | uuid | Yes | From the same comment (`comment.publication_id`) |
+| `text` | string | Yes in practice | Reply body |
+| `media_id` | uuid | No | Media upload id. Only X and Bluesky accept attachments on comment replies. |
+
+### Response 200
+
+```json
+{
+  "ok": true
+}
+```
+
+### cURL
+
+```bash
+curl -X POST "https://api.social0.app/v1/inbox/comments/COMMENT_ID/reply" \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ "publication_id": "PUBLICATION_UUID", "text": "Thanks!" }'
+```

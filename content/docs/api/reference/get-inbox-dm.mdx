@@ -1,0 +1,29 @@
+---
+title: "Get a DM thread"
+description: "Messages in one DM conversation."
+icon: "GET"
+---
+
+## GET /v1/inbox/dms/:conversationId
+
+Messages in one conversation. **X and Bluesky only** today.
+
+**Auth:** Bearer API key (required)
+
+### Path / query
+
+| Param | In | Required | Description |
+|-------|----|----------|-------------|
+| `conversationId` | path | Yes | From `GET /v1/inbox/dms` |
+| `account_id` | query | Yes | Connected account UUID |
+| `peer_id` | query | No | Only when the platform omits it |
+| `fresh` | query | No | Bypass warm cache |
+
+**404** if the account is not in the personal pool.
+
+### cURL
+
+```bash
+curl "https://api.social0.app/v1/inbox/dms/CONVO_ID?account_id=ACCOUNT_UUID" \
+  -H "Authorization: Bearer sk_live_YOUR_KEY"
+```

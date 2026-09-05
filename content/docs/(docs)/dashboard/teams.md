@@ -105,7 +105,7 @@ Teammates do **not** need Pro to join and post on the owner’s team.
 ## Switch context (Main vs team)
 
 - Use the sidebar **Workspace switcher**: **Main** vs owned/joined workspaces.
-- Team work uses the URL tree `/dashboard/teams/:teamId/*` (composer, posts, connections, calendar, bulk tools, create).
+- Team work uses the URL tree `/dashboard/teams/:teamId/*` (composer, posts, connections, calendar, analytics, inbox, bulk tools, create).
 - These stay **personal** (do not wipe team membership): Billing, Settings, API keys, Feedback, Workspaces board, Teams list, More.
 - Visiting a personal page does **not** leave the team permanently — return to a `/dashboard/teams/:teamId/...` URL to re-activate that workspace.
 - The home **logo** goes to your **personal** composer and leaves team context.
@@ -147,7 +147,7 @@ In plain language:
 - Posts, media, queues, and plan limits use the **team owner’s** account and plan.
 - The signed-in teammate is still recorded as the person who acted.
 - Resurface / auto-plug / Growth features follow the **owner’s** plan.
-- Composer, Posts, Calendar, and Bulk tools inside `/dashboard/teams/:teamId/*` use the **active workspace’s** connections.
+- Composer, Posts, Calendar, Analytics, Inbox, and Bulk tools inside `/dashboard/teams/:teamId/*` use the **active workspace’s** connections.
 
 {/* SCREENSHOT: Team composer URL /dashboard/teams/:teamId/composer */}
 
@@ -176,7 +176,7 @@ In plain language:
 | Teams list | `/dashboard/teams` | Owned collaborative + joined teams; create; empty/upgrade state |
 | Create team | `/dashboard/teams/create` | New collaborative team + default workspace |
 | Team settings | `/dashboard/teams/:teamId/settings` | Rename, workspaces, invites, members, leave/delete |
-| Team app | `/dashboard/teams/:teamId/*` | Composer, posts, connections, calendar, bulk tools |
+| Team app | `/dashboard/teams/:teamId/*` | Composer, posts, connections, calendar, analytics, inbox, bulk tools |
 | Workspaces board | `/dashboard/workspaces` | Create, rename, delete, open, move connections |
 | Invite (legacy) | `/invite/:token` | Accept while signed in as invited email |
 

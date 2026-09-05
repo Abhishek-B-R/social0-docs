@@ -1,0 +1,30 @@
+---
+title: "List inbox accounts"
+description: "Connected accounts on networks where comments or DMs are live."
+icon: "GET"
+---
+
+## GET /v1/inbox/accounts
+
+Connected accounts on networks where comments (or DMs) are currently enabled. API keys see the **personal / main** account pool only.
+
+**Comments live:** X, Bluesky, YouTube. **DMs live:** X and Bluesky. TikTok and Pinterest have no comments inbox. A network that is still rolling out is omitted (or `400` if you filter it on other inbox routes).
+
+**Auth:** Bearer API key (required)
+
+### Query parameters
+
+| Param | Type | Default | Description |
+|-------|------|---------|-------------|
+| `mode` | string | `comments` | `comments` or `dms` |
+
+### Response 200
+
+Same shape as [analytics accounts](/docs/api/reference/get-analytics-accounts): `{ "data": [ { "id", "platform", "username", ... } ] }`.
+
+### cURL
+
+```bash
+curl "https://api.social0.app/v1/inbox/accounts?mode=dms" \
+  -H "Authorization: Bearer sk_live_YOUR_KEY"
+```

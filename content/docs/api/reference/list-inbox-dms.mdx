@@ -1,0 +1,35 @@
+---
+title: "List inbox DMs"
+description: "DM conversations on networks that support them."
+icon: "GET"
+---
+
+## GET /v1/inbox/dms
+
+DM conversations fetched live from the network. **Live today: X and Bluesky only.**
+
+No DMs for YouTube, Pinterest, Facebook, or Threads. TikTok DMs are **not live** (posting tokens cannot send DMs). Instagram and LinkedIn are coming.
+
+API keys see the **personal / main** pool only.
+
+**Auth:** Bearer API key (required)
+
+### Query parameters
+
+| Param | Type | Default | Description |
+|-------|------|---------|-------------|
+| `range` | string | `7d` | Same window as analytics |
+| `since` / `until` | datetime | — | With `range=custom` |
+| `account_id` | uuid | — | Restrict to one connected account |
+| `before` | string | — | Cursor from `next_before` |
+| `limit` | int | — | 1–24 |
+| `fresh` | boolean | `false` | Bypass warm cache |
+
+Keep `conversation_id` and `account` (account UUID) for [get thread](/docs/api/reference/get-inbox-dm) and [reply](/docs/api/reference/reply-to-dm).
+
+### cURL
+
+```bash
+curl "https://api.social0.app/v1/inbox/dms?range=7d" \
+  -H "Authorization: Bearer sk_live_YOUR_KEY"
+```

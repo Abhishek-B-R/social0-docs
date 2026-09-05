@@ -1,0 +1,36 @@
+---
+title: "Like or unlike a comment"
+description: "Like or unlike a comment where the network supports it."
+icon: "POST"
+---
+
+## POST /v1/inbox/comments/:commentId/like
+
+Like or unlike a comment. Works where the network supports it.
+
+**Auth:** Bearer API key (required)
+
+### Request body
+
+```json
+{
+  "publication_id": "uuid",
+  "unlike": false
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `publication_id` | uuid | Yes | From the comments list |
+| `unlike` | boolean | No | Default `false` (like). `true` to unlike. |
+
+Returns **400** if the network does not support likes.
+
+### cURL
+
+```bash
+curl -X POST "https://api.social0.app/v1/inbox/comments/COMMENT_ID/like" \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ "publication_id": "PUBLICATION_UUID" }'
+```

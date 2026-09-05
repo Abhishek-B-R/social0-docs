@@ -42,7 +42,7 @@ You’ll see the full caption, media, and a status for each account you selected
 - **Post again** - For a post that’s already published (or partially published), use “Post again” or “Edit and post” to reuse the same content and send it again (e.g. with a new schedule).
 - **Delete** - Remove the post. Use this for drafts or scheduled posts you no longer want.
 - **View on platform** - In the Platforms list, published accounts get a **View** link on the network.
-- **Show analytics** - Loads live views, likes, comments, and engagement for this post from the platforms (not stored). Same live platforms as [Analytics](/docs/dashboard/analytics) (X and Bluesky today). Other networks on the post are skipped until they are live.
+- **Show analytics** - Loads live views, likes, comments, and engagement for this post from the platforms (not stored). Same live platforms as [Analytics](/docs/dashboard/analytics) (X, Bluesky, YouTube, TikTok, and Pinterest today). Other networks on the post are skipped until they are live.
 
 ## Status per platform
 

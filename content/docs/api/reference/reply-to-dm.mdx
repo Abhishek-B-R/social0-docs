@@ -1,0 +1,40 @@
+---
+title: "Reply to a DM"
+description: "Send a message into an existing DM conversation."
+icon: "POST"
+---
+
+## POST /v1/inbox/dms/:conversationId/reply
+
+Sends into an existing conversation. Social0 verifies the conversation belongs to `account_id` before sending. **X and Bluesky only** today. TikTok DMs are not live.
+
+**Auth:** Bearer API key (required)
+
+### Request body
+
+```json
+{
+  "account_id": "uuid",
+  "text": "On it.",
+  "peer_id": "optional",
+  "media_id": "uuid"
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `account_id` | uuid | Yes | Connected account that owns the conversation |
+| `text` | string | Yes in practice | Message body |
+| `peer_id` | string | No | Only when the platform omits it |
+| `media_id` | uuid | No | X: image or video. Bluesky: text only. TikTok image-only is documented for a future DM path — DMs are not live on TikTok today. |
+
+This delivers a **real message to a real person**.
+
+### cURL
+
+```bash
+curl -X POST "https://api.social0.app/v1/inbox/dms/CONVO_ID/reply" \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ "account_id": "ACCOUNT_UUID", "text": "On it." }'
+```

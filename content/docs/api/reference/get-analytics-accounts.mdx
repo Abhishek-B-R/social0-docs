@@ -1,0 +1,38 @@
+---
+title: "List analytics accounts"
+description: "Connected accounts on networks where live analytics is enabled."
+icon: "GET"
+---
+
+## GET /v1/analytics/accounts
+
+Returns connected accounts on networks where live analytics is currently enabled. API keys see the **personal / main** account pool only.
+
+**Live today:** X (`twitter_x`), Bluesky, YouTube, TikTok, Pinterest. Instagram, Facebook, Threads, and LinkedIn are not live yet.
+
+**Auth:** Bearer API key (required)
+
+### Response 200
+
+```json
+{
+  "data": [
+    {
+      "id": "uuid",
+      "platform": "twitter_x",
+      "username": "social0",
+      "profile_image_url": null,
+      "missing_scopes": []
+    }
+  ]
+}
+```
+
+### cURL
+
+```bash
+curl "https://api.social0.app/v1/analytics/accounts" \
+  -H "Authorization: Bearer sk_live_YOUR_KEY"
+```
+
+Live spec: [OpenAPI](https://api.social0.app/openapi.json).

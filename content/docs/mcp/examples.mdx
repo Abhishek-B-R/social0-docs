@@ -1,6 +1,6 @@
 ---
 title: "Examples"
-description: Practical agent recipes for Social0 MCP — schedule, reels, threads, LinkedIn, bulk schedule, and multi-platform publish.
+description: Practical agent recipes for Social0 MCP — publish, analytics, inbox, threads, and multi-platform jobs.
 ---
 
 Same tools on **remote** (`https://mcp.social0.app/mcp`) and **local** (`npx -y @social0/mcp`). Tool names below match [MCP tools](/docs/mcp/tools).
@@ -11,7 +11,8 @@ Same tools on **remote** (`https://mcp.social0.app/mcp`) and **local** (`npx -y 
 2. After any publish, return `tracking_id` and poll `get_publish_status` until terminal (`completed`, `failed`, or `partial`).
 3. Remote hosts: `upload_media` with public `url` or base64 `data` — not sandbox `file_path`.
 4. MCP `scheduled_at` is **UTC ISO-8601** (CLI accepts natural language; MCP does not).
-5. No analytics tools — out of scope.
+5. Quote analytics with `sampled` vs `partial` attached — never present a sampled total as a lifetime figure.
+6. Inbox replies are public. Carry `publication_id` with every `comment_id`. DMs are X and Bluesky only today.
 
 ---
 
@@ -161,6 +162,55 @@ suggest_best_platforms({
 ```
 
 Heuristic only — does not publish.
+
+---
+
+## Analytics for a window
+
+```text
+1. list_accounts
+2. get_analytics({ range: "28d" })
+   → Repeat the Notes: block. If sampled, say totals cover the latest N posts, not the whole profile.
+```
+
+One post:
+
+```text
+get_post_analytics({ post_id: "<post_uuid>" })
+```
+
+Live analytics networks today: X, Bluesky, YouTube, TikTok, Pinterest.
+
+---
+
+## Unanswered comments + reply
+
+```text
+1. list_inbox_comments({ unanswered_only: true, range: "7d" })
+   → copy comment_id and publication_id from the same thread
+2. Confirm wording with the user
+3. reply_to_comment({
+     comment_id: "<comment_id>",
+     publication_id: "<publication_id>",
+     text: "Thanks for watching!"
+   })
+```
+
+Do not invent `publication_id`. `hide` is Instagram + Facebook Pages only (not live in Inbox today).
+
+Comments live: X, Bluesky, YouTube. TikTok and Pinterest have no comments inbox.
+
+---
+
+## DMs (X and Bluesky)
+
+```text
+1. list_inbox_dms({ range: "7d" })
+   → conversation_id + account
+2. get_inbox_dm_thread({ conversation_id, account })
+3. Confirm wording
+4. reply_to_dm({ conversation_id, account, text: "On it." })
+```
 
 ---
 

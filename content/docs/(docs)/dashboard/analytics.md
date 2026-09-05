@@ -7,15 +7,17 @@ description: See live views, likes, comments, and engagement for posts you publi
 
 Analytics shows how posts you published through Social0 are doing on your connected accounts. It is **early access**, not a separate product or plan. In the sidebar you’ll see a small flask next to **Analytics** (no “Experimental” label there). On the page itself, the title includes an Experimental badge.
 
-You can use Analytics on every plan. Metrics come from accounts that are connected, still usable, and **rolled out** for this feature.
+You can use Analytics on every plan. Metrics come from accounts that are connected, still usable, and **rolled out** for this feature. Team workspaces have the same page for that workspace's accounts.
 
-We do **not** store analytics. When you open this page (or click **Show analytics** on a post), Social0 loads the numbers live from X or Bluesky. Refresh loads them again. Nothing is saved on our side.
+We do **not** store analytics. When you open this page (or click **Show analytics** on a post), Social0 loads the numbers live from the networks. Refresh loads them again. Nothing is saved on our side.
 
 ## What's live vs coming
 
-**Live today — X and Bluesky only.** If you connected Instagram, Facebook, Threads, YouTube, LinkedIn, TikTok, or Pinterest, those accounts do not appear on Analytics yet.
+**Live today — X, Bluesky, YouTube, TikTok, and Pinterest.** Those accounts appear on Analytics when they are connected and still usable.
 
-**Coming soon — Instagram, Facebook, Threads, YouTube, LinkedIn, TikTok, and Pinterest.** We've submitted access requests to each network. We'll add Analytics for a platform as soon as that access is approved — not all at once. You can still connect those accounts and publish as usual.
+**Coming soon — Instagram, Facebook, Threads, and LinkedIn.** We're waiting on access from Meta and LinkedIn. You can still connect those accounts and publish as usual. They will show up here once that access is approved.
+
+Analytics is **not** live on all nine publish networks.
 
 ## How to open Analytics
 
@@ -37,16 +39,16 @@ Analytics is about posts **you sent through Social0**, not everything else on th
 ## Tips
 
 - The flask in the nav means early access. Features can change as more platforms go live.
-- If an account is missing, check **Connections** and that the platform is live today (X or Bluesky).
+- If an account is missing, check **Connections** and that the platform is live today (X, Bluesky, YouTube, TikTok, or Pinterest).
 - You can also open numbers for one post from post detail — tap **Show analytics** there; they do not load until you do.
 
 ## Common questions
 
-**Q: Why don’t I see Instagram (or Facebook, YouTube, …)?**  
-A: Analytics works for **X and Bluesky only** right now. We've requested access from the other networks and will turn each one on as those requests are approved.
+**Q: Why don’t I see Instagram (or Facebook, Threads, LinkedIn)?**  
+A: Analytics is live on **X, Bluesky, YouTube, TikTok, and Pinterest** right now. Instagram, Facebook, Threads, and LinkedIn are on the way — we're waiting on access from Meta and LinkedIn.
 
-**Q: When will other platforms work?**  
-A: As soon as each network grants the access we've requested. Reconnecting or upgrading won't unlock them early.
+**Q: When will Meta and LinkedIn work?**  
+A: As soon as those networks grant the access we've requested. Reconnecting or upgrading won't unlock them early.
 
 **Q: Do I need Growth or Pro?**  
 A: No. Analytics is available on Free, Starter, Growth, and Pro. Auto-plug and auto-repost stay Growth+ and X-only.

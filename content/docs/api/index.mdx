@@ -5,7 +5,7 @@ description: Getting started with the Social0 public REST API.
 
 ## Overview
 
-The Social0 REST API lets you publish to LinkedIn, Instagram, X, and other platforms from your backend, CI pipeline, or automation tool. Create drafts, publish immediately, schedule posts, upload media, track publish jobs, and receive webhook notifications — all with the same publishing pipeline the dashboard uses.
+The Social0 REST API lets you publish to LinkedIn, Instagram, X, and other platforms from your backend, CI pipeline, or automation tool. Create drafts, publish immediately, schedule posts, upload media, track publish jobs, read live analytics, triage inbox comments and DMs, and receive webhook notifications — all with the same pipeline the dashboard uses.
 
 **Base URL:** `https://api.social0.app`  
 **Version prefix:** `/v1`  
@@ -42,6 +42,8 @@ sequenceDiagram
 - **Schedule** — set a future `scheduledAt` (absolute instant or dashboard timezone via `+default`)
 - **Upload media** — presign → PUT → confirm flow
 - **Track jobs** — poll or stream publish progress
+- **Analytics** — `GET /v1/analytics/{accounts,overview,posts/:postId}` (live from networks; not stored)
+- **Inbox** — `GET/POST /v1/inbox/...` comments and DMs
 - **Post events** — `GET /v1/posts/:id/events` for per-platform publish timeline
 - **Receive webhooks** — `post.published`, `post.failed`, `post.scheduled`, `post.deleted`
 
@@ -55,7 +57,7 @@ sequenceDiagram
 
 | Principle | Detail |
 |-----------|--------|
-| Per-user keys | API keys are per user — no workspace/team scoping yet |
+| Per-user keys | API keys are per user — **personal / main pool only** (no workspace/team scoping yet) |
 | Same pipeline | Publishing uses the same Cloudflare queues, retries, and token refresh as the dashboard |
 | Stable JSON | All `/v1` responses use **snake_case** field names |
 | Error shape | `{ "error": { "code", "message" } }` on every error |

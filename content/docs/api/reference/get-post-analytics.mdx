@@ -1,0 +1,53 @@
+---
+title: "Post analytics"
+description: "Live per-network metrics for one Social0 post."
+icon: "GET"
+---
+
+## GET /v1/analytics/posts/:postId
+
+Per-publication metrics for a single Social0 post, across every network it went out on. Live from the networks at request time. Networks that are not live for analytics are skipped.
+
+**Auth:** Bearer API key (required)
+
+### Path parameters
+
+| Param | Type | Description |
+|-------|------|-------------|
+| `postId` | uuid | Social0 post ID |
+
+### Response 200
+
+```json
+{
+  "post_id": "uuid",
+  "fetched_at": "2026-09-05T12:00:00.000Z",
+  "partial": false,
+  "totals": {
+    "views": 400,
+    "likes": 20,
+    "comments": 3,
+    "shares": 1,
+    "engagement": 24
+  },
+  "publications": [
+    {
+      "publication_id": "uuid",
+      "platform": "twitter_x",
+      "metrics": { "views": 400, "likes": 20, "comments": 3, "shares": 1, "engagement": 24 }
+    }
+  ],
+  "accounts_needing_reconnect": []
+}
+```
+
+`partial` is true when the live request budget ran out. That is **not** the same as `sampled` on the overview endpoint.
+
+### cURL
+
+```bash
+curl "https://api.social0.app/v1/analytics/posts/POST_UUID" \
+  -H "Authorization: Bearer sk_live_YOUR_KEY"
+```
+
+Related: [Analytics overview](/docs/api/reference/get-analytics-overview)

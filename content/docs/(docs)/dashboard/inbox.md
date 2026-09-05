@@ -7,17 +7,25 @@ description: Reply to comments on posts you published through Social0, and to DM
 
 Inbox is where you read and reply to **comments** on posts you published through Social0, plus **DMs** where the platform allows it. It is **early access**, not a separate product or plan. The sidebar shows a flask next to **Inbox** (icon only — no “Experimental” label). The page title includes an Experimental badge.
 
-Available on every plan. Same rollout as [Analytics](/docs/dashboard/analytics): **X and Bluesky only today.**
+Available on every plan. Inbox does **not** match Analytics one-for-one — comments and DMs each have their own live set. Team workspaces have the same Inbox for that workspace's accounts.
 
 Comments are for posts that went out **through Social0**. DMs are conversations on those live accounts.
 
-We do **not** store comments or DMs. Opening Inbox loads threads live from X or Bluesky. When you reply, it goes to the platform. Nothing is saved on our side.
+We do **not** store comments or DMs. Opening Inbox loads threads live from the networks. When you reply, it goes to the platform. Nothing is saved on our side.
 
 ## What's live vs coming
 
-**Live today — X and Bluesky only** (comments and DMs).
+**Comments live today — X, Bluesky, and YouTube.**
 
-**Coming soon — Instagram, Facebook, Threads, YouTube, LinkedIn, TikTok, and Pinterest.** We've submitted access requests to each network. We'll add Inbox (comments and DMs) for a platform as soon as that access is approved — not all at once. You can still connect those accounts and publish as usual.
+**DMs live today — X and Bluesky only.**
+
+**Coming soon — Instagram, Facebook, Threads, and LinkedIn** for comments (and DMs where those networks actually have them). We're waiting on access from Meta and LinkedIn.
+
+**Not a comments inbox — TikTok and Pinterest.** Those networks don’t offer a comments inbox we can use. They are not “coming soon” for comments.
+
+**No DMs on YouTube, Pinterest, Facebook, or Threads.** TikTok DMs are not live (they need a different kind of TikTok access than posting uses).
+
+You can still connect every platform and publish as usual.
 
 ## How to open Inbox
 
@@ -29,7 +37,7 @@ We do **not** store comments or DMs. Opening Inbox loads threads live from X or 
 
 Images and videos in a thread show inline. You can reply without leaving Social0.
 
-The address bar keeps your place: Comments is the default; DMs uses `?tab=dms`. Account, comment thread, and DM conversation can also sit in the URL (`?account=`, `?thread=`, `?convo=`), so refresh and bookmarks return you to the same view.
+Refresh and bookmarks can return you to the same tab, account, or thread.
 
 ## Unread badge
 
@@ -37,24 +45,30 @@ While you work elsewhere in the dashboard, **Inbox** in the nav shows an unread 
 
 ## What you’ll see
 
-- **Comments** - Threads on Social0-published posts for live accounts (loaded from the platform, not stored).
-- **DMs** - Direct messages on live accounts that support them (X and Bluesky today). Same: live, not stored.
+- **Comments** - Threads on Social0-published posts for live comment accounts (X, Bluesky, YouTube today). Loaded from the platform, not stored.
+- **DMs** - Direct messages on X and Bluesky today. Same: live, not stored.
 - **Account chips** - Only connected, usable accounts that are live for that tab.
 - **Reconnect** - Only for those live platforms, same idea as Analytics.
+- **Like** - Works where the network supports it.
+- **Hide** - Only for Instagram and Facebook Pages, which are not live in Inbox yet — so hide is not useful on the live set today.
 
 ## Tips
 
-- Flask = early access. **X and Bluesky only** for now; the rest are waiting on access we've requested from each network.
-- If you expected Instagram or Facebook in Inbox, they work for posting — Inbox for those networks goes live when each platform approves our access request.
+- Flask = early access. Comments and DMs don’t share the same live platforms.
+- If you expected Instagram or Facebook in Inbox, they work for posting — Inbox for those networks goes live when Meta and LinkedIn approve our access.
+- TikTok and Pinterest can show up in [Analytics](/docs/dashboard/analytics), but not in comments.
 - Open a post from **Posts** if you need the original content; Inbox is for the conversation.
 
 ## Common questions
 
 **Q: Which platforms work in Inbox today?**  
-A: **X and Bluesky only** — both comments and DMs. We've requested access from Instagram, Facebook, Threads, YouTube, LinkedIn, TikTok, and Pinterest. We'll turn each one on as those requests are approved.
+A: **Comments:** X, Bluesky, and YouTube. **DMs:** X and Bluesky only. Instagram, Facebook, Threads, and LinkedIn are on the way. TikTok and Pinterest have no comments inbox. YouTube, Pinterest, Facebook, and Threads have no DMs here.
 
-**Q: When will Instagram / Facebook / … work?**  
-A: As soon as each platform approves the access we've requested. You do not need to reconnect or upgrade — accounts will show up in Inbox automatically when that platform goes live.
+**Q: When will Instagram / Facebook / LinkedIn work?**  
+A: As soon as Meta and LinkedIn approve the access we've requested. You do not need to reconnect or upgrade.
+
+**Q: Why isn’t TikTok in comments?**  
+A: TikTok doesn’t give us a comments inbox. That’s not a pending request — comments for TikTok are not coming in Inbox.
 
 **Q: Do I see comments on posts I published only on the network itself?**  
 A: Inbox comments are for posts you published **through Social0**.

@@ -1,0 +1,66 @@
+---
+title: "Analytics overview"
+description: "Live aggregate metrics for posts published through Social0."
+icon: "GET"
+---
+
+## GET /v1/analytics/overview
+
+Live metrics for posts published through Social0 in the window. Fetched from each network at request time — **not stored**. API keys see the **personal / main** account pool only.
+
+**Live today:** X, Bluesky, YouTube, TikTok, Pinterest.
+
+**Auth:** Bearer API key (required)
+
+### Query parameters
+
+| Param | Type | Default | Description |
+|-------|------|---------|-------------|
+| `range` | string | `7d` | `7d`, `14d`, `28d`, `90d`, `365d`, or `custom` |
+| `since` | datetime | — | ISO 8601 start; only with `range=custom` (max 365 days) |
+| `until` | datetime | — | ISO 8601 end; only with `range=custom` |
+| `account_id` | uuid | — | Restrict to one connected account |
+| `fresh` | boolean | `false` | Bypass warm cache. Entries younger than 90s are still cached. |
+
+### Coverage flags
+
+Check these **separately** before quoting totals. Do not fold them into one caveat.
+
+| Flag | Meaning |
+|------|---------|
+| `sampled` | The page was capped. Only the latest `sample_limit` publications were read. Totals are **not** lifetime numbers. |
+| `partial` | The live request budget ran out before every publication was read. |
+
+### Response 200
+
+```json
+{
+  "range": "7d",
+  "since": "2026-08-29T00:00:00.000Z",
+  "until": "2026-09-05T00:00:00.000Z",
+  "fetched_at": "2026-09-05T12:00:00.000Z",
+  "sampled": false,
+  "sample_limit": 50,
+  "partial": false,
+  "totals": {
+    "views": 1200,
+    "likes": 80,
+    "comments": 12,
+    "shares": 4,
+    "engagement": 96
+  },
+  "by_platform": [],
+  "series": [],
+  "top_posts": [],
+  "accounts_needing_reconnect": []
+}
+```
+
+### cURL
+
+```bash
+curl "https://api.social0.app/v1/analytics/overview?range=28d" \
+  -H "Authorization: Bearer sk_live_YOUR_KEY"
+```
+
+Related: [List analytics accounts](/docs/api/reference/get-analytics-accounts) · [Per-post analytics](/docs/api/reference/get-post-analytics)

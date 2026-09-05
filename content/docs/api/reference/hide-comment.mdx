@@ -1,0 +1,30 @@
+---
+title: "Hide a comment"
+description: "Hide a comment on Instagram or Facebook Pages."
+icon: "POST"
+---
+
+## POST /v1/inbox/comments/:commentId/hide
+
+Moderation. Supported on **Instagram and Facebook Pages only**. Those networks are **not live** in Inbox today, so this route is not useful on the current live set (X, Bluesky, YouTube).
+
+**Auth:** Bearer API key (required)
+
+### Request body
+
+```json
+{
+  "publication_id": "uuid"
+}
+```
+
+Returns **400** if the network does not support hide.
+
+### cURL
+
+```bash
+curl -X POST "https://api.social0.app/v1/inbox/comments/COMMENT_ID/hide" \
+  -H "Authorization: Bearer sk_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ "publication_id": "PUBLICATION_UUID" }'
+```

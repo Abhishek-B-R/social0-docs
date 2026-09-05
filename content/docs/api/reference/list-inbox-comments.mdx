@@ -1,0 +1,62 @@
+---
+title: "List inbox comments"
+description: "Comment threads on posts published through Social0."
+icon: "GET"
+---
+
+## GET /v1/inbox/comments
+
+Comments on posts published through Social0, fetched live from each platform. Page older publications with `before=next_before`.
+
+**Live today:** X, Bluesky, YouTube. TikTok and Pinterest have **no comments inbox**. Instagram, Facebook, Threads, and LinkedIn are not live yet (`platform` naming a not-live network returns **400**).
+
+**Auth:** Bearer API key (required). Personal / main pool only.
+
+### Query parameters
+
+| Param | Type | Default | Description |
+|-------|------|---------|-------------|
+| `range` | string | `7d` | `7d`, `14d`, `28d`, `90d`, `365d`, or `custom` |
+| `since` / `until` | datetime | — | With `range=custom` |
+| `account_id` | uuid | — | Restrict to one connected account |
+| `platform` | string | — | One live comments network |
+| `before` | string | — | Cursor from the previous `next_before` |
+| `limit` | int | — | 1–24 |
+| `fresh` | boolean | `false` | Bypass warm cache |
+
+Pages are per *publication*. A page can be empty while `has_more` is true. Check `has_more` before treating empty `threads` as "no comments".
+
+`sampled` means the page was capped. That is **not** the same as analytics `partial`.
+
+### Response 200
+
+```json
+{
+  "range": "7d",
+  "threads": [
+    {
+      "comment": {
+        "id": "comment-id",
+        "publication_id": "uuid",
+        "platform": "twitter_x",
+        "text": "Nice post",
+        "can_reply": true
+      },
+      "replies": [],
+      "answered": false
+    }
+  ],
+  "has_more": true,
+  "next_before": "cursor",
+  "sampled": false
+}
+```
+
+Keep **both** `comment.id` and `comment.publication_id` to reply, like, or hide.
+
+### cURL
+
+```bash
+curl "https://api.social0.app/v1/inbox/comments?range=7d" \
+  -H "Authorization: Bearer sk_live_YOUR_KEY"
+```
