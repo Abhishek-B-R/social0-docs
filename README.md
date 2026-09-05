@@ -25,7 +25,7 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000), then go to `/docs`.
+Open [http://localhost:3002](http://localhost:3002), then go to `/docs`.
 
 ## Build for production
 

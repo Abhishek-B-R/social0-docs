@@ -79,7 +79,7 @@ For people who use Social0 to schedule and publish posts. They care about what t
 
 **Tone:** Friendly, clear, direct-like a helpful teammate explaining the product. Not a lawyer. Not an engineer.
 
-**Product sections:** Introduction, how-it-works, getting-started, platforms/_, post-types/_, features/_, billing/_, dashboard/\* (composer, create, connections, posts, settings, queue, feedback, bulk-tools, etc.), onboarding, auth, troubleshooting, support, privacy, terms.
+**Product sections:** Introduction, how-it-works, getting-started, platforms/_, post-types/_, features/_, billing/_, dashboard/\* (composer, create, connections, posts, analytics, inbox, settings, queue, feedback, bulk-tools, etc.), onboarding, auth, troubleshooting, support, privacy, terms.
 
 ### Build tabs — technical docs allowed
 
@@ -142,6 +142,7 @@ These tabs may include endpoints, env vars, CLI flags, and code samples. Prefer 
 
 ## 10. Build and config notes
 
+- **Local dev:** `npm run dev` serves on **http://localhost:3002** (main app uses 3000).
 - **Next config:** `next.config.mjs` uses `createMDX()` from `fumadocs-mdx/next` and exports `withMDX(config)`. Do not pass the full Next config into `createMDX()` - use the pattern: `const withMDX = createMDX(); export default withMDX(config);`.
 - **Provider:** Use `RootProvider` from **`fumadocs-ui/provider/next`** (not `fumadocs-ui/provider`). It wraps the app with theme and search providers.
 - **Sidebar:** Sidebar configuration (e.g. `defaultOpenLevel`, `banner`) lives in `app/docs/layout.tsx` and is passed as the `sidebar` prop to `DocsLayout`; `BaseLayoutProps` in Fumadocs types include `sidebar` on the layout, not only in shared options.
