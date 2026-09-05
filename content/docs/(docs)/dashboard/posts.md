@@ -18,7 +18,7 @@ You’ll see a list (or grid) of post cards. Each shows a preview of the content
 
 ## What you can do
 
-- **Open a post** - Click a post to see the full content, media, and status per platform. From there you can edit, publish, schedule, retry a failed post, or delete.
+- **Open a post** - Click a post to see the full content, media, and status per platform. From there you can edit, retry, or delete. Use **Show analytics** to load metrics for that post. See [Post detail](/docs/dashboard/posts/id).
 - **Filter** - Filter by platform (e.g. only Twitter) or by time (e.g. this week). Use the filter controls at the top.
 - **Sort** - Sort by newest or oldest using the sort option.
 - **Create a new post** - Use the “Create post” or “Composer” button to start a new one.

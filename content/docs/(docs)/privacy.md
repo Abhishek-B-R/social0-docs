@@ -12,6 +12,7 @@ Our Privacy Policy explains what information we collect when you use Social0, ho
 - **Account info** - Email, name, and profile picture (from Google or what you enter) so we can identify you and run the product.
 - **Connected accounts** - When you connect Twitter, LinkedIn, etc., we receive and store the access we need to post and manage content on your behalf. We don’t see or store your password for those platforms.
 - **Content you create** - Your posts, captions, and media so we can publish and schedule them to the platforms you choose.
+- **Not analytics, comments, or DMs** - We do not store those. Analytics, Inbox comments, and DMs are loaded live from the platforms when you open those pages, then discarded.
 - **Usage** - How you use the app (e.g. which features you use) to improve the product and fix issues.
 
 We use this to run Social0, keep your account secure, send you important updates, and comply with the law. We don’t sell your personal data to third parties.

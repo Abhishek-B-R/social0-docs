@@ -24,6 +24,9 @@ The More page is split into two sections:
 - **Scheduled** - Posts set to go out at a specific time or in a queue slot.
 - **Posted** - Posts that have already been sent to your connected accounts.
 - **Drafts** - Posts you’ve saved but not yet published or scheduled.
+- **Calendar** - View your scheduled and published posts on a calendar.
+- **Analytics** - Early access (flask icon). **X and Bluesky only today**; we've requested access from the other networks. See [Analytics](/docs/dashboard/analytics).
+- **Inbox** - Early access (flask icon, plus unread count). Same live set. See [Inbox](/docs/dashboard/inbox).
 - **Teams** - Collaborative teams (Pro): invite teammates and manage roles. See [Teams & Workspaces](/docs/dashboard/teams).
 - **Workspaces** - Create solo or team workspaces and move connections. See [Workspaces board](/docs/dashboard/workspaces).
 - **Settings** - Profile, timezone, date format, queue slots, and other preferences.

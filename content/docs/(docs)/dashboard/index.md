@@ -33,6 +33,8 @@ At the top of the sidebar you’ll see a **Create post** button-the quickest way
 - **Scheduled** - Posts set to go out at a specific time or in a queue slot.
 - **Drafts** - Posts you’ve saved but not yet published or scheduled.
 - **Calendar** - View your scheduled and published posts on a calendar.
+- **Analytics** - Live views, likes, comments, and engagement for posts you published through Social0. **X and Bluesky only today**; we've requested access from the other networks. See [Analytics](/docs/dashboard/analytics).
+- **Inbox** - Comments on those posts, plus DMs where the platform allows it. Same: **X and Bluesky only today**. See [Inbox](/docs/dashboard/inbox).
 
 **WORKSPACE**
 
