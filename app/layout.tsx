@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { GeistMono } from "geist/font/mono";
-import { Instrument_Serif, Inter } from "next/font/google";
+import { DM_Sans, Instrument_Serif } from "next/font/google";
 import { RootProvider } from "fumadocs-ui/provider/next";
 import { DocsNavbar } from "@/components/docs-navbar";
 import {
@@ -65,9 +65,10 @@ export const metadata: Metadata = {
 
 const jsonLd = [buildOrganizationJsonLd(), buildWebSiteJsonLd()];
 
-const inter = Inter({
+// Same face as social0.app (home hero, headings, body).
+const dmSans = DM_Sans({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-dm-sans",
 });
 
 const instrumentSerif = Instrument_Serif({
@@ -82,7 +83,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} ${instrumentSerif.variable}`}
+      className={`${dmSans.variable} ${instrumentSerif.variable}`}
     >
       <head>
         <script

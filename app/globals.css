@@ -13,9 +13,9 @@
   --muted-foreground: #6b6b6b;
   --card: #ffffff;
   --sidebar-bg: #f5f2ed;
-  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-sans: var(--font-dm-sans), system-ui, sans-serif;
   --font-mono: var(--geist-mono), monospace;
-  --font-serif: var(--font-inter), system-ui, sans-serif;
+  --font-serif: var(--font-dm-sans), system-ui, sans-serif;
   --font-brand: var(--font-instrument-serif), Georgia, serif;
 
   /* Fumadocs fd-* overrides so components use Social0 green */
@@ -106,6 +106,9 @@ body {
 h1 {
   font-family: var(--font-sans);
   font-weight: 800;
+  font-size: clamp(32px, 3.2vw, 40px);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
 }
 
 h2,
@@ -113,6 +116,12 @@ h3,
 h4 {
   font-family: var(--font-sans);
   font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Body copy reads in near-foreground, not the dim muted grey (sidebar/meta stay muted). */
+.prose :where(p, li, td) {
+  color: color-mix(in srgb, var(--color-fd-foreground) 84%, transparent);
 }
 
 /* No shadow - border only (Social0 anti-pattern) */
